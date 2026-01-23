@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from storage import load_users, save_users
 
 def ask_student_id() -> str:
@@ -39,6 +39,31 @@ def assign_personality(goal_hours: int) -> str:
         return "Mediocre"
     else:
         return "Serious"
+
+
+def check_inactivity_penalty(user_data: dict) -> tuple[dict, str | None]:
+    """
+    Check if user was inactive for 7+ days.
+    If so, reset health and coins, and return a warning message.
+    """
+    last_login_str = user_data.get("last_login")
+    if not last_login_str:
+        return user_data, None
+
+    try:
+        last_login_date = date.fromisoformat(last_login_str)
+    except ValueError:
+        return user_data, None
+
+    today = date.today()
+    days_inactive = (today - last_login_date).days
+
+    if days_inactive >= 7:
+        user_data["health"] = 10
+        user_data["coins"] = -100
+        return user_data, "Inactive for 7+ days: pet died. Reset applied."
+
+    return user_data, None
 
 
 def register():
@@ -84,6 +109,10 @@ def login():
         return None, None
 
     user_data = users[user_id]
+
+    user_data, warning = check_inactivity_penalty(user_data)
+    if warning:
+        print(warning)
 
     user_data["last_login"] = str(date.today())
     users[user_id] = user_data
