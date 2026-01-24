@@ -1,10 +1,14 @@
-# DEV_MODE = True treats 1 minute as 1 second for quick testing.
+# DEV_MODE = True means:
+# 1 minute in logic = 1 second in real time (for fast demo/testing)
 
 import time
 
-# Set True for quick demo (1 minute == 1 second). Set False for real minutes.
 DEV_MODE = True
 
+MAX_STUDY_MIN = 180     # Upper limit so program doesn't run forever
+MAX_BREAK_MIN = 60
+
+# Difficulty choice mapped to (name, coin reward)
 DIFFICULTY = {
     "1": ("Easy", 5),
     "2": ("Medium", 10),
@@ -13,138 +17,120 @@ DIFFICULTY = {
 
 
 def trim(s):
-    """Remove leading and trailing spaces, tabs, newlines ."""
+    """
+    Manually removes leading and trailing whitespace.
+   
+    """
     if s is None:
         return ""
+
     start = 0
     end = len(s) - 1
-    while start <= end and (s[start] == " " or s[start] == "\t" or s[start] == "\n" or s[start] == "\r"):
-        start = start + 1
-    while end >= start and (s[end] == " " or s[end] == "\t" or s[end] == "\n" or s[end] == "\r"):
-        end = end - 1
+
+    while start <= end and (s[start] in " \t\n\r"):
+        start += 1
+
+    while end >= start and (s[end] in " \t\n\r"):
+        end -= 1
+
     if start > end:
         return ""
+
     return s[start:end + 1]
 
 
 def is_alpha_space(s):
-    """Return True if s has only letters (A-Z/a-z) and spaces."""
+    """
+    Returns True if string contains only letters (A-Z/a-z) and spaces.
+    """
     if s is None or s == "":
         return False
-    i = 0
-    while i < len(s):
-        ch = s[i]
-        if ch == " ":
-            i = i + 1
-            continue
-        if "a" <= ch <= "z":
-            i = i + 1
-            continue
-        if "A" <= ch <= "Z":
-            i = i + 1
-            continue
-        return False
+
+    for ch in s:
+        if ch != " " and not ("a" <= ch <= "z") and not ("A" <= ch <= "Z"):
+            return False
     return True
 
 
 def get_topic(prompt_text):
-    """Ask until user gives a topic with letters and spaces only."""
+    """
+    Keeps asking until user enters a valid topic.
+    Only letters + spaces allowed.
+    """
     while True:
-        raw = input(prompt_text)
-        raw = trim(raw)
+        raw = trim(input(prompt_text))
         if raw != "" and is_alpha_space(raw):
             return raw
-        print("Enter topic using letters and spaces only. Example: Data Structures")
+        print("Enter topic using letters and spaces only.")
 
 
 def get_choice(prompt_text, allowed):
-    """Ask until user enters one of the allowed choices (strings)."""
+    """
+    Generic input validator.
+    Keeps asking until input matches one of the allowed options.
+    """
     while True:
-        v = input(prompt_text)
-        v = trim(v)
+        v = trim(input(prompt_text))
         for a in allowed:
             if v == a:
                 return v
-        # show allowed choices
-        out = ""
-        first = True
-        for a in allowed:
-            if first:
-                out = a
-                first = False
-            else:
-                out = out + ", " + a
-        print("Please choose one of: " + out)
+        # Show allowed options
+        print("Please choose one of: " + ", ".join(allowed))
 
 
 def countdown(seconds, label):
-    """Simple MM:SS countdown; clears previous line using exact length."""
+    """
+    Displays a live countdown timer in MM:SS format.
+    Uses carriage return (\r) to overwrite the same line.
+    """
     if seconds <= 0:
         return
+
     remaining = seconds
     last_line = ""
+
     while remaining > 0:
         mins = remaining // 60
-        secs = remaining - (mins * 60)
-        if mins < 10:
-            mins_s = "0" + str(mins)
-        else:
-            mins_s = str(mins)
-        if secs < 10:
-            secs_s = "0" + str(secs)
-        else:
-            secs_s = str(secs)
+        secs = remaining % 60
+
+        mins_s = "0" + str(mins) if mins < 10 else str(mins)
+        secs_s = "0" + str(secs) if secs < 10 else str(secs)
 
         line = label + " - time left: " + mins_s + ":" + secs_s
-        # print and overwrite previous line
         print(line, end="\r")
         last_line = line
 
-        # sleep 1 second per tick
         time.sleep(1)
-        remaining = remaining - 1
+        remaining -= 1
 
-    # clear previous printed line using its exact length
+    # Clear the last countdown line completely
     if last_line != "":
-        clear = ""
-        i = 0
-        while i < len(last_line):
-            clear = clear + " "
-            i = i + 1
-        print(clear, end="\r")
+        print(" " * len(last_line), end="\r")
 
-    # final message on its own line
     print(label + " finished.")
 
 
 def today_date_str():
     """
-    Return today's date as "YYYY-MM-DD" without using date.isoformat().
-    Uses only basic operations and simple zero-pad logic.
+    Returns today's date in YYYY-MM-DD format without using date.isoformat().
     """
     t = time.localtime()
     year = t.tm_year
     month = t.tm_mon
     day = t.tm_mday
 
-    if month < 10:
-        month_s = "0" + str(month)
-    else:
-        month_s = str(month)
+    month_s = "0" + str(month) if month < 10 else str(month)
+    day_s = "0" + str(day) if day < 10 else str(day)
 
-    if day < 10:
-        day_s = "0" + str(day)
-    else:
-        day_s = str(day)
-
-    return str(year) + "-" + month_s + "-" + day_s
+    return f"{year}-{month_s}-{day_s}"
 
 
 def start_session(user_data):
     """
-    Start interactive study session.
-    Returns (updated_user_data, session_log) or (user_data, None) if cancelled.
+    Runs one full study session.
+    Returns updated user_data and a session log dictionary.
     """
+
     if "user_id" not in user_data:
         raise KeyError("user_data must include 'user_id'")
 
@@ -153,25 +139,20 @@ def start_session(user_data):
     if "health" not in user_data:
         user_data["health"] = 0
 
-    # Topic: only letters and spaces allowed
+    
+
+    # Ask for topic
     topic = get_topic("Enter study topic (letters and spaces only): ")
 
-    # Difficulty
-    print("")
-    print("Select difficulty:")
-    print("1. Easy")
-    print("2. Medium")
-    print("3. Hard")
+    # Difficulty selection
+    print("\nSelect difficulty:")
+    print("1. Easy\n2. Medium\n3. Hard")
     choice = get_choice("Choose 1/2/3: ", {"1", "2", "3"})
     diff_name, coins_reward = DIFFICULTY[choice]
 
     # Pomodoro selection
-    print("")
-    print("Select Pomodoro mode:")
-    print("1. 25 / 5")
-    print("2. 50 / 10")
-    print("3. Custom")
-    print("4. Cancel")
+    print("\nSelect Pomodoro mode:")
+    print("1. 25 / 5\n2. 50 / 10\n3. Custom\n4. Cancel")
     pm = get_choice("Choose 1/2/3/4: ", {"1", "2", "3", "4"})
 
     if pm == "4":
@@ -185,63 +166,55 @@ def start_session(user_data):
         study_minutes = 50
         break_minutes = 10
     else:
+        # Custom minutes with validation
         while True:
-            s_text = input("Enter study minutes (positive integer): ")
-            s_text = trim(s_text)
-            b_text = input("Enter break minutes (0 or positive integer): ")
-            b_text = trim(b_text)
-            ok = True
+            s_text = trim(input("Enter study minutes (1–180): "))
+            b_text = trim(input("Enter break minutes (0–60): "))
+
             try:
                 s_val = int(s_text)
-            except Exception:
-                ok = False
-            try:
                 b_val = int(b_text)
             except Exception:
-                ok = False
-            if ok:
-                if s_val > 0 and b_val >= 0:
-                    study_minutes = s_val
-                    break_minutes = b_val
-                    break
-            print("Enter valid integers: study > 0, break >= 0.")
+                print("Enter valid integers.")
+                continue
 
-    # convert minutes to seconds depending on DEV_MODE
+            if 1 <= s_val <= MAX_STUDY_MIN and 0 <= b_val <= MAX_BREAK_MIN:
+                study_minutes = s_val
+                break_minutes = b_val
+                break
+
+            print("Study: 1–180 minutes, Break: 0–60 minutes.")
+
+    # Convert minutes to seconds depending on DEV_MODE
+    study_seconds = study_minutes if DEV_MODE else study_minutes * 60
+    break_seconds = break_minutes if DEV_MODE else break_minutes * 60
+
+    # Countdown study
+
     if DEV_MODE:
-        study_seconds = study_minutes
-        break_seconds = break_minutes
-    else:
-        study_seconds = study_minutes * 60
-        break_seconds = break_minutes * 60
+        print("\n[DEV MODE] 1 minute = 1 second")
 
-    print("")
-    print("Starting study for " + str(study_minutes) + " minute(s)")
+    print("\nStarting study for " + str(study_minutes) + " minute(s)")
     countdown(study_seconds, "Study time")
 
+    # Countdown break
     if break_minutes > 0:
-        print("Starting break for " + str(break_minutes) + " minute(s).")
+        print("Starting break for " + str(break_minutes) + " minute(s)")
         countdown(break_seconds, "Break time")
 
-    # Update user_data
-    try:
-        cur_coins = int(user_data["coins"])
-    except Exception:
-        cur_coins = 0
-    try:
-        cur_health = int(user_data["health"])
-    except Exception:
-        cur_health = 0
+    # Update coins and health 
+    cur_coins = int(user_data["coins"])
+    cur_health = int(user_data["health"])
 
-    cur_coins = cur_coins + coins_reward
-    cur_health = cur_health + 1
+    cur_coins += coins_reward
+    cur_health += 1  
 
     user_data["coins"] = cur_coins
     user_data["health"] = cur_health
 
-    print("")
-    print("Well done! You completed '" + topic + "' (" + diff_name + ").")
-    print("Coins earned: +" + str(coins_reward) + "  - Total: " + str(user_data["coins"]))
-    print("Health +1  - Current: " + str(user_data["health"]))
+    print("\nWell done! You completed '" + topic + "' (" + diff_name + ").")
+    print(f"Coins earned: +{coins_reward} | Total: {cur_coins}")
+    print(f"Health +1 | Current: {cur_health}")
 
     session_log = {
         "user_id": user_data["user_id"],
@@ -249,7 +222,9 @@ def start_session(user_data):
         "topic": topic,
         "difficulty": diff_name,
         "study_minutes": study_minutes,
-        "coins_earned": coins_reward
+        "break_minutes": break_minutes,
+        "coins_earned": coins_reward,
+        "dev_mode": DEV_MODE
     }
 
     return user_data, session_log
@@ -258,6 +233,5 @@ def start_session(user_data):
 if __name__ == "__main__":
     demo = {"user_id": "demo_user", "coins": 0, "health": 5}
     updated, log = start_session(demo)
-    print("")
-    print("Updated user:", updated)
+    print("\nUpdated user:", updated)
     print("Session log:", log)
