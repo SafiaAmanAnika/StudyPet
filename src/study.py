@@ -74,8 +74,17 @@ def get_choice(prompt_text, allowed):
         for a in allowed:
             if v == a:
                 return v
-        # Show allowed options
-        print("Please choose one of: " + ", ".join(allowed))
+
+        # Manually build allowed options string 
+        msg = "Please choose one of: "
+        first = True
+        for a in allowed:
+            if not first:
+                msg += ", "
+            msg += a
+            first = False
+
+        print(msg)
 
 
 def countdown(seconds, label):
