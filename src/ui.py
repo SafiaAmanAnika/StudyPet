@@ -40,6 +40,9 @@ def show_user_summary(user_data):
     goal_hours = user_data.get("goal_hours", "?")
     academic_goal = user_data.get("academic_goal", "")
     pet_personality = user_data.get("pet_personality", "Neutral")
+    mood = user_data.get("mood_today", "")
+    if mood: 
+        print(f"Mood Today: {mood}")
 
     print(f"Name: {name}")
     print(f"Pet: {pet_theme} | Personality: {pet_personality}")
@@ -69,4 +72,9 @@ def show_user_stats(user_id, user_data):
     print_kv("Last Login", user_data.get("last_login", ""))
     print_kv("Mood Today", user_data.get("mood_today", ""))
     
+
+def choose_mood(menu_func): 
+    moods = ["Happy", "Neutral", "Tired", "Stressed", "Motivated", "Skip"]
+    choice = menu_func("How are you feeling today, dear?", moods)
+    return moods[choice -1]
 
