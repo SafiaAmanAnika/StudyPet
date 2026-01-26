@@ -40,18 +40,32 @@ def save_user_data(user_id, user_data):
     # save_users(users)
     return
 
+def apply_inactivity_penalty_if_needed(user_data):
+    try: 
+        from src.auth import check_inactivity_penalty
+        updated_user_data, msg = check_inactivity_penalty(user_data)
+        return updated_user_data, msg
+    
+    except ImportError: 
+        return user_data, None
+    except Exception: 
+        return user_data, None
 
-#todo 
+
 def register_user():
-    print("[TODO]")
-    pause()
-    return None 
+    from src.auth import register
+    user_id, user_data = register()
+    if user_id: 
+        user_data["user_id"] = user_id
+    return user_id, user_data 
 
-#todo 
+
 def login_user():
-    print("[TODO]")
-    pause()
-    return None, None
+    from src.auth import login
+    user_id, user_data = login()
+    if user_id: 
+        user_data["user_id"] = user_id
+    return user_id, user_data
 
 def handle_study_session(user_id, user_data):
     try: 
@@ -119,11 +133,22 @@ def main():
         choice = menu("Main Menu: ", ["Register", "Login", "Exit"])
 
         if choice == 1: 
-            register_user()
+            user_id, user_data = register_user()
+            if user_id: 
+                save_user_data(user_id, user_data)
+                dashboard(user_id, user_data)
 
         elif choice == 2: 
             user_id, user_data = login_user()
             if user_id: 
+                #penalty given 
+                user_data, penatly_msg = apply_inactivity_penalty_if_needed(user_data)
+                if penatly_msg: 
+                    title("Inactivity Penalty Applied")
+                    print(penatly_msg)
+                    pause()
+                
+                #choose mood 
                 mood = choose_mood(menu)
                 if mood != "Skip": 
                     user_data["mood_today"] = mood

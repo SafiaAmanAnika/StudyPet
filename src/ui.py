@@ -36,6 +36,8 @@ def show_user_summary(user_data):
     if health <= 3: 
         print("\n⚠️ Warning: Your pet is very weak! Feed it soon.")
     coins = user_data.get("coins", 5)
+    if coins < 0: 
+        print("\n⚠️ Penalty active: negative coins due to inactivity.")
     pet_theme = user_data.get("pet_theme", "Unknown")
     goal_hours = user_data.get("goal_hours", "?")
     academic_goal = user_data.get("academic_goal", "")
