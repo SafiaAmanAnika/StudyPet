@@ -1,4 +1,9 @@
 from src.ui import title, menu, pause, show_user_summary, show_user_stats, choose_mood
+from src.storage import load_users, save_users
+from src.pet import show_status
+from src.shop import feed_pet, open_shop
+from src.study import start_session
+
 import json 
 import os
 
@@ -30,15 +35,9 @@ def append_study_log(session_log):
 
 
 def save_user_data(user_id, user_data):
-    """
-    Day 4: integration hook.
-    Later this will call Person 2's load_users/save_users.
-    """
-    # TODO: replace with:
-    # users = load_users()
-    # users[user_id] = user_data
-    # save_users(users)
-    return
+    users = load_users()
+    users[user_id] = user_data
+    save_users(users)
 
 def apply_inactivity_penalty_if_needed(user_data):
     try: 
@@ -78,15 +77,11 @@ def handle_study_session(user_id, user_data):
         return user_data, None
 
 def handle_feed_pet(user_id, user_data):
-    # Later: from src.shop import feed_pet
-    print("[TODO] Feed pet will be connected (Person 3).")
-    pause()
+    user_data = feed_pet(user_data)
     return user_data
 
 def handle_shop(user_id, user_data):
-    # Later: from src.shop import open_shop
-    print("[TODO] Pet shop will be connected (Person 3).")
-    pause()
+    user_data = open_shop(user_data)
     return user_data
 
 
@@ -103,19 +98,16 @@ def dashboard(user_id, user_data):
             user_data ,session_log = handle_study_session(user_id, user_data)
             save_user_data(user_id, user_data)
             append_study_log(session_log)
-            print("[TODO] connects study.start_session(user_data) (nuzhat)")
             pause()
 
         elif choice == 2: 
-            user_data = handle_study_session(user_id, user_data)
+            user_data = handle_feed_pet(user_id, user_data)
             save_user_data(user_id, user_data)
-            print("[TODO] connects shop.feed_pet(user_data) (riya)")
             pause()
 
         elif choice == 3: 
             user_data = handle_shop(user_id, user_data)
             save_user_data(user_id, user_data)
-            print("[TODO] connects shop.open_shop(user_data) (riya)")
             pause()
         
         elif choice == 4: 

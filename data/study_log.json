@@ -1,1 +1,32 @@
-"last_login": "2026-01-01"
+[
+  {
+    "user_id": "126",
+    "date": "2026-01-26",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 20,
+    "dev_mode": true
+  },
+  {
+    "user_id": "126",
+    "date": "2026-01-26",
+    "topic": "SPL",
+    "difficulty": "Easy",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 5,
+    "dev_mode": true
+  },
+  {
+    "user_id": "126",
+    "date": "2026-01-26",
+    "topic": "DS",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 20,
+    "dev_mode": true
+  }
+]

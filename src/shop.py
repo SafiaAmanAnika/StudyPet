@@ -1,7 +1,7 @@
 
 # Shop and feeding system
 
-import pet
+from src import pet
 
 NORMAL_FOOD_COST = 50
 NORMAL_FOOD_HEALTH = 3
