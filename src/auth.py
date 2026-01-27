@@ -1,14 +1,26 @@
-from datetime import date, datetime, timedelta
+from datetime import date
+import re
 from src.storage import load_users, save_users
 
-def ask_student_id() -> str:
-    """Ask for a numeric student ID."""
-    while True:
-        user_id = input("Enter Student ID: ").strip()
-        if user_id.isdigit():
-            return user_id
-        print("Student ID must be numeric.")
+# ---------------- EMAIL VALIDATION ---------------- #
 
+EMAIL_REGEX = re.compile(
+    r"^[a-zA-Z0-9._%+-]+@(gmail\.com|iut-dhaka\.edu)$"
+)
+
+
+def ask_email() -> str:
+    """Ask until user enters a valid email from allowed domains."""
+    while True:
+        email = input("Enter email address: ").strip().lower()
+
+        if EMAIL_REGEX.match(email):
+            return email
+
+        print("Invalid email.")
+
+
+# ---------------- INPUT HELPERS ---------------- #
 
 def ask_non_empty(prompt: str) -> str:
     """Ask until user enters a non-empty value."""
@@ -20,31 +32,55 @@ def ask_non_empty(prompt: str) -> str:
 
 
 def ask_goal_hours() -> int:
-    """Ask for valid study hours (0–24)."""
+    """Ask for valid study hours (1–24)."""
     while True:
         try:
-            hours = int(input("Enter daily study hours (0–24): "))
-            if 0 <= hours <= 24:
+            hours = int(input("Enter daily study hours (1–24): "))
+            if 1 <= hours <= 24:
                 return hours
-            print("Please enter a number between 0 and 24.")
+            print("Please enter a number between 1 and 24.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
 
+def ask_pet_theme() -> str:
+    """Ask user to choose pet theme using numeric options only."""
+    options = {
+        "1": "Cat",
+        "2": "Dog",
+        "3": "Bunny"
+    }
+
+    while True:
+        print("\nChoose pet theme:")
+        print("1. Cat")
+        print("2. Dog")
+        print("3. Bunny")
+
+        choice = input("Enter choice (1–3): ").strip()
+
+        if choice in options:
+            return options[choice]
+
+        print("Invalid choice. Please enter 1, 2, or 3.")
+
+
+# ---------------- PET LOGIC ---------------- #
+
 def assign_personality(goal_hours: int) -> str:
     """Assign pet personality based on study hours."""
     if goal_hours <= 2:
-        return "Lazy"
+        return "Lower than average"
     elif goal_hours <= 4:
-        return "Mediocre"
+        return "Average"
     else:
-        return "Serious"
+        return "Better than average"
 
 
-def check_inactivity_penalty(user_data: dict) -> tuple[dict, str | None]:
+def check_inactivity_penalty(user_data: dict):
     """
     Check if user was inactive for 7+ days.
-    If so, reset health and coins, and return a warning message.
+    If so, reset health and coins.
     """
     last_login_str = user_data.get("last_login")
     if not last_login_str:
@@ -66,18 +102,20 @@ def check_inactivity_penalty(user_data: dict) -> tuple[dict, str | None]:
     return user_data, None
 
 
+# ---------------- AUTH ---------------- #
+
 def register():
     users = load_users()
 
-    user_id = ask_student_id()
-    if user_id in users:
-        print("User already exists. Please login instead.")
+    email = ask_email()
+    if email in users:
+        print("Email already registered. Please login instead.")
         return None, None
 
     name = ask_non_empty("Enter name: ")
     goal_hours = ask_goal_hours()
     academic_goal = ask_non_empty("Enter academic goal: ")
-    pet_theme = ask_non_empty("Choose pet theme (Cat, Dog, Bear): ")
+    pet_theme = ask_pet_theme()
 
     personality = assign_personality(goal_hours)
 
@@ -93,30 +131,30 @@ def register():
         "mood_today": ""
     }
 
-    users[user_id] = user_data
+    users[email] = user_data
     save_users(users)
 
     print("Registration successful.")
-    return user_id, user_data
+    return email, user_data
 
 
 def login():
     users = load_users()
 
-    user_id = ask_student_id()
-    if user_id not in users:
+    email = ask_email()
+    if email not in users:
         print("User not found.")
         return None, None
 
-    user_data = users[user_id]
+    user_data = users[email]
 
     user_data, warning = check_inactivity_penalty(user_data)
     if warning:
         print(warning)
 
     user_data["last_login"] = str(date.today())
-    users[user_id] = user_data
+    users[email] = user_data
     save_users(users)
 
     print("Login successful.")
-    return user_id, user_data
+    return email, user_data
