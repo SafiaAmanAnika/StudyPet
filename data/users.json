@@ -34,5 +34,17 @@
     "last_login": "2026-01-27",
     "mood_today": "Stressed",
     "user_id": "2300"
+  },
+  "2301": {
+    "name": "Sadia",
+    "goal_hours": 2,
+    "academic_goal": "Study hard.",
+    "pet_theme": "C",
+    "pet_personality": "Lazy",
+    "health": 3,
+    "coins": 110,
+    "last_login": "2026-01-27",
+    "mood_today": "",
+    "user_id": "2301"
   }
 }

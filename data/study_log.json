@@ -78,5 +78,35 @@
     "break_minutes": 2,
     "coins_earned": 100,
     "dev_mode": true
+  },
+  {
+    "user_id": "2301",
+    "date": "2026-01-27",
+    "topic": "SPL",
+    "difficulty": "Medium",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 80,
+    "dev_mode": true
+  },
+  {
+    "user_id": "2301",
+    "date": "2026-01-27",
+    "topic": "spl",
+    "difficulty": "Easy",
+    "study_minutes": 2,
+    "break_minutes": 0,
+    "coins_earned": 50,
+    "dev_mode": true
+  },
+  {
+    "user_id": "2301",
+    "date": "2026-01-27",
+    "topic": "spl",
+    "difficulty": "Easy",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 50,
+    "dev_mode": true
   }
 ]
