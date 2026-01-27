@@ -29,11 +29,15 @@
     "academic_goal": "jani na",
     "pet_theme": "cat",
     "pet_personality": "Lazy",
-    "health": 16,
-    "coins": 75,
+    "health": 9,
+    "coins": 150,
     "last_login": "2026-01-27",
-    "mood_today": "Stressed",
-    "user_id": "2300"
+    "mood_today": "Happy",
+    "user_id": "2300",
+    "inventory": {
+      "normal_food": 1,
+      "premium_food": 0
+    }
   },
   "2301": {
     "name": "Sadia",

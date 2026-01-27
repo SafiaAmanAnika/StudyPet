@@ -92,7 +92,7 @@ def dashboard(user_id, user_data):
         
         show_user_summary(user_data)
         
-        choice = menu("Select an action: ", ["Start Study Session", "Feed Pet", "Pet Shop", "View Stats", "Logout"])
+        choice = menu("Select an action: ", ["Start Study Session", "Feed Pet", "Pet Shop", "View Pet Status", "View Stats", "Logout"])
 
         if choice == 1: 
             user_data ,session_log = handle_study_session(user_id, user_data)
@@ -109,12 +109,16 @@ def dashboard(user_id, user_data):
             user_data = handle_shop(user_id, user_data)
             save_user_data(user_id, user_data)
             pause()
-        
+
         elif choice == 4: 
+            show_status(user_data)
+            pause()
+        
+        elif choice == 5: 
             show_user_stats(user_id, user_data)
             pause()
 
-        elif choice == 5: 
+        elif choice == 6: 
             title("Logged out.")
             pause()
             return 
