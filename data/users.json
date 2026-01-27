@@ -50,5 +50,29 @@
     "last_login": "2026-01-27",
     "mood_today": "",
     "user_id": "2301"
+  },
+  "safiaaman@iut-dhaka.edu": {
+    "name": "anika",
+    "goal_hours": 5,
+    "academic_goal": "YOYO MAMA",
+    "pet_theme": "Cat",
+    "pet_personality": "Focused, intense, and hungry for knowledge \ud83e\udd13\ud83d\udcda",
+    "health": 1,
+    "coins": 205,
+    "last_login": "2026-01-28",
+    "mood_today": "Happy",
+    "user_id": "safiaaman@iut-dhaka.edu"
+  },
+  "zen@gmail.com": {
+    "name": "zen",
+    "goal_hours": 3,
+    "academic_goal": "YAHH",
+    "pet_theme": "Dog",
+    "pet_personality": "Calm, steady, and building consistency \ud83e\udd17\ud83d\ude0c",
+    "health": 4,
+    "coins": 105,
+    "last_login": "2026-01-28",
+    "mood_today": "Tired",
+    "user_id": "zen@gmail.com"
   }
 }

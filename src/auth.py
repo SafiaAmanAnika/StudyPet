@@ -70,11 +70,11 @@ def ask_pet_theme() -> str:
 def assign_personality(goal_hours: int) -> str:
     """Assign pet personality based on study hours."""
     if goal_hours <= 2:
-        return "Lower than average"
+        return "Sleepy but curious, learning one step at a time🤔💭"
     elif goal_hours <= 4:
-        return "Average"
+        return "Calm, steady, and building consistency🤗😌"
     else:
-        return "Better than average"
+        return "Focused, intense, and hungry for knowledge🤓📚"
 
 
 def check_inactivity_penalty(user_data: dict):

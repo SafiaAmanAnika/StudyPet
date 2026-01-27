@@ -1,9 +1,77 @@
 import time
+import os 
 
 DEV_MODE = True
 
 MAX_STUDY_MIN = 180
 MAX_BREAK_MIN = 60
+
+CAT_FRAMES = {
+    "Happy": [
+        " /\\_/\\   ♪\n( ^.^ )\n >  ^  <",
+        " /\\_/\\   ♪\n( ^o^ )\n >  ^  <",
+        " /\\_/\\   ♪\n( ^.^ )\n >  o  <",
+    ],
+    "Neutral": [
+        " /\\_/\\\n( -.- )\n >  ^  <",
+        " /\\_/\\\n( -_- )\n >  ^  <",
+        " /\\_/\\\n( -.- )\n >  _  <",
+    ],
+    "Tired": [
+        " /\\_/\\  zZ\n( -.- )\n >  ^  <",
+        " /\\_/\\  zZ\n( -_- )\n >  ^  <",
+        " /\\_/\\  zZ\n( -.- )\n >  _  <",
+    ],
+    "Stressed": [
+        " /\\_/\\  !!!\n( o.O )\n >  ^  <",
+        " /\\_/\\  !!!\n( O.o )\n >  ^  <",
+        " /\\_/\\  !!!\n( o.O )\n >  _  <",
+    ],
+    "Motivated": [
+        " /\\_/\\  🔥\n( >.< )\n >  ^  <",
+        " /\\_/\\  🔥\n( >o< )\n >  ^  <",
+        " /\\_/\\  🔥\n( >.< )\n >  o  <",
+    ],
+}
+
+
+#clears the whole screen 
+def _clear_screen_soft():
+    print("\033[H\033[J", end="")
+
+#animating the part
+def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:
+    if seconds <= 0:
+        return True
+
+    frames = CAT_FRAMES.get(mood, CAT_FRAMES["Neutral"])
+    frame_i = 0
+
+    try:
+        for remaining in range(seconds, 0, -1):
+            mins = remaining // 60
+            secs = remaining % 60
+            time_str = f"{mins:02d}:{secs:02d}"
+
+            frame = frames[frame_i % len(frames)]
+            frame_i += 1
+
+            _clear_screen_soft()
+            print(frame)
+            print()
+            print(f"{label} - time left: {time_str}")
+
+            time.sleep(1)
+
+        _clear_screen_soft()
+        print(f"{label} finished. Well done!👍")
+        return True
+
+    except KeyboardInterrupt:
+        _clear_screen_soft()
+        print(f"{label} cancelled.")
+        return False
+    
 
 
 # =========================
@@ -11,7 +79,7 @@ MAX_BREAK_MIN = 60
 # Now each difficulty has:
 # - multiplier for coins
 # - health decrease
-# =========================
+# =========================                                                                                                                                             
 DIFFICULTY = {
     "1": ("Easy", 1.0, 1),     # multiplier, health loss
     "2": ("Medium", 1.5, 2),
@@ -89,6 +157,7 @@ def today_date_str():
 
 
 def start_session(user_data):
+    mood = user_data.get("mood_today", "Neutral")
 
 # Ensure user has coins and health initialized
     if "coins" not in user_data:
@@ -142,10 +211,17 @@ def start_session(user_data):
     break_seconds = break_minutes if DEV_MODE else break_minutes * 60
 
     print("\nStarting study...")
-    countdown(study_seconds, "Study")
+    ok = animated_countdown(study_seconds, "Study", mood=mood)
+    if not ok:
+        print("Session cancelled. No rewards given.")
+        return user_data, None
 
     if break_minutes > 0:
-        countdown(break_seconds, "Break")
+        ok = animated_countdown(break_seconds, "Break", mood="Neutral")
+    if not ok:
+        print("Break cancelled.")
+        return user_data, None
+
 
     
     #  base coins = study_minutes

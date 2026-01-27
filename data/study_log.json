@@ -135,5 +135,50 @@
     "study_minutes": 25,
     "coins_earned": 50,
     "health_lost": 3
+  },
+  {
+    "user_id": "safiaaman@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "safiaaman@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "safiaaman@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 50,
+    "coins_earned": 100,
+    "health_lost": 3
+  },
+  {
+    "user_id": "zen@gmail.com",
+    "date": "2026-01-28",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "zen@gmail.com",
+    "date": "2026-01-28",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
   }
 ]
