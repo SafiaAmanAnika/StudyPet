@@ -10,5 +10,29 @@
     "last_login": "2026-01-26",
     "mood_today": "",
     "user_id": "126"
+  },
+  "230042154": {
+    "name": "Aksan",
+    "goal_hours": 5,
+    "academic_goal": "Be a nerd",
+    "pet_theme": "Cat",
+    "pet_personality": "Serious",
+    "health": 10,
+    "coins": 5,
+    "last_login": "2026-01-27",
+    "mood_today": "",
+    "user_id": "230042154"
+  },
+  "2300": {
+    "name": "khi",
+    "goal_hours": 1,
+    "academic_goal": "jani na",
+    "pet_theme": "cat",
+    "pet_personality": "Lazy",
+    "health": 16,
+    "coins": 75,
+    "last_login": "2026-01-27",
+    "mood_today": "Stressed",
+    "user_id": "2300"
   }
 }

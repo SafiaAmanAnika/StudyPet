@@ -10,9 +10,9 @@ MAX_BREAK_MIN = 60
 
 # Difficulty choice mapped to (name, coin reward)
 DIFFICULTY = {
-    "1": ("Easy", 5),
-    "2": ("Medium", 10),
-    "3": ("Hard", 20),
+    "1": ("Easy", 50),
+    "2": ("Medium", 80),
+    "3": ("Hard", 100),
 }
 
 
@@ -151,7 +151,7 @@ def start_session(user_data):
     
 
     # Ask for topic
-    topic = get_topic("Enter study topic (letters and spaces only): ")
+    topic = get_topic("Enter study topic: ")
 
     # Difficulty selection
     print("\nSelect difficulty:")
@@ -216,14 +216,14 @@ def start_session(user_data):
     cur_health = int(user_data["health"])
 
     cur_coins += coins_reward
-    cur_health += 1  
+    cur_health -=4 
 
     user_data["coins"] = cur_coins
     user_data["health"] = cur_health
 
     print("\nWell done! You completed '" + topic + "' (" + diff_name + ").")
     print(f"Coins earned: +{coins_reward} | Total: {cur_coins}")
-    print(f"Health +1 | Current: {cur_health}")
+    print(f"Health +1 | Current Health: {cur_health}")
 
     session_log = {
         "user_id": user_data["user_id"],
