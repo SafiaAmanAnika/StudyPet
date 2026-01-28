@@ -1,11 +1,11 @@
 [
   {
     "user_id": "safiaaman@iut-dhaka.edu",
-    "date": "2026-01-28",
-    "topic": "SPL",
-    "difficulty": "Medium",
-    "study_minutes": 2,
-    "coins_earned": 3,
-    "health_lost": 2
+    "date": "2026-01-20",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
   }
 ]
