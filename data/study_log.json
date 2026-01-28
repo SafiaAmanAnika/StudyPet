@@ -71,7 +71,7 @@
   },
   {
     "user_id": "2300",
-    "date": "2026-01-27",
+    "date": "2026-01-12",
     "topic": "DLD",
     "difficulty": "Hard",
     "study_minutes": 3,
@@ -176,6 +176,15 @@
     "user_id": "zen@gmail.com",
     "date": "2026-01-28",
     "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "x@gmail.com",
+    "date": "2026-01-28",
+    "topic": "math",
     "difficulty": "Hard",
     "study_minutes": 25,
     "coins_earned": 50,

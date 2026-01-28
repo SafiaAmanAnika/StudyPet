@@ -71,8 +71,24 @@
     "pet_personality": "Calm, steady, and building consistency \ud83e\udd17\ud83d\ude0c",
     "health": 4,
     "coins": 105,
-    "last_login": "2026-01-28",
+    "last_login": "2026-01-19",
     "mood_today": "Tired",
     "user_id": "zen@gmail.com"
+  },
+  "x@gmail.com": {
+    "name": "A b 9",
+    "goal_hours": 2,
+    "academic_goal": "good",
+    "pet_theme": "Cat",
+    "pet_personality": "Sleepy but curious, learning one step at a time\ud83e\udd14\ud83d\udcad",
+    "health": 7,
+    "coins": 55,
+    "last_login": "2026-01-28",
+    "mood_today": "",
+    "user_id": "x@gmail.com",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    }
   }
 }
