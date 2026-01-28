@@ -180,5 +180,59 @@
     "study_minutes": 25,
     "coins_earned": 50,
     "health_lost": 3
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "Linear Algebra",
+    "difficulty": "Medium",
+    "study_minutes": 3,
+    "coins_earned": 4,
+    "health_lost": 2
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "Linear algebra",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "DLD",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "hh",
+    "difficulty": "Medium",
+    "study_minutes": 5,
+    "coins_earned": 7,
+    "health_lost": 2
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "hh",
+    "difficulty": "Easy",
+    "study_minutes": 25,
+    "coins_earned": 25,
+    "health_lost": 1
+  },
+  {
+    "user_id": "aksan@iut-dhaka.edu",
+    "date": "2026-01-28",
+    "topic": "kk",
+    "difficulty": "Medium",
+    "study_minutes": 5,
+    "coins_earned": 7,
+    "health_lost": 2
   }
 ]

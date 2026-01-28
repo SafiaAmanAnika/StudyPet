@@ -23,21 +23,21 @@ def ensure_pet_defaults(user_data: dict) -> dict:
 
 
 def get_pet_ascii(health: int) -> str:
-    if health >= 15:
+    if health >= 10:
         return (
             "   /\\_/\\\n"
             "  ( ^_^ )\n"
             "   > ^ <\n"
             "✨😸 Your pet is energetic and happy!"
         )
-    elif health >= 10:
+    elif health >=8:
         return (
             "   /\\_/\\\n"
             "  ( -_- )\n"
             "   > ^ <\n"
             "😺 Your pet is doing okay."
         )
-    elif health >= 4:
+    elif health >= 5:
         return (
             "   /\\_/\\\n"
             "  ( T_T )\n"

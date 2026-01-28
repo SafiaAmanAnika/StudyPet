@@ -74,5 +74,21 @@
     "last_login": "2026-01-28",
     "mood_today": "Tired",
     "user_id": "zen@gmail.com"
+  },
+  "aksan@iut-dhaka.edu": {
+    "name": "Aksan",
+    "goal_hours": 2,
+    "academic_goal": "A+",
+    "pet_theme": "Cat",
+    "pet_personality": "Sleepy but curious, learning one step at a time\ud83e\udd14\ud83d\udcad",
+    "health": 5,
+    "coins": 23,
+    "last_login": "2026-01-28",
+    "mood_today": "Neutral",
+    "user_id": "aksan@iut-dhaka.edu",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    }
   }
 }
