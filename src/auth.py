@@ -5,7 +5,7 @@ from src.storage import load_users, save_users
 # ---------------- EMAIL VALIDATION ---------------- #
 
 EMAIL_REGEX = re.compile(
-    r"^[a-zA-Z0-9._%+-]+@(gmail\.com|iut-dhaka\.edu)$"
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 )
 
 
