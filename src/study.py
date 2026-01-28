@@ -37,7 +37,7 @@ CAT_FRAMES = {
 
 #clears the whole screen 
 def _clear_screen_soft():
-    print("\033[H\033[J", end="")
+    print("\033[2J\033[3J\033[H", end="")
 
 #animating the part
 def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:

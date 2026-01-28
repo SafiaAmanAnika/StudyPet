@@ -37,7 +37,7 @@ def get_pet_ascii(health: int) -> str:
             "   > ^ <\n"
             "😺 Your pet is doing okay."
         )
-    elif health >= 5:
+    elif health >= 5 and health > 3:
         return (
             "   /\\_/\\\n"
             "  ( T_T )\n"

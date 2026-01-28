@@ -1,4 +1,4 @@
-from src.ui import title, menu, pause, show_user_summary, show_user_stats, choose_mood
+from src.ui import title, menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen
 from src.storage import load_users, save_users
 from src.pet import show_status
 from src.shop import feed_pet, open_shop
@@ -11,11 +11,11 @@ LOG_FILE = "data/study_log.json"
 
 def mood_message(mood):
     messages = {
-        "Happy": "Nice! Let’s use that energy and study well today 😊 you GOT THISSSSS",
-        "Neutral": "Steady and calm — small progress today is still progress.",
-        "Tired": "Take it slow. Try JUST one short session, then rest.",
-        "Stressed": "Breathe. One Pomodoro at a time. You’ve got this. YOU CAN DO THISSSSS!!!!!",
-        "Motivated": "Love the energy! Let’s complete a strong session today! GO KYLIEEEE GOOOOO"
+        "Happy 😊": "Nice! Let’s use that energy and study well today 😊 you GOT THISSSSS 👊👊👊👊",
+        "Neutral 😐": "Steady and calm — small progress today is still progress 🥳🥳🥳🥳🥳",
+        "Tired 😞": "Take it slow. Try JUST one short session, then rest ☝️",
+        "Stressed 😫": "Breathe. One Pomodoro at a time. You’ve got this. YOU CAN DO THISSSSS!!!!! 🤗🤗🤗🤗🤗",
+        "Motivated 🥳": "Love the energy! Let’s complete a strong session today! GO KYLIEEEE GOOOOO 🏃🏃‍♀️"
     }
     return messages.get(mood, "")
 
@@ -92,7 +92,7 @@ def dashboard(user_id, user_data):
         
         show_user_summary(user_data)
         
-        choice = menu("Select an action: ", ["Start Study Session", "Feed Pet", "Pet Shop", "View Pet Status", "View Stats", "Logout"])
+        choice = menu("Select an action: ", ["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
 
         if choice == 1: 
             user_data ,session_log = handle_study_session(user_id, user_data)
@@ -119,14 +119,15 @@ def dashboard(user_id, user_data):
             pause()
 
         elif choice == 6: 
-            title("Logged out.")
+            clear_screen()
+            title("Logged out. Albida mere dost 👋")
             pause()
             return 
         
 def main(): 
     while True: 
         title("StudyPet - Your Virtual Study Companion")
-        choice = menu("Main Menu: ", ["Register", "Login", "Exit"])
+        choice = menu("Main Menu: ", ["Register 📝", "Login 💻", "Exit 🚪"])
 
         if choice == 1: 
             user_id, user_data = register_user()
@@ -148,7 +149,7 @@ def main():
                 mood = choose_mood(menu)
                 if mood != "Skip": 
                     user_data["mood_today"] = mood
-                    title("Mood Check-in")
+                    title("Mood Check-in 🤗")
                     print(mood_message(mood))
                     pause()
 

@@ -6,6 +6,9 @@ def title(text):
     print(text)
     clear_line()
 
+def clear_screen():
+    print("\033[2J\033[3J\033[H", end="")
+
 def pause():
     try:
         input("\nPress the Enter button to continue!")
@@ -63,19 +66,19 @@ def show_user_stats(user_id, user_data):
     print(title_text)
     clear_line()
 
-    print_kv("Email", user_data("email", ""))
-    print_kv("Nickname", user_data.get("name", "User"))
-    print_kv("Goal Hours", user_data.get("goal_hours", "?"))
-    print_kv("Academic Goal", user_data.get("academic_goal", ""))
-    print_kv("Pet Theme", user_data.get("pet_theme", "Unknown"))
-    print_kv("Personality", user_data.get("pet_personality", "Neutral"))
-    print_kv("Health", user_data.get("health", 10))
-    print_kv("Coins", user_data.get("coins", 5))
-    print_kv("Last Login", user_data.get("last_login", ""))
-    print_kv("Mood Today", user_data.get("mood_today", ""))
+    print_kv("🐱 Email", user_id)
+    print_kv("🐱 Nickname", user_data.get("name", "User"))
+    print_kv("🐱 Goal Hours", user_data.get("goal_hours", "?"))
+    print_kv("🐱 Academic Goal", user_data.get("academic_goal", ""))
+    print_kv("🐱 Pet Theme", user_data.get("pet_theme", "Unknown"))
+    print_kv("🐱 Personality", user_data.get("pet_personality", "Neutral"))
+    print_kv("🐱 Health", user_data.get("health", 10))
+    print_kv("🐱 Coins", user_data.get("coins", 5))
+    print_kv("🐱 Last Login", user_data.get("last_login", ""))
+    print_kv("🐱 Mood Today", user_data.get("mood_today", ""))
     
 
 def choose_mood(menu_func): 
-    moods = ["Happy", "Neutral", "Tired", "Stressed", "Motivated", "Skip"]
+    moods = ["Happy 😊", "Neutral 😐", "Tired 😞", "Stressed 😫", "Motivated 🥳", "Skip"]
     choice = menu_func("How are you feeling today, dear?", moods)
     return moods[choice -1]
