@@ -112,7 +112,7 @@ def register():
         print("Email already registered. Please login instead.")
         return None, None
 
-    name = ask_non_empty("Enter name: ")
+    name = ask_non_empty("Enter nickname: ")
     goal_hours = ask_goal_hours()
     academic_goal = ask_non_empty("Enter academic goal: ")
     pet_theme = ask_pet_theme()

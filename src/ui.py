@@ -63,8 +63,8 @@ def show_user_stats(user_id, user_data):
     print(title_text)
     clear_line()
 
-    print_kv("User ID", user_id)
-    print_kv("Name", user_data.get("name", "User"))
+    print_kv("Email", user_data("email", ""))
+    print_kv("Nickname", user_data.get("name", "User"))
     print_kv("Goal Hours", user_data.get("goal_hours", "?"))
     print_kv("Academic Goal", user_data.get("academic_goal", ""))
     print_kv("Pet Theme", user_data.get("pet_theme", "Unknown"))
