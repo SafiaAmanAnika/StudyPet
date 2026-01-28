@@ -28,14 +28,14 @@ def get_pet_ascii(health: int) -> str:
             "   /\\_/\\\n"
             "  ( ^_^ )\n"
             "   > ^ <\n"
-            "✨ Your pet is energetic and happy!"
+            "✨😸 Your pet is energetic and happy!"
         )
     elif health >= 10:
         return (
             "   /\\_/\\\n"
             "  ( -_- )\n"
             "   > ^ <\n"
-            "🙂 Your pet is doing okay."
+            "😺 Your pet is doing okay."
         )
     elif health >= 4:
         return (
@@ -49,7 +49,7 @@ def get_pet_ascii(health: int) -> str:
             "   /\\_/\\\n"
             "  ( x_x )\n"
             "   > ^ <\n"
-            "⚠ Pet is in critical condition!"
+            "🙀 Pet is in critical condition!"
         )
 
 
@@ -102,7 +102,7 @@ def health_warning(user_data: dict):
     health = user_data["health"]
 
     if health <= 3:
-        return "⚠ CRITICAL WARNING: Feed your pet immediately!"
+        return "⚠️ CRITICAL WARNING: Feed your pet immediately!"
     elif health < 10:
-        return "🐾 Your pet is hungry."
+        return "😿 Your pet is hungry."
     return None

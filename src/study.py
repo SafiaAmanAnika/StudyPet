@@ -259,4 +259,3 @@ def start_session(user_data):
     }
 
     return user_data, session_log
-

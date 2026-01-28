@@ -17,7 +17,7 @@ def ask_email() -> str:
         if EMAIL_REGEX.match(email):
             return email
 
-        print("Invalid email.")
+        print("❌ Invalid email.")
 
 
 # ---------------- INPUT HELPERS ---------------- #
@@ -35,12 +35,12 @@ def ask_goal_hours() -> int:
     """Ask for valid study hours (1–24)."""
     while True:
         try:
-            hours = int(input("Enter daily study hours (1–24): "))
+            hours = int(input("Enter daily study hours: "))
             if 1 <= hours <= 24:
                 return hours
-            print("Please enter a number between 1 and 24.")
+            print("❌ Invalid input. Please enter a number between 1 and 24.")
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            print("❌ Invalid input. Please enter a number.")
 
 
 def ask_pet_theme() -> str:
@@ -53,16 +53,16 @@ def ask_pet_theme() -> str:
 
     while True:
         print("\nChoose pet theme:")
-        print("1. Cat")
-        print("2. Dog")
-        print("3. Bunny")
+        print("1. Cat😸")
+        print("2. Dog🐶")
+        print("3. Bunny🐰")
 
         choice = input("Enter choice (1–3): ").strip()
 
         if choice in options:
             return options[choice]
 
-        print("Invalid choice. Please enter 1, 2, or 3.")
+        print("❌ Invalid choice. Please enter 1, 2, or 3.")
 
 
 # ---------------- PET LOGIC ---------------- #
@@ -97,7 +97,7 @@ def check_inactivity_penalty(user_data: dict):
     if days_inactive >= 7:
         user_data["health"] = 10
         user_data["coins"] = -100
-        return user_data, "Inactive for 7+ days: pet died. Reset applied."
+        return user_data, "Inactive for 7+ days: pet died💀⚰️. \nReset applied."
 
     return user_data, None
 
@@ -143,7 +143,7 @@ def login():
 
     email = ask_email()
     if email not in users:
-        print("User not found.")
+        print("⚠️User not found.")
         return None, None
 
     user_data = users[email]
@@ -156,5 +156,5 @@ def login():
     users[email] = user_data
     save_users(users)
 
-    print("Login successful.")
+    print("Login successful!")
     return email, user_data

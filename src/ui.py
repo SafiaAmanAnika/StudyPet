@@ -79,4 +79,3 @@ def choose_mood(menu_func):
     moods = ["Happy", "Neutral", "Tired", "Stressed", "Motivated", "Skip"]
     choice = menu_func("How are you feeling today, dear?", moods)
     return moods[choice -1]
-

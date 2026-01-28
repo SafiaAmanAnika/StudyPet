@@ -1,5 +1,5 @@
 # Shop and inventory system
-from src import pet  # make sure this is at the top of the file
+from src import pet 
 
 def open_shop(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
