@@ -10,5 +10,21 @@
     "last_login": "2026-01-20",
     "mood_today": "",
     "user_id": "safiaaman@iut-dhaka.edu"
+  },
+  "zenia@iut-dhaka.edu": {
+    "name": "Zenia",
+    "goal_hours": 4,
+    "academic_goal": "Spl",
+    "pet_theme": "Cat",
+    "pet_personality": "Calm, steady, and building consistency\ud83e\udd17\ud83d\ude0c",
+    "health": 10,
+    "coins": 7,
+    "last_login": "2026-01-28",
+    "mood_today": "",
+    "user_id": "zenia@iut-dhaka.edu",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    }
   }
 }
