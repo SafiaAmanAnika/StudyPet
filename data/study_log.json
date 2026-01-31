@@ -7,14 +7,5 @@
     "study_minutes": 25,
     "coins_earned": 50,
     "health_lost": 3
-  },
-  {
-    "user_id": "zenia@iut-dhaka.edu",
-    "date": "2026-01-28",
-    "topic": "linear algebra",
-    "difficulty": "Hard",
-    "study_minutes": 26,
-    "coins_earned": 52,
-    "health_lost": 3
   }
 ]
