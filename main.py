@@ -2,7 +2,6 @@ from src.ui import title, menu, pause, show_user_summary, show_user_stats, choos
 from src.storage import load_users, save_users
 from src.pet import show_status
 from src.shop import feed_pet, open_shop
-from src.study import start_session
 
 import json 
 import os
@@ -120,13 +119,20 @@ def dashboard(user_id, user_data):
 
         elif choice == 6: 
             clear_screen()
-            title("Logged out. Albida mere dost 👋")
+            title("Logged out. Alvida mere dost 👋")
             pause()
             return 
         
 def main(): 
     while True: 
-        title("StudyPet - Your Virtual Study Companion")
+        print(r"""
+        ███████╗ ████████╗ ██╗   ██╗ ██████╗  ██╗   ██╗ ██████╗  ███████╗ ████████╗
+        ██╔════╝ ╚══██╔══╝ ██║   ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ██╔════╝ ╚══██╔══╝
+        ███████╗    ██║    ██║   ██║ ██║  ██║  ╚████╔╝  ██████╔╝ █████╗      ██║   
+        ╚════██║    ██║    ██║   ██║ ██║  ██║   ╚██╔╝   ██╔═══╝  ██╔══╝      ██║   
+        ███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║   
+        ╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝   
+        """)
         choice = menu("Main Menu: ", ["Register 📝", "Login 💻", "Exit 🚪"])
 
         if choice == 1: 
@@ -139,10 +145,10 @@ def main():
             user_id, user_data = login_user()
             if user_id: 
                 #penalty given 
-                user_data, penatly_msg = apply_inactivity_penalty_if_needed(user_data)
-                if penatly_msg: 
+                user_data, penalty_msg = apply_inactivity_penalty_if_needed(user_data)
+                if penalty_msg: 
                     title("Inactivity Penalty Applied")
-                    print(penatly_msg)
+                    print(penalty_msg)
                     pause()
                 
                 #choose mood 

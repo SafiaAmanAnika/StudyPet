@@ -50,8 +50,9 @@ def show_user_summary(user_data):
         print(f"Mood Today: {mood}")
 
     print(f"Name: {name}")
-    print(f"Pet: {pet_theme} | Personality: {pet_personality}")
-    print(f"Health: {health}   Coins: {coins}")
+    print(f"Pet: {pet_theme}")
+    print(f"Personality: {pet_personality}")
+    print(f"Health: {health}  |  Coins: {coins}")
     print(f"Daily Goal: {goal_hours} hours")
     if academic_goal: 
         print(f"Academic Goal: {academic_goal}")
