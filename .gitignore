@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .DS_Store
 
+data/*.json
+data/mood_log.json
+data/quiz_marks.json
+data/study_log.json
+data/users.json
+data/weekly_reports.json
