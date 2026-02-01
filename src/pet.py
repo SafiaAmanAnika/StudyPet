@@ -21,7 +21,7 @@ def ensure_pet_defaults(user_data: dict) -> dict:
 
     return user_data
 
-#hi changed my name 
+
 
 def get_pet_ascii(health: int) -> str:
     if health >= 10:
