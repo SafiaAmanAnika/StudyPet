@@ -35,10 +35,6 @@ CAT_FRAMES = {
 }
 
 
-#clears the whole screen 
-def _clear_screen_soft():
-    print("\033[2J\033[3J\033[H", end="")
-
 #animating the part
 def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:
     if seconds <= 0:
@@ -56,22 +52,21 @@ def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:
             frame = frames[frame_i % len(frames)]
             frame_i += 1
 
-            _clear_screen_soft()
+            clear_screen()
             print(frame)
             print()
             print(f"{label} - time left: {time_str}")
 
             time.sleep(1)
 
-        _clear_screen_soft()
+        clear_screen()
         print(f"{label} finished. Well done!👍")
         return True
 
     except KeyboardInterrupt:
-        _clear_screen_soft()
+        clear_screen()
         print(f"{label} cancelled.")
         return False
-    
 
 
 # =========================
@@ -168,17 +163,17 @@ def start_session(user_data):
     topic = get_topic("Enter study topic: ")
 
 # Difficulty selection
-    print("\nSelect difficulty:")
+    print("══════════════════════════\n     DIFFICULTY\n══════════════════════════")
     print("[1] Easy\n[2] Medium\n[3] Hard")
-    choice = get_choice("Choose 1/2/3: ", {"1", "2", "3"})
+    choice = get_choice("Choose a difficulty: ", {"1", "2", "3"})
     clear_screen()
     
     diff_name, diff_multiplier, health_loss = DIFFICULTY[choice]
 
 # Pomodoro mode selection
-    print("\nPomodoro mode:")
+    print("══════════════════════════\n    POMODORO MODE\n══════════════════════════")
     print("[1] 25 min Study/ 5 min Break\n[2] 50 min Study / 10 min Break \n[3] Custom\n[0] Cancel")
-    pm = get_choice("Choose: ", {"1", "2", "3", "0"})
+    pm = get_choice("Choose your option: ", {"1", "2", "3", "0"})
     clear_screen()
 
     if pm == "0":

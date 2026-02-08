@@ -86,11 +86,11 @@ def handle_shop(user_id, user_data):
 def dashboard(user_id, user_data):
 
     while True: 
-        title(f"StudyPet Dashboard - {user_data.get('name', 'User')}")
+        title(f"       STUDYPET DASHBOARD - {user_data.get('name', 'User')}")
         
         show_user_summary(user_data)
         
-        choice = menu("Select an action: ", ["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
+        choice = menu("════════════════════════════════════════\n      Your virtual pet awaits! 🐾 \n════════════════════════════════════════", ["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
         clear_screen()
 
         if choice == 1: 
@@ -139,7 +139,7 @@ def main():
         ███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║   
         ╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝   
         """)
-        choice = menu("Main Menu: ", ["Register 📝", "Login 💻", "Exit 🚪"])
+        choice = menu("══════════════════════════\n       MAIN MENU \n══════════════════════════", ["Register 📝", "Login 💻", "Exit 🚪"])
 
         if choice == 1: 
             user_id, user_data = register_user()
@@ -154,7 +154,7 @@ def main():
                 mood = choose_mood(menu)
                 if mood != "Skip": 
                     user_data["mood_today"] = mood
-                    title("Mood Check-in 🤗")
+                    title("           Mood Check-in 🤗")
                     print(mood_message(mood))
                     pause()
                     clear_screen()

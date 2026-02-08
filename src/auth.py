@@ -6,7 +6,9 @@ import re, os, hashlib, getpass
 # ---------------- EMAIL VALIDATION ---------------- #
 
 EMAIL_REGEX = re.compile(
-    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    r"^[a-z0-9](?:[a-z0-9._%+-]{0,62}[a-z0-9])?"
+    r"@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
+    r"(?:\.[a-z]{2,})+$"
 )
 
 # ---------------- PASSWORD HELPERS ---------------- #
@@ -48,7 +50,7 @@ def ask_password() -> str:
     """Ask until user enters a valid password."""
     while True:
         password = getpass.getpass(
-            "🔒Create password (min 8 chars, 1 capital letter and 1 number): "
+            "🔒 Create password (min 8 chars, 1 capital letter and 1 number): "
         ).strip()
 
         if is_valid_password(password):
@@ -65,9 +67,9 @@ def ask_email() -> str:
     """Ask until user enters a valid email."""
     while True:
         email = input("Enter email address: ").strip().lower()
-        if EMAIL_REGEX.match(email):
+        if EMAIL_REGEX.fullmatch(email):
             return email
-        print("❌ Invalid email.")
+        print("❌ Invalid email. Please try again.")
 
 # ---------------- INPUT HELPERS ---------------- #
 
@@ -102,12 +104,12 @@ def ask_pet_theme() -> str:
     }
 
     while True:
-        print("\nChoose pet theme:")
+        print("══════════════════════════\nPET THEME\n══════════════════════════")
         print("[1] Cat😸")
         print("[2] Dog🐶")
         print("[3] Bunny🐰")
 
-        choice = input("Enter choice (1–3): ").strip()
+        choice = input("Choose a pet theme (1–3): ").strip()
         if choice in options:
             return options[choice]
 
@@ -153,7 +155,8 @@ def register():
 
     email = ask_email()
     if email in users:
-        print("Email already registered. Please login instead.")
+        clear_screen()
+        print("⚠️ Email already registered. Please login instead!")
         return None, None
 
     name = ask_non_empty("Enter nickname: ")

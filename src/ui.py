@@ -1,5 +1,5 @@
 def clear_line(): 
-    print("-" * 40)
+    print("═" * 40)
 
 def title(text): 
     clear_line()
@@ -70,7 +70,7 @@ def print_kv(label, value):
     print(f"{label:<15}: {value}")
 
 def show_user_stats(user_id, user_data):
-    title_text = f"User Stats - {user_data.get('name', 'User')}"
+    title_text = f" 🐱 USER STATISTICS 🐱 - {user_data.get('name', 'User')}"
     clear_line()
     print(title_text)
     clear_line()
@@ -89,5 +89,5 @@ def show_user_stats(user_id, user_data):
 
 def choose_mood(menu_func): 
     moods = ["Happy 😊", "Neutral 😐", "Tired 😞", "Stressed 😫", "Motivated 🥳", "Skip"]
-    choice = menu_func("How are you feeling today, dear?", moods)
+    choice = menu_func("════════════════════════════════════════════════════\n     How are you feeling today, dear?\n════════════════════════════════════════════════════", moods)
     return moods[choice -1]

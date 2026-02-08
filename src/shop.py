@@ -5,7 +5,7 @@ def open_shop(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
     while True:
-        print("\n====== PET SHOP ======")
+        print("══════════════════════════\n        PET SHOP \n══════════════════════════")
         print("[1] Buy Food")
         print("[2] Feed Pet")
         print("[0] Back")
@@ -32,7 +32,7 @@ PREMIUM_FOOD_HEALTH = 5
 def buy_food(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
-    print("\n====== PET SHOP ======")
+    print("══════════════════════════\n        PET SHOP \n══════════════════════════")
     print("[1] Buy Normal Food   (50 coins)")
     print("[2] Buy Premium Food (75 coins)")
     print("[0] Back")
@@ -78,7 +78,7 @@ def buy_food(user_data: dict) -> dict:
 def feed_pet(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
-    print("\n====== FEED PET ======")
+    print("══════════════════════════\n        FEED PET \n══════════════════════════")
     print("[1] Use Normal Food (+3 health)")
     print("[2] Use Premium Food (+5 health)")
     print("[0] Cancel")
