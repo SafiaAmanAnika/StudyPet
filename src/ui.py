@@ -17,27 +17,18 @@ def pause():
 
 
 def menu(prompt, options):
-    if not options:
-        print("No options available.")
-        return None
-
     while True:
         print("\n" + prompt)
-
-        # print all except last option
         for i, option in enumerate(options[:-1], start=1):
             print(f"[{i}] {option}")
-
-        # last option is always 0
-        print(f"[0] {options[-1]}")
+        print(f"[0] {options[-1]}")  # last option = 0
 
         choice = input("Choose your option: ").strip()
 
         if choice.isdigit():
             choice = int(choice)
-
             if choice == 0:
-                return len(options)  # last option
+                return 0
             elif 1 <= choice < len(options):
                 return choice
 

@@ -1,3 +1,4 @@
+from src.ui import clear_screen
 import time, os 
 
 DEV_MODE = True
@@ -170,16 +171,17 @@ def start_session(user_data):
     print("\nSelect difficulty:")
     print("[1] Easy\n[2] Medium\n[3] Hard")
     choice = get_choice("Choose 1/2/3: ", {"1", "2", "3"})
-
+    clear_screen()
     
     diff_name, diff_multiplier, health_loss = DIFFICULTY[choice]
 
 # Pomodoro mode selection
     print("\nPomodoro mode:")
     print("[1] 25 min Study/ 5 min Break\n[2] 50 min Study / 10 min Break \n[3] Custom\n[0] Cancel")
-    pm = get_choice("Choose: ", {"1", "2", "3", "4"})
+    pm = get_choice("Choose: ", {"1", "2", "3", "0"})
+    clear_screen()
 
-    if pm == "4":
+    if pm == "0":
         print("Session cancelled.")
         return user_data, None
     
@@ -190,7 +192,7 @@ def start_session(user_data):
     elif pm == "2":
         study_minutes = 50
         break_minutes = 10
-    else:
+    elif pm == "3":
         while True:
             try:
                 s = int(trim(input("Study minutes (1–180): ")))

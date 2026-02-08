@@ -1,4 +1,5 @@
 from datetime import date
+from src.ui import clear_screen
 from src.storage import load_users, save_users
 import re, os, hashlib, getpass
 
@@ -161,7 +162,9 @@ def register():
 
     goal_hours = ask_goal_hours()
     academic_goal = ask_non_empty("Enter academic goal: ")
+    clear_screen()
     pet_theme = ask_pet_theme()
+    clear_screen()
     personality = assign_personality(goal_hours)
 
     user_data = {
@@ -174,6 +177,10 @@ def register():
         "pet_personality": personality,
         "health": 10,
         "coins": 5,
+        "inventory": {
+            "normal_food": 0,
+            "premium_food": 0
+        },
         "last_login": str(date.today()),
         "mood_today": ""
     }
@@ -182,6 +189,7 @@ def register():
     save_users(users)
 
     print("✅ Registration successful!")
+    print(" ")
     return email, user_data
 
 
@@ -190,6 +198,7 @@ def login():
 
     email = ask_email()
     if email not in users:
+        clear_screen()
         print("⚠️ User not found.")
         return None, None
 
@@ -212,6 +221,6 @@ def login():
     user_data["last_login"] = str(date.today())
     users[email] = user_data
     save_users(users)
-
+    clear_screen()
     print("✅ Login successful!")
     return email, user_data

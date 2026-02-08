@@ -1,4 +1,5 @@
 from src import pet 
+from src.ui import clear_screen
 
 def open_shop(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
@@ -7,15 +8,16 @@ def open_shop(user_data: dict) -> dict:
         print("\n====== PET SHOP ======")
         print("[1] Buy Food")
         print("[2] Feed Pet")
-        print("[3] Back")
+        print("[0] Back")
 
         choice = input("Choose: ").strip()
+        clear_screen()
 
         if choice == "1":
             user_data = buy_food(user_data)
         elif choice == "2":
             user_data = feed_pet(user_data)
-        elif choice == "3":
+        elif choice == "0":
             return user_data
         else:
             print("❌ Invalid option.")
@@ -33,9 +35,10 @@ def buy_food(user_data: dict) -> dict:
     print("\n====== PET SHOP ======")
     print("[1] Buy Normal Food   (50 coins)")
     print("[2] Buy Premium Food (75 coins)")
-    print("[3] Back")
+    print("[0] Back")
 
     choice = input("Choose: ").strip()
+    clear_screen()
 
     if choice == "1":
         if user_data["coins"] < NORMAL_FOOD_COST:
@@ -63,7 +66,7 @@ def buy_food(user_data: dict) -> dict:
         print("💰 Coins spent: 75")
         print(f"💰 Current Coins: {user_data['coins']}")
 
-    elif choice == "3":
+    elif choice == "0":
         return user_data
 
     else:
@@ -78,7 +81,7 @@ def feed_pet(user_data: dict) -> dict:
     print("\n====== FEED PET ======")
     print("[1] Use Normal Food (+3 health)")
     print("[2] Use Premium Food (+5 health)")
-    print("[3] Cancel")
+    print("[0] Cancel")
 
     choice = input("Choose: ").strip()
 
@@ -108,7 +111,7 @@ def feed_pet(user_data: dict) -> dict:
         print("❤️ Health increased by 5")
         print(f"❤️ Current Health: {user_data['health']}")
 
-    elif choice == "3":
+    elif choice == "0":
         return user_data
 
     else:

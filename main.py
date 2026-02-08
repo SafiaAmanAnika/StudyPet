@@ -71,6 +71,7 @@ def handle_study_session(user_id, user_data):
     except ImportError: 
         print("[TODO] Start study session will be connected.") 
         pause()
+        clear_screen()
         return user_data, None
 
 def handle_feed_pet(user_id, user_data):
@@ -90,35 +91,42 @@ def dashboard(user_id, user_data):
         show_user_summary(user_data)
         
         choice = menu("Select an action: ", ["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
+        clear_screen()
 
         if choice == 1: 
             user_data ,session_log = handle_study_session(user_id, user_data)
             save_user_data(user_id, user_data)
             append_study_log(session_log)
             pause()
+            clear_screen()
 
         elif choice == 2: 
             user_data = handle_feed_pet(user_id, user_data)
             save_user_data(user_id, user_data)
             pause()
+            clear_screen()
 
         elif choice == 3: 
             user_data = handle_shop(user_id, user_data)
             save_user_data(user_id, user_data)
             pause()
+            clear_screen()
 
         elif choice == 4: 
             show_status(user_data)
             pause()
+            clear_screen()
         
         elif choice == 5: 
             show_user_stats(user_id, user_data)
             pause()
+            clear_screen()
 
-        elif choice == 6: 
+        elif choice == 0: 
             clear_screen()
             title("Logged out. Alvida mere dost 👋")
             pause()
+            clear_screen()
             return 
         
 def main(): 
@@ -142,13 +150,6 @@ def main():
         elif choice == 2: 
             user_id, user_data = login_user()
             if user_id: 
-                #penalty given 
-                user_data, penalty_msg = apply_inactivity_penalty_if_needed(user_data)
-                if penalty_msg: 
-                    title("Inactivity Penalty Applied")
-                    print(penalty_msg)
-                    pause()
-                
                 #choose mood 
                 mood = choose_mood(menu)
                 if mood != "Skip": 
@@ -156,12 +157,13 @@ def main():
                     title("Mood Check-in 🤗")
                     print(mood_message(mood))
                     pause()
+                    clear_screen()
 
                 save_user_data(user_id, user_data)    
                 dashboard(user_id, user_data)
 
-        elif choice == 3: 
-            title("Come back soon! I'll be waiting for you!")
+        elif choice == 0: 
+            clear_screen()
             break 
 
 if __name__ == "__main__": 
