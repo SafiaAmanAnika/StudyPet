@@ -2,9 +2,7 @@ from src.ui import title, menu, pause, show_user_summary, show_user_stats, choos
 from src.storage import load_users, save_users
 from src.pet import show_status
 from src.shop import feed_pet, open_shop
-
-import json 
-import os
+import json, os
 
 LOG_FILE = "data/study_log.json"
 
@@ -71,7 +69,7 @@ def handle_study_session(user_id, user_data):
         user_data, session_log = start_session(user_data)
         return user_data, session_log
     except ImportError: 
-        print("[TODO] Start study session will be connected (Person 4).") 
+        print("[TODO] Start study session will be connected.") 
         pause()
         return user_data, None
 

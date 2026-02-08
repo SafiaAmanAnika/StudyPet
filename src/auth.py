@@ -1,9 +1,6 @@
 from datetime import date
-import re
-import hashlib
-import os
-import getpass
 from src.storage import load_users, save_users
+import re, os, hashlib, getpass
 
 # ---------------- EMAIL VALIDATION ---------------- #
 
@@ -105,9 +102,9 @@ def ask_pet_theme() -> str:
 
     while True:
         print("\nChoose pet theme:")
-        print("1. Cat😸")
-        print("2. Dog🐶")
-        print("3. Bunny🐰")
+        print("[1] Cat😸")
+        print("[2] Dog🐶")
+        print("[3] Bunny🐰")
 
         choice = input("Enter choice (1–3): ").strip()
         if choice in options:

@@ -15,37 +15,53 @@ def pause():
     except KeyboardInterrupt:
         print("\nExiting pause.")
 
+
 def menu(prompt, options):
     if not options:
         print("No options available.")
         return None
 
-    while True: 
+    while True:
         print("\n" + prompt)
-        for i, option in enumerate(options, start=1):
-            print(f"{i}. {option}")
+
+        # print all except last option
+        for i, option in enumerate(options[:-1], start=1):
+            print(f"[{i}] {option}")
+
+        # last option is always 0
+        print(f"[0] {options[-1]}")
+
         choice = input("Choose your option: ").strip()
 
         if choice.isdigit():
             choice = int(choice)
-            if 1 <= choice <= len(options):
+
+            if choice == 0:
+                return len(options)  # last option
+            elif 1 <= choice < len(options):
                 return choice
-            
-        print("Invalid choice provided. Please try again.")
+
+        print("⚠️ Invalid choice provided. Please try again.")
+
 
 def show_user_summary(user_data):
     name = user_data.get("name", "User")
     health = user_data.get("health", 10)
+    
     if health <= 3: 
         print("\n⚠️ Warning: Your pet is very weak! Feed it soon.")
+    
     coins = user_data.get("coins", 5)
+    
     if coins < 0: 
         print("\n⚠️ Penalty active: negative coins due to inactivity.")
+    
     pet_theme = user_data.get("pet_theme", "Unknown")
     goal_hours = user_data.get("goal_hours", "?")
     academic_goal = user_data.get("academic_goal", "")
     pet_personality = user_data.get("pet_personality", "Neutral")
     mood = user_data.get("mood_today", "")
+    
     if mood: 
         print(f"Mood Today: {mood}")
 
@@ -54,6 +70,7 @@ def show_user_summary(user_data):
     print(f"Personality: {pet_personality}")
     print(f"Health: {health}  |  Coins: {coins}")
     print(f"Daily Goal: {goal_hours} hours")
+    
     if academic_goal: 
         print(f"Academic Goal: {academic_goal}")
 

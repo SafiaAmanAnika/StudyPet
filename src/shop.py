@@ -1,4 +1,3 @@
-# Shop and inventory system
 from src import pet 
 
 def open_shop(user_data: dict) -> dict:
@@ -6,9 +5,9 @@ def open_shop(user_data: dict) -> dict:
 
     while True:
         print("\n====== PET SHOP ======")
-        print("1. Buy Food")
-        print("2. Feed Pet")
-        print("3. Back")
+        print("[1] Buy Food")
+        print("[2] Feed Pet")
+        print("[3] Back")
 
         choice = input("Choose: ").strip()
 
@@ -32,9 +31,9 @@ def buy_food(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
     print("\n====== PET SHOP ======")
-    print("1. Buy Normal Food   (50 coins)")
-    print("2. Buy Premium Food (75 coins)")
-    print("3. Back")
+    print("[1] Buy Normal Food   (50 coins)")
+    print("[2] Buy Premium Food (75 coins)")
+    print("[3] Back")
 
     choice = input("Choose: ").strip()
 
@@ -77,9 +76,9 @@ def feed_pet(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
     print("\n====== FEED PET ======")
-    print("1. Use Normal Food (+3 health)")
-    print("2. Use Premium Food (+5 health)")
-    print("3. Cancel")
+    print("[1] Use Normal Food (+3 health)")
+    print("[2] Use Premium Food (+5 health)")
+    print("[3] Cancel")
 
     choice = input("Choose: ").strip()
 
