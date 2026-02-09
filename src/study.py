@@ -115,7 +115,7 @@ def get_topic(prompt):
         t = trim(input(prompt))
         if t != "" and is_alpha_space(t):
             return t
-        print("Use letters and spaces only.")
+        print("❌ Invalid choice. Use letters and spaces only.")
         
 # Keep asking until user enters a valid choice from the allowed list
 def get_choice(prompt, allowed):
@@ -123,7 +123,7 @@ def get_choice(prompt, allowed):
         v = trim(input(prompt))
         if v in allowed:
             return v
-        print("Invalid choice, try again.")  
+        print("❌ Invalid choice. Try again.")  
 
 # Counts down from `seconds`, updating a MM:SS timer with `label` on the same line and prints finished message
 def countdown(seconds, label):
@@ -221,7 +221,6 @@ def start_session(user_data):
         print("Break cancelled.")
         return user_data, None
 
-
     
     #  base coins = study_minutes
     #  coins earned = base coins * difficulty multiplier
@@ -237,8 +236,9 @@ def start_session(user_data):
 
     
     #  Display the info
-    
-    print("\nSession complete!")
+    print("╔═════════════════════════════════════╗")
+    print("║          Session complete!          ║")
+    print("╚═════════════════════════════════════╝")
     print("Topic:", topic)
     print("Difficulty:", diff_name)
     print("Study time:", study_minutes, "minutes")

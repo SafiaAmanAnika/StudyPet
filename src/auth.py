@@ -195,9 +195,7 @@ def register():
     users[email] = user_data
     save_users(users)
 
-    print("╔══════════════════════════════════════════════╗")
-    print("║           ✅ Registration successful!        ║")
-    print("╚══════════════════════════════════════════════╝")
+    print("✅ Registration successful!")
     print(" ")
     return email, user_data
 
@@ -208,7 +206,9 @@ def login():
     email = ask_email()
     if email not in users:
         clear_screen()
-        print("⚠️ User not found.")
+        print("╔══════════════════════════════════════════════════╗")
+        print("║   ⚠️  User not found. Please register instead!    ║")
+        print("╚══════════════════════════════════════════════════╝")
         return None, None
 
     user_data = users[email]
@@ -224,8 +224,16 @@ def login():
         print("❌ Incorrect password. Please try again.")
 
     user_data, warning = check_inactivity_penalty(user_data)
+
     if warning:
-        print(warning)
+        save_users(users)
+        clear_screen()
+        print("╔══════════════════════════════════════════════════╗")
+        print("║          ⚠️   Inactive for 7+ days                ║")
+        print("║                  Pet died💀⚰️                     ║")
+        print("║          Negative coins due to inactivity        ║")
+        print("╚══════════════════════════════════════════════════╝")
+        input("\nPress Enter to continue...")
 
     user_data["last_login"] = str(date.today())
     users[email] = user_data

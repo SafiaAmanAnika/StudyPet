@@ -8,10 +8,10 @@ LOG_FILE = "data/study_log.json"
 
 def mood_message(mood):
     messages = {
-        "Happy 😊": "Nice! Let’s use that energy and study well today 😊 you GOT THISSSSS 👊👊👊👊",
-        "Neutral 😐": "Steady and calm — small progress today is still progress 🥳🥳🥳🥳🥳",
+        "Happy 😊": "Nice! Let’s use that energy and study well today 😊 you GOT THISSSSS 👊",
+        "Neutral 😐": "Steady and calm — small progress today is still progress 🥳",
         "Tired 😞": "Take it slow. Try JUST one short session, then rest ☝️",
-        "Stressed 😫": "Breathe. One Pomodoro at a time. You’ve got this. YOU CAN DO THISSSSS!!!!! 🤗🤗🤗🤗🤗",
+        "Stressed 😫": "Breathe. One Pomodoro at a time. You’ve got this. YOU CAN DO THISSSSS!!!!! 🤗",
         "Motivated 🥳": "Love the energy! Let’s complete a strong session today! GO KYLIEEEE GOOOOO 🏃🏃‍♀️"
     }
     return messages.get(mood, "")
@@ -35,17 +35,6 @@ def save_user_data(user_id, user_data):
     users = load_users()
     users[user_id] = user_data
     save_users(users)
-
-def apply_inactivity_penalty_if_needed(user_data):
-    try: 
-        from src.auth import check_inactivity_penalty
-        updated_user_data, msg = check_inactivity_penalty(user_data)
-        return updated_user_data, msg
-    
-    except ImportError: 
-        return user_data, None
-    except Exception: 
-        return user_data, None
 
 
 def register_user():
@@ -85,7 +74,8 @@ def handle_shop(user_id, user_data):
 
 def dashboard(user_id, user_data):
 
-    while True: 
+    while True:
+        clear_screen()
         print("╔══════════════════════════════════════╗")
         print("║          STUDYPET DASHBOARD          ║")
         print("╚══════════════════════════════════════╝")

@@ -31,12 +31,10 @@ def show_user_summary(user_data):
     health = user_data.get("health", 10)
     
     if health <= 3: 
-        print("\n⚠️ Warning: Your pet is very weak! Feed it soon.")
+        print("\n⚠️   Warning: Your pet is very weak! Feed it soon.")
+        print()
     
     coins = user_data.get("coins", 5)
-    
-    if coins < 0: 
-        print("\n⚠️ Penalty active: negative coins due to inactivity.")
     
     pet_theme = user_data.get("pet_theme", "Unknown")
     goal_hours = user_data.get("goal_hours", "?")
@@ -82,4 +80,5 @@ def choose_mood(menu_func):
     print("║      How are you feeling today, dear?     ║")
     print("╚═══════════════════════════════════════════╝")
     choice = menu_func(moods)
+
     return moods[choice -1]
