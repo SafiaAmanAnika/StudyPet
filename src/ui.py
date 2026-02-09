@@ -24,7 +24,8 @@ def menu(options):
                 return choice
 
         clear_screen()
-        print("❌ Invalid choice. Please try again.\n")
+        print("❌ Invalid choice. Please try again.")
+        print()
 
 
 def print_kv(label, value):

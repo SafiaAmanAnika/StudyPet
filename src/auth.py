@@ -1,7 +1,7 @@
 from datetime import date
 from src.ui import clear_screen
 from src.storage import load_users, save_users
-import re, os, hashlib, getpass
+import re, os, hashlib, sys
 
 # ---------------- EMAIL VALIDATION ---------------- #
 
@@ -12,6 +12,54 @@ EMAIL_REGEX = re.compile(
 )
 
 # ---------------- PASSWORD HELPERS ---------------- #
+
+def masked_input(prompt: str) -> str:
+    print(prompt, end="", flush=True)
+    password = ""
+
+    if os.name == "nt":  # Windows
+        import msvcrt
+        while True:
+            ch = msvcrt.getch()
+            if ch in {b"\r", b"\n"}:
+                print()
+                break
+            elif ch == b"\x08":  # backspace
+                if password:
+                    password = password[:-1]
+                    print("\b \b", end="", flush=True)
+            else:
+                password += ch.decode("utf-8", errors="ignore")
+                print("*", end="", flush=True)
+    else:  # Linux / macOS
+        try:
+            import tty
+            import termios
+        except ImportError:
+                raise RuntimeError("This password input method is only supported on Unix systems.")
+
+
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            while True:
+                ch = sys.stdin.read(1)
+                if ch in ("\n", "\r"):
+                    print()
+                    break
+                elif ch == "\x7f":  # backspace
+                    if password:
+                        password = password[:-1]
+                        print("\b \b", end="", flush=True)
+                else:
+                    password += ch
+                    print("*", end="", flush=True)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+    return password.strip()
+
 
 def is_valid_password(password: str) -> bool:
     """Check password rules."""
@@ -49,9 +97,9 @@ def verify_password(password: str, salt_hex: str, hash_hex: str) -> bool:
 def ask_password() -> str:
     """Ask until user enters a valid password."""
     while True:
-        password = getpass.getpass(
-            "🔒 Create password (min 8 chars, 1 capital letter and 1 number): "
-        ).strip()
+        password = masked_input(
+            "🔒 Create password (Min 8 characters, 1 capital letter and 1 number): "
+        )
 
         if is_valid_password(password):
             return password
@@ -69,7 +117,9 @@ def ask_email() -> str:
         email = input("Enter email address: ").strip().lower()
         if EMAIL_REGEX.fullmatch(email):
             return email
+        
         print("❌ Invalid email. Please try again.")
+        print()
 
 # ---------------- INPUT HELPERS ---------------- #
 
@@ -90,8 +140,10 @@ def ask_goal_hours() -> int:
             if 1 <= hours <= 24:
                 return hours
             print("❌ Invalid input. Please enter a number between 1 and 24.")
+            print()
         except ValueError:
             print("❌ Invalid input. Please enter a number.")
+            print()
 
 # ---------------- PET SELECTION ---------------- #
 
@@ -115,7 +167,9 @@ def ask_pet_theme() -> str:
         if choice in options:
             return options[choice]
 
-        print("❌ Invalid choice. Please enter 1, 2, or 3.")
+        clear_screen()
+        print("❌ Invalid choice. Please enter 1, 2, or 3")
+        print()
 
 # ---------------- PET LOGIC ---------------- #
 
@@ -163,7 +217,7 @@ def register():
         print("╚═══════════════════════════════════════════════════════╝")
         return None, None
 
-    name = ask_non_empty("Enter nickname: ")
+    name = ask_non_empty("Enter nickname     : ")
     password = ask_password()
     salt, password_hash = hash_password(password)
 
@@ -175,22 +229,23 @@ def register():
     personality = assign_personality(goal_hours)
 
     user_data = {
-        "name"             : name,
-        "password_salt"    : salt,
-        "password_hash"    : password_hash,
-        "goal_hours"       : goal_hours,
-        "academic_goal"    : academic_goal,
-        "pet_theme"        : pet_theme,
-        "pet_personality"  : personality,
-        "health"           : 10,
-        "coins"            : 5,
-        "inventory"        : {
-            "normal_food"  : 0,
-            "premium_food" : 0
+        "name": name,
+        "password_salt": salt,
+        "password_hash": password_hash,
+        "goal_hours": goal_hours,
+        "academic_goal": academic_goal,
+        "pet_theme": pet_theme,
+        "pet_personality": personality,
+        "health": 10,
+        "coins": 5,
+        "inventory": {
+            "normal_food": 0,
+            "premium_food": 0
         },
-        "last_login"       : str(date.today()),
-        "mood_today"       : ""
+        "last_login": str(date.today()),
+        "mood_today": ""
     }
+
 
     users[email] = user_data
     save_users(users)
@@ -214,7 +269,7 @@ def login():
     user_data = users[email]
 
     while True:
-        password = getpass.getpass("🔑 Enter password: ").strip()
+        password = masked_input("🔑 Enter password  : ")
         if verify_password(
             password,
             user_data["password_salt"],

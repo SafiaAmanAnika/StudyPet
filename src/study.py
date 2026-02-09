@@ -60,21 +60,21 @@ def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:
             time.sleep(1)
 
         clear_screen()
-        print(f"{label} finished. Well done!👍")
+        print(f"{label} finished. Well done!👍\n")
         return True
 
     except KeyboardInterrupt:
         clear_screen()
-        print(f"{label} cancelled.")
+        print(f"{label} cancelled.\n")
         return False
-
 
 # ═════════════════════════════ 
 # CHANGE 1: Difficulty updated
 # Now each difficulty has:
 # - multiplier for coins
 # - health decrease
-# ═════════════════════════════                                                                                                                                             
+# ═════════════════════════════     
+                                                                                                                                        
 DIFFICULTY = {
     "1": ("Easy", 1.0, 1),     # multiplier, health loss
     "2": ("Medium", 1.5, 2),
@@ -107,6 +107,7 @@ def is_alpha_space(s):
     for ch in s:
         if ch != " " and not ("a" <= ch <= "z") and not ("A" <= ch <= "Z"):
             return False
+        
     return True
 
 #keep asking the user for input until they give a valid topic
@@ -115,7 +116,9 @@ def get_topic(prompt):
         t = trim(input(prompt))
         if t != "" and is_alpha_space(t):
             return t
+        
         print("❌ Invalid choice. Use letters and spaces only.")
+        print()
         
 # Keep asking until user enters a valid choice from the allowed list
 def get_choice(prompt, allowed):
@@ -123,7 +126,9 @@ def get_choice(prompt, allowed):
         v = trim(input(prompt))
         if v in allowed:
             return v
-        print("❌ Invalid choice. Try again.")  
+        
+        print("❌ Invalid choice. Try again.")
+        print()  
 
 # Counts down from `seconds`, updating a MM:SS timer with `label` on the same line and prints finished message
 def countdown(seconds, label):
@@ -142,7 +147,7 @@ def countdown(seconds, label):
     if last_line != "":
         print(" " * len(last_line), end="\r")
 
-    print(label + " finished.")
+    print(label + " finished.\n")
 
 
 def today_date_str():
@@ -194,9 +199,10 @@ def start_session(user_data):
         while True:
             try:
                 s = int(trim(input("Study minutes (1–180): ")))
-                b = int(trim(input("Break minutes (0–60): ")))
+                b = int(trim(input("Break minutes (0–60) : ")))
             except:
-                print("Enter valid integers.")
+                print("❌ Invalid input. Enter valid integers.")
+                print()
                 continue
 
             if 1 <= s <= MAX_STUDY_MIN and 0 <= b <= MAX_BREAK_MIN:
@@ -212,13 +218,13 @@ def start_session(user_data):
     print("\nStarting study...")
     ok = animated_countdown(study_seconds, "Study", mood=mood)
     if not ok:
-        print("Session cancelled. No rewards given.")
+        print("Session cancelled! No rewards given.\n")
         return user_data, None
 
     if break_minutes > 0:
         ok = animated_countdown(break_seconds, "Break", mood="Neutral")
     if not ok:
-        print("Break cancelled.")
+        print("Break cancelled!\n")
         return user_data, None
 
     
@@ -248,13 +254,13 @@ def start_session(user_data):
     print("Current health :", user_data["health"])
 
     session_log = {
-        "user_id"       : user_data["user_id"],
-        "date"          : today_date_str(),
-        "topic"         : topic,
-        "difficulty"    : diff_name,
-        "study_minutes" : study_minutes,
-        "coins_earned"  : coins_earned,
-        "health_lost"   : health_loss
+        "user_id": user_data["user_id"],
+        "date": today_date_str(),
+        "topic": topic,
+        "difficulty": diff_name,
+        "study_minutes": study_minutes,
+        "coins_earned": coins_earned,
+        "health_lost": health_loss
     }
 
     return user_data, session_log
