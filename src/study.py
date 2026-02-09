@@ -180,7 +180,7 @@ def start_session(user_data):
     clear_screen()
 
     if pm == "0":
-        print("Session cancelled.")
+        print("Session cancelled!")
         return user_data, None
     
 # Set study and break times
@@ -239,22 +239,22 @@ def start_session(user_data):
     print("╔═════════════════════════════════════╗")
     print("║          Session complete!          ║")
     print("╚═════════════════════════════════════╝")
-    print("Topic:", topic)
-    print("Difficulty:", diff_name)
-    print("Study time:", study_minutes, "minutes")
-    print("Coins earned:", coins_earned)
-    print("Health lost:", health_loss)
-    print("Current coins:", user_data["coins"])
-    print("Current health:", user_data["health"])
+    print("Topic          :", topic)
+    print("Difficulty     :", diff_name)
+    print("Study time     :", study_minutes, "minutes")
+    print("Coins earned   :", coins_earned)
+    print("Health lost    :", health_loss)
+    print("Current coins  :", user_data["coins"])
+    print("Current health :", user_data["health"])
 
     session_log = {
-        "user_id": user_data["user_id"],
-        "date": today_date_str(),
-        "topic": topic,
-        "difficulty": diff_name,
-        "study_minutes": study_minutes,
-        "coins_earned": coins_earned,
-        "health_lost": health_loss
+        "user_id"       : user_data["user_id"],
+        "date"          : today_date_str(),
+        "topic"         : topic,
+        "difficulty"    : diff_name,
+        "study_minutes" : study_minutes,
+        "coins_earned"  : coins_earned,
+        "health_lost"   : health_loss
     }
 
     return user_data, session_log

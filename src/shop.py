@@ -12,7 +12,7 @@ def open_shop(user_data: dict) -> dict:
         print("[2] Feed Pet")
         print("[0] Back")
 
-        choice = input("Choose: ").strip()
+        choice = input("Choose your option: ").strip()
         clear_screen()
 
         if choice == "1":
@@ -41,7 +41,7 @@ def buy_food(user_data: dict) -> dict:
     print("[2] Buy Premium Food (75 coins)")
     print("[0] Back")
 
-    choice = input("Choose: ").strip()
+    choice = input("Choose your option: ").strip()
     clear_screen()
 
     if choice == "1":
@@ -89,7 +89,7 @@ def feed_pet(user_data: dict) -> dict:
     print("[2] Use Premium Food (+5 health)")
     print("[0] Cancel")
 
-    choice = input("Choose: ").strip()
+    choice = input("Choose your option: ").strip()
 
     if choice == "1":
         if user_data["inventory"]["normal_food"] <= 0:

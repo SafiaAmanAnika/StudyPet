@@ -12,9 +12,10 @@ def mood_message(mood):
         "Neutral 😐": "Steady and calm — small progress today is still progress 🥳",
         "Tired 😞": "Take it slow. Try JUST one short session, then rest ☝️",
         "Stressed 😫": "Breathe. One Pomodoro at a time. You’ve got this. YOU CAN DO THISSSSS!!!!! 🤗",
-        "Motivated 🥳": "Love the energy! Let’s complete a strong session today! GO KYLIEEEE GOOOOO 🏃🏃‍♀️"
+        "Motivated 🥳": "Love the energy! Let’s complete a strong session today! GO KYLIEEEE GOOOOO 🏃"
     }
     return messages.get(mood, "")
+
 
 def append_study_log(session_log):
     if session_log is None: 
@@ -77,7 +78,7 @@ def dashboard(user_id, user_data):
     while True:
         clear_screen()
         print("╔══════════════════════════════════════╗")
-        print("║          STUDYPET DASHBOARD          ║")
+        print("║      🐾 STUDYPET DASHBOARD 🐾        ║")
         print("╚══════════════════════════════════════╝")
         show_user_summary(user_data)
 

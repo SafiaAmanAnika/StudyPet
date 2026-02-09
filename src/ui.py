@@ -23,8 +23,13 @@ def menu(options):
             elif 1 <= choice < len(options):
                 return choice
 
-        print("⚠️ Invalid choice provided. Please try again.")
+        clear_screen()
+        print("❌ Invalid choice. Please try again.\n")
 
+
+def print_kv(label, value):
+    print(f"{label:<15}: {value}")
+    
 
 def show_user_summary(user_data):
     name = user_data.get("name", "User")
@@ -43,20 +48,18 @@ def show_user_summary(user_data):
     mood = user_data.get("mood_today", "")
     
     if mood: 
-        print(f"Mood Today: {mood}")
+        print(f"Mood Today    : {mood}")
 
-    print(f"Name: {name}")
-    print(f"Pet: {pet_theme}")
-    print(f"Personality: {pet_personality}")
-    print(f"Health: {health}  |  Coins: {coins}")
-    print(f"Daily Goal: {goal_hours} hours")
+    print(f"Name          : {name}")
+    print(f"Pet           : {pet_theme}")
+    print(f"Personality   : {pet_personality}")
+    print(f"Health        : {health}")
+    print(f"Coins         : {coins}")
+    print(f"Daily Goal    : {goal_hours} hours")
     
     if academic_goal: 
-        print(f"Academic Goal: {academic_goal}")
+        print(f"Academic Goal : {academic_goal}")
 
-
-def print_kv(label, value):
-    print(f"{label:<15}: {value}")
 
 def show_user_stats(user_id, user_data):
     print("╔═══════════════════════════════════════════╗")

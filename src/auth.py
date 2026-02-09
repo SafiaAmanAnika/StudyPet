@@ -129,16 +129,16 @@ def assign_personality(goal_hours: int) -> str:
         return "Focused, intense, and hungry for knowledge🤓📚"
 
 
-def check_inactivity_penalty(user_data: dict):
-    """Check inactivity for 7+ days."""
+def check_inactivity_penalty(user_data: dict) -> bool:
+    """Check inactivity penalty. Return True if penalty was applied."""
     last_login_str = user_data.get("last_login")
     if not last_login_str:
-        return user_data, None
+        return False
 
     try:
         last_login_date = date.fromisoformat(last_login_str)
     except ValueError:
-        return user_data, None
+        return False
 
     today = date.today()
     days_inactive = (today - last_login_date).days
@@ -146,9 +146,9 @@ def check_inactivity_penalty(user_data: dict):
     if days_inactive >= 7:
         user_data["health"] = 10
         user_data["coins"] = -100
-        return user_data, "Inactive for 7+ days: pet died💀⚰️.\nReset applied."
+        return True
 
-    return user_data, None
+    return False
 
 # ---------------- AUTH ---------------- #
 
@@ -175,21 +175,21 @@ def register():
     personality = assign_personality(goal_hours)
 
     user_data = {
-        "name": name,
-        "password_salt": salt,
-        "password_hash": password_hash,
-        "goal_hours": goal_hours,
-        "academic_goal": academic_goal,
-        "pet_theme": pet_theme,
-        "pet_personality": personality,
-        "health": 10,
-        "coins": 5,
-        "inventory": {
-            "normal_food": 0,
-            "premium_food": 0
+        "name"             : name,
+        "password_salt"    : salt,
+        "password_hash"    : password_hash,
+        "goal_hours"       : goal_hours,
+        "academic_goal"    : academic_goal,
+        "pet_theme"        : pet_theme,
+        "pet_personality"  : personality,
+        "health"           : 10,
+        "coins"            : 5,
+        "inventory"        : {
+            "normal_food"  : 0,
+            "premium_food" : 0
         },
-        "last_login": str(date.today()),
-        "mood_today": ""
+        "last_login"       : str(date.today()),
+        "mood_today"       : ""
     }
 
     users[email] = user_data
@@ -223,9 +223,9 @@ def login():
             break
         print("❌ Incorrect password. Please try again.")
 
-    user_data, warning = check_inactivity_penalty(user_data)
+    penalized = check_inactivity_penalty(user_data)
 
-    if warning:
+    if penalized:
         save_users(users)
         clear_screen()
         print("╔══════════════════════════════════════════════════╗")
@@ -238,7 +238,9 @@ def login():
     user_data["last_login"] = str(date.today())
     users[email] = user_data
     save_users(users)
+
     clear_screen()
     print("✅ Login successful!")
     print()
+    
     return email, user_data

@@ -20,29 +20,41 @@ def ensure_pet_defaults(user_data: dict) -> dict:
     return user_data
 
 
+def get_health_state(health: int) -> str:
+    if health <= 3:
+        return "critical"
+    elif health < 10:
+        return "hungry"
+    elif health < 15:
+        return "okay"
+    return "happy"
+
+
 def get_pet_ascii(health: int) -> str:
-    if health >= 10:
+    state = get_health_state(health)
+
+    if state == "happy":
         return (
             "   /\\_/\\\n"
             "  ( ^_^ )\n"
             "   > ^ <\n"
             "✨😸 Your pet is energetic and happy!"
         )
-    elif health >=8:
+    elif state == "okay":
         return (
             "   /\\_/\\\n"
             "  ( -_- )\n"
             "   > ^ <\n"
             "😺 Your pet is doing okay."
         )
-    elif health >= 5 and health > 3:
+    elif state == "hungry":
         return (
             "   /\\_/\\\n"
             "  ( T_T )\n"
             "   > ^ <\n"
             "😿 Your pet looks hungry..."
         )
-    else:
+    else:  # critical
         return (
             "   /\\_/\\\n"
             "  ( x_x )\n"
@@ -57,20 +69,18 @@ def show_status(user_data: dict) -> None:
     print("╔══════════════════════════════════════════╗")
     print("║            🐱 PET STATUS 🐱              ║")
     print("╚══════════════════════════════════════════╝")
+
     print(f"Health : {user_data['health']}")
     print(f"Coins  : {user_data['coins']}")
-    print("═══════════════════════════════════════════")
+    print("════════════════════════════════════════════")
+
     print("Inventory:")
-    print(f"🍎 Normal Food  : {user_data['inventory']['normal_food']}")
+    print(f"🍎 Normal Food : {user_data['inventory']['normal_food']}")
     print(f"🍗 Premium Food: {user_data['inventory']['premium_food']}")
-    print("═══════════════════════════════════════════")
+    print("════════════════════════════════════════════")
+
     print(get_pet_ascii(user_data["health"]))
-
-    warning = health_warning(user_data)
-    if warning:
-        print("\n" + warning)
-
-    print("═══════════════════════════════════════════\n")
+    print("════════════════════════════════════════════\n")
 
 
 def change_health(user_data: dict, delta: int) -> dict:
@@ -80,8 +90,7 @@ def change_health(user_data: dict, delta: int) -> dict:
 
     if user_data["health"] > 20:
         user_data["health"] = 20
-
-    if user_data["health"] < 0:
+    elif user_data["health"] < 0:
         user_data["health"] = 0
 
     return user_data
@@ -96,13 +105,3 @@ def change_coins(user_data: dict, delta: int) -> dict:
         user_data["coins"] = -100
 
     return user_data
-
-
-def health_warning(user_data: dict):
-    health = user_data["health"]
-
-    if health <= 3:
-        return "⚠️ CRITICAL WARNING: Feed your pet immediately!"
-    elif health < 10:
-        return "😿 Your pet is hungry."
-    return None
