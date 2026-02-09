@@ -1,5 +1,3 @@
-# Pet-related logic: status, health, coins, warnings
-
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:
         user_data["health"] = 10
@@ -20,7 +18,6 @@ def ensure_pet_defaults(user_data: dict) -> dict:
         user_data["pet_personality"] = "Neutral"
 
     return user_data
-
 
 
 def get_pet_ascii(health: int) -> str:
@@ -57,21 +54,23 @@ def get_pet_ascii(health: int) -> str:
 def show_status(user_data: dict) -> None:
     user_data = ensure_pet_defaults(user_data)
 
-    print("\n=========== PET STATUS ===========")
+    print("╔══════════════════════════════════════════╗")
+    print("║            🐱 PET STATUS 🐱              ║")
+    print("╚══════════════════════════════════════════╝")
     print(f"Health : {user_data['health']}")
     print(f"Coins  : {user_data['coins']}")
-    print("---------------------------------")
+    print("═══════════════════════════════════════════")
     print("Inventory:")
     print(f"🍎 Normal Food  : {user_data['inventory']['normal_food']}")
     print(f"🍗 Premium Food: {user_data['inventory']['premium_food']}")
-    print("---------------------------------")
+    print("═══════════════════════════════════════════")
     print(get_pet_ascii(user_data["health"]))
 
     warning = health_warning(user_data)
     if warning:
         print("\n" + warning)
 
-    print("=================================\n")
+    print("═══════════════════════════════════════════\n")
 
 
 def change_health(user_data: dict, delta: int) -> dict:

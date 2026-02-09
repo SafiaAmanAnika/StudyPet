@@ -1,11 +1,3 @@
-def clear_line(): 
-    print("═" * 40)
-
-def title(text): 
-    clear_line()
-    print(text)
-    clear_line()
-
 def clear_screen():
     print("\033[2J\033[3J\033[H", end="")
 
@@ -16,9 +8,8 @@ def pause():
         print("\nExiting pause.")
 
 
-def menu(prompt, options):
+def menu(options):
     while True:
-        print("\n" + prompt)
         for i, option in enumerate(options[:-1], start=1):
             print(f"[{i}] {option}")
         print(f"[0] {options[-1]}")  # last option = 0
@@ -70,11 +61,9 @@ def print_kv(label, value):
     print(f"{label:<15}: {value}")
 
 def show_user_stats(user_id, user_data):
-    title_text = f" 🐱 USER STATISTICS 🐱 - {user_data.get('name', 'User')}"
-    clear_line()
-    print(title_text)
-    clear_line()
-
+    print("╔═══════════════════════════════════════════╗")
+    print("║           🐱 USER STATISTICS 🐱           ║")
+    print("╚═══════════════════════════════════════════╝")
     print_kv("🐱 Email", user_id)
     print_kv("🐱 Nickname", user_data.get("name", "User"))
     print_kv("🐱 Goal Hours", user_data.get("goal_hours", "?"))
@@ -89,5 +78,8 @@ def show_user_stats(user_id, user_data):
 
 def choose_mood(menu_func): 
     moods = ["Happy 😊", "Neutral 😐", "Tired 😞", "Stressed 😫", "Motivated 🥳", "Skip"]
-    choice = menu_func("════════════════════════════════════════════════════\n     How are you feeling today, dear?\n════════════════════════════════════════════════════", moods)
+    print("╔═══════════════════════════════════════════╗")
+    print("║      How are you feeling today, dear?     ║")
+    print("╚═══════════════════════════════════════════╝")
+    choice = menu_func(moods)
     return moods[choice -1]

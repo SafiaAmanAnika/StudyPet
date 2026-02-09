@@ -69,12 +69,12 @@ def animated_countdown(seconds: int, label: str, mood: str = "Neutral") -> bool:
         return False
 
 
-# =========================
+# ═════════════════════════════ 
 # CHANGE 1: Difficulty updated
 # Now each difficulty has:
 # - multiplier for coins
 # - health decrease
-# =========================                                                                                                                                             
+# ═════════════════════════════                                                                                                                                             
 DIFFICULTY = {
     "1": ("Easy", 1.0, 1),     # multiplier, health loss
     "2": ("Medium", 1.5, 2),
@@ -109,7 +109,7 @@ def is_alpha_space(s):
             return False
     return True
 
-#keep asking the user for input until they give a valid topic (letters and spaces only)
+#keep asking the user for input until they give a valid topic
 def get_topic(prompt):
     while True:
         t = trim(input(prompt))
@@ -139,7 +139,6 @@ def countdown(seconds, label):
 
    
     # Clear last countdown line using its length (len)
-   
     if last_line != "":
         print(" " * len(last_line), end="\r")
 
@@ -163,7 +162,9 @@ def start_session(user_data):
     topic = get_topic("Enter study topic: ")
 
 # Difficulty selection
-    print("══════════════════════════\n     DIFFICULTY\n══════════════════════════")
+    print("╔════════════════════════════════╗")
+    print("║           DIFFICULTY           ║")
+    print("╚════════════════════════════════╝")
     print("[1] Easy\n[2] Medium\n[3] Hard")
     choice = get_choice("Choose a difficulty: ", {"1", "2", "3"})
     clear_screen()
@@ -171,7 +172,9 @@ def start_session(user_data):
     diff_name, diff_multiplier, health_loss = DIFFICULTY[choice]
 
 # Pomodoro mode selection
-    print("══════════════════════════\n    POMODORO MODE\n══════════════════════════")
+    print("╔════════════════════════════════╗")
+    print("║          POMODORO MODE         ║")
+    print("╚════════════════════════════════╝")
     print("[1] 25 min Study/ 5 min Break\n[2] 50 min Study / 10 min Break \n[3] Custom\n[0] Cancel")
     pm = get_choice("Choose your option: ", {"1", "2", "3", "0"})
     clear_screen()

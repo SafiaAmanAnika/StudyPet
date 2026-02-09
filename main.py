@@ -1,4 +1,4 @@
-from src.ui import title, menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen
+from src.ui import menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen
 from src.storage import load_users, save_users
 from src.pet import show_status
 from src.shop import feed_pet, open_shop
@@ -86,11 +86,15 @@ def handle_shop(user_id, user_data):
 def dashboard(user_id, user_data):
 
     while True: 
-        title(f"       STUDYPET DASHBOARD - {user_data.get('name', 'User')}")
-        
+        print("╔══════════════════════════════════════╗")
+        print("║          STUDYPET DASHBOARD          ║")
+        print("╚══════════════════════════════════════╝")
         show_user_summary(user_data)
-        
-        choice = menu("════════════════════════════════════════\n      Your virtual pet awaits! 🐾 \n════════════════════════════════════════", ["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
+
+        print("╔══════════════════════════════════════╗")
+        print("║       Your virtual pet awaits!       ║")
+        print("╚══════════════════════════════════════╝")
+        choice = menu(["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Logout 👋"])
         clear_screen()
 
         if choice == 1: 
@@ -124,7 +128,9 @@ def dashboard(user_id, user_data):
 
         elif choice == 0: 
             clear_screen()
-            title("Logged out. Alvida mere dost 👋")
+            print("╔══════════════════════════════════════╗")
+            print("║   Logged out. Alvida mere dost 👋    ║")
+            print("╚══════════════════════════════════════╝")                
             pause()
             clear_screen()
             return 
@@ -139,7 +145,10 @@ def main():
         ███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║   
         ╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝   
         """)
-        choice = menu("══════════════════════════\n       MAIN MENU \n══════════════════════════", ["Register 📝", "Login 💻", "Exit 🚪"])
+        print("╔════════════════════════════════╗")
+        print("║           MAIN MENU            ║")
+        print("╚════════════════════════════════╝")
+        choice = menu(["Register 📝", "Login 💻", "Exit 🚪"])
 
         if choice == 1: 
             user_id, user_data = register_user()
@@ -154,7 +163,9 @@ def main():
                 mood = choose_mood(menu)
                 if mood != "Skip": 
                     user_data["mood_today"] = mood
-                    title("           Mood Check-in 🤗")
+                    print("╔═══════════════════════════════════════════╗")
+                    print("║              Mood Check-in 🤗             ║")
+                    print("╚═══════════════════════════════════════════╝")
                     print(mood_message(mood))
                     pause()
                     clear_screen()
