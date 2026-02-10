@@ -35,8 +35,10 @@ def open_shop(user_data: dict) -> dict:
 
 def buy_normal_food(user_data: dict) -> dict:
     if user_data["coins"] < NORMAL_FOOD_COST:
+        clear_screen()
         print("❌ Not enough coins!")
         print(f"💰 Current Coins: {user_data['coins']}")
+        print()
         return user_data
 
     user_data = pet.change_coins(user_data, -NORMAL_FOOD_COST)
@@ -49,8 +51,10 @@ def buy_normal_food(user_data: dict) -> dict:
 
 def buy_premium_food(user_data: dict) -> dict:
     if user_data["coins"] < PREMIUM_FOOD_COST:
+        clear_screen()
         print("❌ Not enough coins!")
         print(f"💰 Current Coins: {user_data['coins']}")
+        print()
         return user_data
 
     user_data = pet.change_coins(user_data, -PREMIUM_FOOD_COST)
@@ -76,8 +80,10 @@ def feed_pet(user_data: dict) -> dict:
 
         if choice == "1":
             if user_data["inventory"]["normal_food"] <= 0:
+                clear_screen()
                 print("❌ No Normal Food available!")
                 print("🛒 Buy food from the Pet Shop.")
+                print()
                 continue
 
             user_data["inventory"]["normal_food"] -= 1
@@ -89,8 +95,10 @@ def feed_pet(user_data: dict) -> dict:
 
         elif choice == "2":
             if user_data["inventory"]["premium_food"] <= 0:
+                clear_screen()
                 print("❌ No Premium Food available!")
                 print("🛒 Buy food from the Pet Shop.")
+                print()
                 continue
 
             user_data["inventory"]["premium_food"] -= 1

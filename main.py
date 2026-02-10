@@ -31,8 +31,11 @@ def append_study_log(session_log):
         with open(LOG_FILE, "w") as f: 
             json.dump([], f)
     
-    with open(LOG_FILE, "r") as f:
-        logs = json.load(f)
+    try:
+        with open(LOG_FILE, "r") as f:
+            logs = json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        logs = []
 
     logs.append(session_log)
 
@@ -56,8 +59,8 @@ def login_user():
 
 # ---------------- HANDLERS ---------------- #
 
-def handle_study_session(user_data):
-    user_data, session_log = start_session(user_data)
+def handle_study_session(user_id, user_data):
+    user_data, session_log = start_session(user_id, user_data)
     return user_data, session_log
 
 def handle_feed_pet(user_data):

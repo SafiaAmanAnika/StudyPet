@@ -1,5 +1,5 @@
 from src.ui import clear_screen
-import time, os 
+import time
 
 DEV_MODE = True
 
@@ -32,6 +32,15 @@ CAT_FRAMES = {
         " /\\_/\\  🔥\n( >o< )\n >  ^  <",
         " /\\_/\\  🔥\n( >.< )\n >  o  <",
     ],
+}
+
+
+RAW_TO_BASE_MOOD = {
+    "Happy 😊": "Happy",
+    "Neutral 😐": "Neutral",
+    "Tired 😞": "Tired",
+    "Stressed 😫": "Stressed",
+    "Motivated 🥳": "Motivated",
 }
 
 
@@ -130,43 +139,23 @@ def get_choice(prompt, allowed):
         print("❌ Invalid choice. Try again.")
         print()  
 
-# Counts down from `seconds`, updating a MM:SS timer with `label` on the same line and prints finished message
-def countdown(seconds, label):
-    last_line = ""
-    while seconds > 0:
-        mins = seconds // 60
-        secs = seconds % 60
-        line = f"{label} - {mins:02}:{secs:02}"
-        print(line, end="\r")
-        last_line = line
-        time.sleep(1)
-        seconds -= 1
-
-   
-    # Clear last countdown line using its length (len)
-    if last_line != "":
-        print(" " * len(last_line), end="\r")
-
-    print(label + " finished.\n")
-
 
 def today_date_str():
     t = time.localtime()
     return f"{t.tm_year}-{t.tm_mon:02}-{t.tm_mday:02}"
 
 
-def start_session(user_data):
-    mood = user_data.get("mood_today", "Neutral")
+def start_session(user_id, user_data):
+    raw_mood = user_data.get("mood_today", "Neutral 😐")
+    mood = RAW_TO_BASE_MOOD.get(raw_mood, "Neutral")
 
-# Ensure user has coins and health initialized
-    if "coins" not in user_data:
-        user_data["coins"] = 0
-    if "health" not in user_data:
-        user_data["health"] = 0
+    # Ensure user has coins and health initialized
+    user_data.setdefault("coins", 5)
+    user_data.setdefault("health", 10)
 
     topic = get_topic("Enter study topic: ")
 
-# Difficulty selection
+    # Difficulty selection
     print("╔════════════════════════════════╗")
     print("║           DIFFICULTY           ║")
     print("╚════════════════════════════════╝")
@@ -222,10 +211,9 @@ def start_session(user_data):
         return user_data, None
 
     if break_minutes > 0:
-        ok = animated_countdown(break_seconds, "Break", mood="Neutral")
+        ok = animated_countdown(break_seconds, "Break", mood=mood)
     if not ok:
         print("Break cancelled!\n")
-        return user_data, None
 
     
     #  base coins = study_minutes
@@ -254,13 +242,14 @@ def start_session(user_data):
     print("Current health :", user_data["health"])
 
     session_log = {
-        "user_id": user_data["user_id"],
+        "user_id": user_id,
         "date": today_date_str(),
         "topic": topic,
         "difficulty": diff_name,
         "study_minutes": study_minutes,
         "coins_earned": coins_earned,
-        "health_lost": health_loss
+        "health_lost": health_loss,
+        "mood": raw_mood
     }
 
     return user_data, session_log
