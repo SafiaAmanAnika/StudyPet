@@ -1,10 +1,12 @@
 import json
 import os
 from datetime import date, datetime, timedelta
+from src.ui import analytics_menu, clear_screen
 
-# =========================
+
+
 # Safe File Handling
-# =========================
+
 
 def _project_root():
     return os.path.dirname(os.path.dirname(__file__))
@@ -81,9 +83,8 @@ def build_daily_maps(user_logs: list):
 
     return minutes_by_date, sessions_by_date
 
-# =========================
 # Intensity Mapping
-# =========================
+
 
 def intensity_char(total_minutes: int) -> str:
     if total_minutes <= 0:
@@ -96,9 +97,9 @@ def intensity_char(total_minutes: int) -> str:
         return "▓"
     return "█"
 
-# =========================
+
 # Date Range Builder
-# =========================
+
 
 def date_range_list(days: int):
     end = date.today()
@@ -144,9 +145,9 @@ def print_heatmap(date_list: list, grid: list):
 
     print("==========================\n")
 
-# =========================
+
 # Stats Computation
-# =========================
+
 
 def sum_last_n(days: int, minutes_by_date: dict, sessions_by_date: dict):
     dates = date_range_list(days)
@@ -212,30 +213,24 @@ def print_stats(date_list, minutes_by_date, sessions_by_date):
 
     print("=================\n")
 
-# =========================
+
 # Required Interface
-# =========================
+
 
 menu_label = "Study Analytics 📈"
 
 def run(user_id: str, user_data: dict) -> dict:
     while True:
-        print("\n=== Study Analytics ===")
-        print("1. View last 7 days")
-        print("2. View last 28 days")
-        print("3. View last 56 days")
-        print("4. Back")
+        clear_screen()
+        choice = analytics_menu()
 
-        choice = input("Choose: ").strip()
-
-        if choice == "4":
+        if choice == 0:
             return user_data
 
-        if choice not in {"1", "2", "3"}:
-            print("❌ Invalid choice.")
+        if choice not in {1, 2, 3}:
             continue
 
-        days = 7 if choice == "1" else 28 if choice == "2" else 56
+        days = 7 if choice == 1 else 28 if choice == 2 else 56
 
         all_logs = load_study_logs()
         user_logs = filter_user_logs(all_logs, user_id)
@@ -244,5 +239,8 @@ def run(user_id: str, user_data: dict) -> dict:
         dates = date_range_list(days)
         grid = build_heatmap_grid(dates, minutes_by_date)
 
+        clear_screen()
         print_heatmap(dates, grid)
         print_stats(dates, minutes_by_date, sessions_by_date)
+
+        input("Press Enter to return to Analytics menu...")

@@ -86,3 +86,19 @@ def choose_mood(menu_func):
     choice = menu_func(moods)
 
     return moods[choice -1]
+
+# ---------------- ANALYTICS UI ---------------- #
+
+def analytics_menu():
+    print("╔═══════════════════════════════════════════╗ ")
+    print("║          📈 STUDY ANALYTICS 📈             ║")
+    print("╚═══════════════════════════════════════════╝")
+
+    options = [
+        "View last 7 days",
+        "View last 28 days",
+        "View last 56 days",
+        "Back"
+    ]
+
+    return menu(options)
