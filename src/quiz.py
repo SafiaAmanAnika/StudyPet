@@ -3,80 +3,76 @@ QUIZ_FILE = "data/quiz_marks.json"
 
 import json
 
-# ---------------- File handling ----------------
+# ---------------- File Handling ----------------
 def write_json(path, data):
     try:
         with open(path, "w") as f:
-            json.dump(data, f, indent=4)
-    except:
-        print("Error writing file:", path)
+            f.write(json.dumps(data, indent=4))
+    except Exception as e:
+        print("Error writing file:", e)
 
 def read_json(path):
     try:
         with open(path, "r") as f:
-            data = json.load(f)
-            if type(data) != dict:
-                data = {}
-            return data
-    except:
+            content = f.read()
+        data = json.loads(content)
+        if type(data) != dict:
+            print("⚠️ Invalid JSON format, resetting file")
+            return {}
+        return data
+    except FileNotFoundError:
+        return {}
+    except json.JSONDecodeError as e:
+        print("⚠️ JSON decode error:", e)
         return {}
 
-# ---------------- Helpers ----------------
+# ---------------- Manual Utilities ----------------
+def manual_len(lst):
+    count = 0
+    for _ in lst: count += 1
+    return count
+
+def manual_append(lst, item):
+    n = manual_len(lst)
+    new_lst = [0] * (n + 1)
+    for i in range(n):
+        new_lst[i] = lst[i]
+    new_lst[n] = item
+    return new_lst
+
 def strip(s):
+    whitespace = " \t\n\r"
     start = 0
     end = len(s) - 1
-    while start <= end and s[start] == " ":
-        start += 1
-    while end >= start and s[end] == " ":
-        end -= 1
+    while start <= end and s[start] in whitespace: start += 1
+    while end >= start and s[end] in whitespace: end -= 1
     return s[start:end+1]
 
 def round_num(x):
     return int(x * 10) / 10
 
-# ---------------- Input helpers ----------------
+# ---------------- Input Helpers ----------------
 def ask_non_empty_letters(prompt):
     while True:
         v = strip(input(prompt))
-        if v == "":
-            print("Cannot be empty.")
-            continue
-
+        if v == "": print("Cannot be empty."); continue
         has_letter = False
         valid = True
-        for i in range(len(v)):
-            ch = v[i]
-            if ('a' <= ch <= 'z') or ('A' <= ch <= 'Z'):
-                has_letter = True
-            elif ch == " " or ('0' <= ch <= '9'):
-                pass
-            else:
-                valid = False
-                break
-
-        if not has_letter:
-            print("Must contain at least one letter.")
-            continue
-        if not valid:
-            print("Only letters, numbers and spaces allowed.")
-            continue
+        for ch in v:
+            if ('a' <= ch <= 'z') or ('A' <= ch <= 'Z'): has_letter = True
+            elif ch == " " or ('0' <= ch <= '9'): pass
+            else: valid = False; break
+        if not has_letter: print("Must contain at least one letter."); continue
+        if not valid: print("Only letters, numbers and spaces allowed."); continue
         return v
 
 def ask_int(prompt, min_v=None, max_v=None):
     while True:
         v = strip(input(prompt))
-        n = 0
-        try:
-            n = int(v)
-        except:
-            print("Enter a valid integer.")
-            continue
-        if min_v is not None and n < min_v:
-            print("Must be >=", min_v)
-            continue
-        if max_v is not None and n > max_v:
-            print("Must be <=", max_v)
-            continue
+        try: n = int(v)
+        except: print("Enter a valid integer."); continue
+        if min_v is not None and n < min_v: print("Must be >=", min_v); continue
+        if max_v is not None and n > max_v: print("Must be <=", max_v); continue
         return n
 
 def ask_percent(prompt):
@@ -85,86 +81,39 @@ def ask_percent(prompt):
 def ask_date(prompt):
     while True:
         d = strip(input(prompt))
-        if d == "":
-            print("Using empty date")
-            return ""
+        if d == "": print("Date cannot be empty."); continue
 
-        # manual split
         parts = []
         temp = ""
-        for i in range(len(d)):
-            if d[i] == "-":
-                n = 0
-                for _ in parts: n += 1
-                parts_new = [0] * (n + 1)
-                for j in range(n): parts_new[j] = parts[j]
-                parts_new[n] = temp
-                parts = parts_new
+        for ch in d:
+            if ch == "-":
+                parts = manual_append(parts, temp)
                 temp = ""
             else:
-                temp = temp + d[i]
-        n = 0
-        for _ in parts: n += 1
-        parts_new = [0] * (n + 1)
-        for j in range(n): parts_new[j] = parts[j]
-        parts_new[n] = temp
-        parts = parts_new
+                temp += ch
+        parts = manual_append(parts, temp)
+        if manual_len(parts) != 3:
+            print("Invalid format. Use YYYY-MM-DD"); continue
+        try: y = int(parts[0]); m = int(parts[1]); day = int(parts[2])
+        except: print("Invalid numbers in date."); continue
+        if m < 1 or m > 12: print("Invalid month."); continue
+        if m == 2: is_leap = (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)); max_day = 29 if is_leap else 28
+        elif m in [1,3,5,7,8,10,12]: max_day = 31
+        else: max_day = 30
+        if day < 1 or day > max_day: print("Invalid day for month."); continue
+        return d
 
-        if len(parts) != 3:
-            print("Invalid date, format YYYY-MM-DD")
-            continue
-
-        try:
-            y = int(parts[0])
-            m = int(parts[1])
-            day = int(parts[2])
-            
-            if m < 1 or m > 12:
-                print("Invalid month. Must be 1-12.")
-                continue
-
-            # Days in month
-            if m == 2:
-                # leap year check
-                is_leap = False
-                if y % 4 == 0:
-                    if y % 100 != 0 or y % 400 == 0:
-                        is_leap = True
-                max_day = 29 if is_leap else 28
-            elif m in [1,3,5,7,8,10,12]:
-                max_day = 31
-            else:
-                max_day = 30
-
-            if day < 1 or day > max_day:
-                print(f"Invalid day for month {m}. Must be 1-{max_day}.")
-                continue
-
-            return d
-        except:
-            print("Invalid date, format YYYY-MM-DD")
-
-
-# ---------------- Quiz helpers ----------------
+# ---------------- Quiz Helpers ----------------
 def get_user_quizzes(db, user_id):
-    found = False
-    for key in db:
-        if key == user_id:
-            found = True
-            break
-    if not found:
-        db[user_id] = {"quizzes": []}
-    if "quizzes" not in db[user_id]:
-        db[user_id]["quizzes"] = []
+    if user_id not in db: db[user_id] = {"quizzes":[]}
+    if "quizzes" not in db[user_id]: db[user_id]["quizzes"] = []
     return db[user_id]["quizzes"]
 
 def quiz_percent(q):
-    try:
-        return int(q["score"]) / int(q["max_score"]) * 100
-    except:
-        return 0.0
+    try: return int(q["score"]) / int(q["max_score"]) * 100
+    except: return 0.0
 
-# ---------------- Add quiz ----------------
+# ---------------- Add Quiz ----------------
 def add_quiz(user_id):
     db = read_json(QUIZ_FILE)
     quizzes = get_user_quizzes(db, user_id)
@@ -175,260 +124,187 @@ def add_quiz(user_id):
     max_score = ask_int("Max marks: ", 1)
     score = ask_int("Your marks: ", 0, max_score)
     coverage = ask_percent("Syllabus covered % (0-100): ")
-    d = ask_date("Date (YYYY-MM-DD, blank=today): ")
+    d = ask_date("Date (YYYY-MM-DD): ")
 
-    record = {"date": d, "title": title, "topic": topic, "score": score,
-              "max_score": max_score, "coverage_percent": coverage}
+    record = {"date":d, "title":title, "topic":topic, "score":score,
+              "max_score":max_score, "coverage_percent":coverage}
 
-    # manual append
-    n = 0
-    for _ in quizzes: n += 1
-    new_quizzes = [0] * (n + 1)
-    for i in range(n):
-        new_quizzes[i] = quizzes[i]
-    new_quizzes[n] = record
-    quizzes = new_quizzes
-
+    quizzes = manual_append(quizzes, record)
     db[user_id]["quizzes"] = quizzes
     write_json(QUIZ_FILE, db)
     pct = round_num(score / max_score * 100)
     print("✅ Saved:", title, "-", score, "/", max_score, "(", pct, "% )")
 
-# ---------------- Trend ----------------
-def detect_trend(last_quizzes):
-    n = 0
-    for _ in last_quizzes: n += 1
-    if n < 2: return "need at least 2 quizzes"
-
-    changes = []
+# ---------------- Trend & Sparkline ----------------
+def detect_trend(quizzes, overall=False):
+    """
+    Determine trend: Improving ⬆️, Declining ⬇️, Stable ↔️
+    Minor fluctuations <=5% are ignored for stability.
+    """
+    n = manual_len(quizzes)
+    if n < 2: return "Need at least 2 quizzes"
+    
+    ups = downs = 0
+    threshold = 5  # Only changes >5% count
+    
     for i in range(1, n):
-        prev = quiz_percent(last_quizzes[i-1])
-        curr = quiz_percent(last_quizzes[i])
-        ch = 0
-        if curr > prev: ch = 1
-        elif curr < prev: ch = -1
+        prev = quiz_percent(quizzes[i-1]) if not overall else quizzes[i-1]["score"]
+        curr = quiz_percent(quizzes[i]) if not overall else quizzes[i]["score"]
+        diff = curr - prev
+        if diff > threshold: ups += 1
+        elif diff < -threshold: downs += 1
 
-        # manual append
-        clen = 0
-        for _ in changes: clen += 1
-        new_changes = [0] * (clen + 1)
-        for j in range(clen): new_changes[j] = changes[j]
-        new_changes[clen] = ch
-        changes = new_changes
-
-    # evaluate trend
-    all_up = True; all_down = True; all_stable = True
-    clen = 0
-    for _ in changes: clen += 1
-    for i in range(clen):
-        c = changes[i]
-        if c != 1: all_up = False
-        if c != -1: all_down = False
-        if c != 0: all_stable = False
-
-    if all_up: return "⬆️ Improving"
-    elif all_down: return "⬇️ Declining"
-    elif all_stable: return "↔️ Stable"
+    if ups > downs and ups >= n//2: return "⬆️ Improving"
+    elif downs > ups and downs >= n//2: return "⬇️ Declining"
     else: return "↔️ Stable"
 
-# ---------------- View history ----------------
-def view_history(user_id, last_n=5):
+def sparkline(values):
+    bars = "▁▂▃▄▅▆▇█"; n = manual_len(values)
+    if n==0: return ""
+    min_val = max_val = values[0]
+    for i in range(n):
+        if values[i]<min_val: min_val=values[i]
+        if values[i]>max_val: max_val=values[i]
+    line=""
+    for i in range(n):
+        if max_val==min_val: index = len(bars)//2
+        else: index = int((values[i]-min_val)/(max_val-min_val)*(len(bars)-1))
+        line += bars[index]
+    return line
+
+# ---------------- Group by subject ----------------
+def group_by_subject(quizzes):
+    subject_map = {}
+    for q in quizzes:
+        topic = q["topic"]
+        if topic not in subject_map: subject_map[topic] = []
+        subject_map[topic] = manual_append(subject_map[topic], q)
+    return subject_map
+
+# ---------------- Dashboard ----------------
+def view_dashboard(user_id, last_n=5):
     db = read_json(QUIZ_FILE)
     quizzes = get_user_quizzes(db, user_id)
-    n = 0
-    for _ in quizzes: n += 1
-    if n == 0:
-        print("⚠️ No quizzes yet.")
-        return
+    if manual_len(quizzes) == 0:
+        print("⚠️ No quizzes yet."); return
 
-    # manual sort by date (bubble sort)
-    for i in range(n):
-        for j in range(0, n-i-1):
-            if quizzes[j]["date"] > quizzes[j+1]["date"]:
-                temp = quizzes[j]; quizzes[j] = quizzes[j+1]; quizzes[j+1] = temp
+    # Sort by date
+    n_quiz = manual_len(quizzes)
+    for i in range(n_quiz-1):
+        for j in range(i+1, n_quiz):
+            if quizzes[i]["date"] > quizzes[j]["date"]:
+                temp = quizzes[i]; quizzes[i] = quizzes[j]; quizzes[j] = temp
 
-    # collect subjects manually
-    subjects = []
-    for i in range(n):
-        topic = quizzes[i]["topic"]
-        found = False
-        for j in range(len(subjects)):
-            if subjects[j] == topic: found = True
-        if not found:
-            subjects_len = 0
-            for _ in subjects: subjects_len += 1
-            new_subjects = [0] * (subjects_len + 1)
-            for k in range(subjects_len): new_subjects[k] = subjects[k]
-            new_subjects[subjects_len] = topic
-            subjects = new_subjects
+    subjects=[]
+    for q in quizzes:
+        topic = q["topic"]; found=False
+        for s in subjects:
+            if s == topic: found=True
+        if not found: subjects = manual_append(subjects, topic)
 
-    # show each subject
-    overall_quizzes = []
-    subjects_len = 0
-    for _ in subjects: subjects_len += 1
-    for si in range(subjects_len):
-        sub = subjects[si]
-        print("\n=== History:", sub, "===")
-        sub_quizzes = []
-        for i in range(n):
-            if quizzes[i]["topic"] == sub:
-                sub_len = 0
-                for _ in sub_quizzes: sub_len += 1
-                new_sub = [0] * (sub_len + 1)
-                for k in range(sub_len): new_sub[k] = sub_quizzes[k]
-                new_sub[sub_len] = quizzes[i]
-                sub_quizzes = new_sub
-                overall_len = 0
-                for _ in overall_quizzes: overall_len += 1
-                new_overall = [0] * (overall_len + 1)
-                for k in range(overall_len): new_overall[k] = overall_quizzes[k]
-                new_overall[overall_len] = quizzes[i]
-                overall_quizzes = new_overall
+    overall_scores=[]
+    print("\n=== Dashboard ===")
+    for sub in subjects:
+        sub_quizzes=[]
+        for q in quizzes:
+            if q["topic"]==sub: sub_quizzes = manual_append(sub_quizzes,q)
 
-        # print sub quizzes
-        sub_len = 0
-        for _ in sub_quizzes: sub_len += 1
-        for i in range(sub_len):
-            q = sub_quizzes[i]
-            pct = round_num(quiz_percent(q))
-            cov = q["coverage_percent"]
-            print("-", q["date"], "|", q["title"], "|", q["score"], "/", q["max_score"], "(", pct, "% ) | Coverage:", cov)
+        sub_scores=[]; sub_coverage=0
+        for q in sub_quizzes:
+            s = round_num(quiz_percent(q))
+            sub_scores = manual_append(sub_scores,s)
+            overall_scores = manual_append(overall_scores,{"score":s})
+            sub_coverage += q["coverage_percent"]
+        if sub_coverage>100: sub_coverage=100
 
-        sub_recent_len = sub_len if sub_len < last_n else last_n
-        recent = [0] * sub_recent_len
-        for i in range(sub_recent_len):
-            recent[i] = sub_quizzes[sub_len - sub_recent_len + i]
-        print("Trend (last", sub_recent_len, "quizzes):", detect_trend(recent))
+        total_score=0
+        for s in sub_scores: total_score += s
+        avg_score = total_score / manual_len(sub_scores)
 
-# ---------------- Coverage remaining ----------------
-def show_coverage(user_id):
-    db = read_json(QUIZ_FILE)
-    quizzes = get_user_quizzes(db, user_id)
-    n = 0
-    for _ in quizzes: n += 1
-    if n == 0:
-        print("⚠️ No quizzes yet.")
-        return
+        recent_len = last_n if last_n < manual_len(sub_scores) else manual_len(sub_scores)
+        recent_scores=[]
+        for i in range(manual_len(sub_scores)-recent_len, manual_len(sub_scores)):
+            recent_scores = manual_append(recent_scores, sub_scores[i])
 
-    # collect subjects
-    subjects = []
-    for i in range(n):
-        topic = quizzes[i]["topic"]
-        found = False
-        for j in range(len(subjects)):
-            if subjects[j] == topic: found = True
-        if not found:
-            subjects_len = 0
-            for _ in subjects: subjects_len += 1
-            new_subjects = [0] * (subjects_len + 1)
-            for k in range(subjects_len): new_subjects[k] = subjects[k]
-            new_subjects[subjects_len] = topic
-            subjects = new_subjects
+        print("\n--- Subject:", sub, "---")
+        print("Average Score:", round_num(avg_score), "%")
+        print("Coverage:", sub_coverage, "%")
+        print("Recent Scores:", end=" ")
+        for sc in recent_scores: print(sc, end="  ")
+        print("\nLine:  ", sparkline(recent_scores))
+        print("Trend (last", recent_len, "):", detect_trend(sub_quizzes))
 
-    print("\n=== Coverage per subject ===")
-    subjects_len = 0
-    for _ in subjects: subjects_len += 1
-    for si in range(subjects_len):
-        sub = subjects[si]
-        total_covered = 0
-        for i in range(n):
-            if quizzes[i]["topic"] == sub and "coverage_percent" in quizzes[i]:
-                total_covered += quizzes[i]["coverage_percent"]
-        if total_covered > 100: total_covered = 100
-        remaining = 100 - total_covered
-        if total_covered == 0:
-            print("-", sub, ": coverage unknown")
-        else:
-            print("-", sub, ":", total_covered, "% covered |", remaining, "% remaining")
+    # Overall trend
+    overall_scores_list = []
+    for o in overall_scores:
+        overall_scores_list = manual_append(overall_scores_list, o["score"])
 
-# ---------------- Performance prediction ----------------
+    overall_avg = 0
+    for sc in overall_scores_list: overall_avg += sc
+    overall_avg = overall_avg / manual_len(overall_scores_list) if manual_len(overall_scores_list)>0 else 0
+
+    print("\n=== Overall ===")
+    print("Average Score:", round_num(overall_avg), "%")
+    print("Scores:", end=" ")
+    for sc in overall_scores_list: print(sc, end="  ")
+    print("\nLine:  ", sparkline(overall_scores_list))
+    print("Trend:", detect_trend([{"score":s,"max_score":100} for s in overall_scores_list], overall=True))
+
+# ---------------- Predict Performance ----------------
 def predict_performance(user_id):
     db = read_json(QUIZ_FILE)
     quizzes = get_user_quizzes(db, user_id)
-    n = 0
-    for _ in quizzes: n += 1
-    if n == 0:
-        print("⚠️ Add at least 1 quiz first.")
-        return
-
-    # collect subjects
-    subjects = []
-    for i in range(n):
-        topic = quizzes[i]["topic"]
-        found = False
-        for j in range(len(subjects)):
-            if subjects[j] == topic: found = True
-        if not found:
-            subjects_len = 0
-            for _ in subjects: subjects_len += 1
-            new_subjects = [0] * (subjects_len + 1)
-            for k in range(subjects_len): new_subjects[k] = subjects[k]
-            new_subjects[subjects_len] = topic
-            subjects = new_subjects
-
+    if manual_len(quizzes)==0: print("⚠️ Add at least 1 quiz first."); return
+    subject_map = group_by_subject(quizzes)
     print("\n=== Performance Prediction ===")
-    subjects_len = 0
-    for _ in subjects: subjects_len += 1
-    for si in range(subjects_len):
-        sub = subjects[si]
-        sub_quizzes = []
-        for i in range(n):
-            if quizzes[i]["topic"] == sub:
-                sub_len = 0
-                for _ in sub_quizzes: sub_len += 1
-                new_sub = [0] * (sub_len + 1)
-                for k in range(sub_len): new_sub[k] = sub_quizzes[k]
-                new_sub[sub_len] = quizzes[i]
-                sub_quizzes = new_sub
-
-        sub_len = 0
-        for _ in sub_quizzes: sub_len += 1
-        total_covered = 0
-        total_score = 0
-        for i in range(sub_len):
-            total_covered += sub_quizzes[i]["coverage_percent"]
-            total_score += quiz_percent(sub_quizzes[i])
-        if total_covered > 100: total_covered = 100
-        remaining = 100 - total_covered
-        if sub_len > 0:
-            avg = total_score / sub_len
-        else:
-            avg = 0
-
-        predicted = avg - remaining * 0.05
-        if predicted < 0: predicted = 0
-        if predicted > 100: predicted = 100
-        low = predicted - 5
-        if low < 0: low = 0
-        high = predicted + 5
-        if high > 100: high = 100
-
-        print("\n--- Subject:", sub, "---")
-        print("Based on", sub_len, "quiz(es), average =", round_num(avg), "%")
+    for subject in subject_map:
+        sub = subject_map[subject]
+        total = 0
+        for q in sub: total += quiz_percent(q)
+        avg = total/manual_len(sub)
+        total_coverage = 0
+        for q in sub: total_coverage += q["coverage_percent"]
+        if total_coverage>100: total_coverage=100
+        remaining = 100 - total_coverage
+        predicted = avg - remaining*0.05
+        if predicted<0: predicted=0
+        if predicted>100: predicted=100
+        low = predicted-5; high = predicted+5
+        if low<0: low=0
+        if high>100: high=100
+        print("\n---", subject, "---")
+        print("Average:", round_num(avg), "%")
         print("Coverage remaining:", remaining, "%")
-        print("📈 Predicted score range:", round_num(low), "% –", round_num(high), "%")
+        print("Predicted score range:", round_num(low), "% -", round_num(high), "%")
+
+# ---------------- Coverage ----------------
+def show_coverage(user_id):
+    db = read_json(QUIZ_FILE)
+    quizzes = get_user_quizzes(db, user_id)
+    if manual_len(quizzes)==0: print("⚠️ No quizzes yet."); return
+    subject_map = group_by_subject(quizzes)
+    print("\n=== Coverage per subject ===")
+    for subject in subject_map:
+        total=0
+        for q in subject_map[subject]: total+=q["coverage_percent"]
+        if total>100: total=100
+        print("-", subject, ":", total, "% covered |", 100-total, "% remaining")
 
 # ---------------- CLI ----------------
 def run(user_id, user_data):
     while True:
         print("\n=== Quiz & Prediction ===")
         print("1. Add quiz")
-        print("2. View history")
+        print("2. View dashboard")
         print("3. Coverage remaining")
         print("4. Predict performance")
-        print("5. Back")
-        choice = strip(input("Choose: "))
-        if choice == "1":
-            add_quiz(user_id)
-        elif choice == "2":
-            view_history(user_id)
-        elif choice == "3":
-            show_coverage(user_id)
-        elif choice == "4":
-            predict_performance(user_id)
-        elif choice == "5":
-            return user_data
-        else:
-            print("❌ Invalid choice")
+        print("0. Exit")
 
+        choice = strip(input("Choose: "))
+        if choice=="1": add_quiz(user_id)
+        elif choice=="2": view_dashboard(user_id)
+        elif choice=="3": show_coverage(user_id)
+        elif choice=="4": predict_performance(user_id)
+        elif choice=="0": print("👋 Exiting Quiz Module..."); return user_data
+        else: print("❌ Invalid choice")
 
