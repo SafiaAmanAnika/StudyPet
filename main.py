@@ -5,6 +5,7 @@ from src.shop import feed_pet, open_shop
 from src.study import start_session
 from src.wellbeing import log_mood, apply_tired_penalty, tired_streak_days
 from src.recreation import recreation_menu, count_today_sessions
+from src.quiz import run as quiz_run
 import json, os
 
 LOG_FILE = "data/study_log.json"
@@ -112,7 +113,7 @@ def dashboard(user_id, user_data):
         print("╔══════════════════════════════════════╗")
         print("║       Your virtual pet awaits!       ║")
         print("╚══════════════════════════════════════╝")
-        choice = menu(["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Wellbeing 🌼", "Logout 👋"])
+        choice = menu(["Start Study Session ⏳", "Feed Pet 🍖", "Pet Shop 🛒", "View Pet Status 🐱", "View Stats 📊", "Wellbeing 🌼", "Quiz 📚", "Logout 👋"])
         clear_screen()
 
         if choice == 1: 
@@ -146,6 +147,9 @@ def dashboard(user_id, user_data):
         
         elif choice == 6:
             user_data = handle_wellbeing(user_id, user_data)
+
+        elif choice == 7: 
+            quiz_run(user_id, user_data)
 
         elif choice == 0: 
             clear_screen()

@@ -1,0 +1,38 @@
+{
+    "z@gmail.com": {
+        "quizzes": [
+            {
+                "date": "2026-02-10",
+                "title": "linear",
+                "topic": "shit",
+                "score": 10,
+                "max_score": 30,
+                "coverage_percent": 30
+            },
+            {
+                "date": "2026-02-01",
+                "title": "linear",
+                "topic": "idk",
+                "score": 1,
+                "max_score": 30,
+                "coverage_percent": 69
+            },
+            {
+                "date": "2026-01-26",
+                "title": "DSA",
+                "topic": "idk",
+                "score": 12,
+                "max_score": 30,
+                "coverage_percent": 89
+            },
+            {
+                "date": "2026-01-01",
+                "title": "DSA",
+                "topic": "ss",
+                "score": 12,
+                "max_score": 30,
+                "coverage_percent": 50
+            }
+        ]
+    }
+}
