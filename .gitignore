@@ -1,7 +1,11 @@
+# Ignore Python bytecode files
 __pycache__/
 *.pyc
+
+# Ignore system files
 .DS_Store
 
+# Ignore data files
 data/*.json
 data/mood_log.json
 data/quiz_marks.json

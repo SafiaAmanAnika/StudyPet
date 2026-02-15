@@ -110,7 +110,7 @@ def tired_streak_days(user_id: str) -> int:
     #counting the tired days from the present day to the day when it shows not tired 
     while True: 
         d = str(cur)
-        print(f"Checking date: {d}, Mood: {record_map.get(d)}") 
+        #print(f"Checking date: {d}, Mood: {record_map.get(d)}") 
         #if the user was tired today, continue the streak 
         if record_map.get(d) == "Tired 😞":
             streak += 1     
@@ -121,7 +121,7 @@ def tired_streak_days(user_id: str) -> int:
         #go to the prev day 
         cur -= timedelta(days = 1) #subtracting 1 day from current date 
 
-    print(f"Tired streak for user {user_id}: {streak}")
+    #print(f"Tired streak for user {user_id}: {streak}")
     return streak 
 
 def apply_tired_penalty(user_id: str, user_data: dict):
