@@ -1,1 +1,19 @@
-{}
+{
+  "z@gmail.com": {
+    "name": "z",
+    "password_salt": "7fc6700216a8396d69b102d896e1c0ca",
+    "password_hash": "024b1d8890820ea31875e989ac783614dc57d0f68787736929a18af1388fafb1",
+    "goal_hours": 6,
+    "academic_goal": "YOYO",
+    "pet_theme": "Cat",
+    "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
+    "health": 0,
+    "coins": 467,
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-02-15",
+    "mood_today": "Tired \ud83d\ude1e"
+  }
+}

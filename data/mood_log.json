@@ -1,0 +1,45 @@
+{
+  "user@email.com": [
+    {
+      "date": "2026-02-01",
+      "mood": "Tired \ud83d\ude1e"
+    }
+  ],
+  "z@gmail.com": [
+    {
+      "date": "2026-02-09",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-10",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-11",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-12",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-13",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-14",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    },
+    {
+      "date": "2026-02-15",
+      "mood": "Tired \ud83d\ude1e",
+      "penalty_applied": false
+    }
+  ]
+}
