@@ -1,3 +1,6 @@
+# Pet-related logic: status, health, coins, warnings
+
+
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:
         user_data["health"] = 10
