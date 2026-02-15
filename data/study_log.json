@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "user_id": "tasniafarzana@iut-dhaka.edu",
+    "date": "2026-02-14",
+    "topic": "linear",
+    "difficulty": "Hard",
+    "study_minutes": 10,
+    "coins_earned": 20,
+    "health_lost": 3,
+    "mood": ""
+  },
+  {
+    "user_id": "tasniafarzana@iut-dhaka.edu",
+    "date": "2026-02-14",
+    "topic": "linear",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "coins_earned": 50,
+    "health_lost": 3,
+    "mood": ""
+  }
+]

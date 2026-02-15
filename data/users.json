@@ -1,1 +1,19 @@
-{}
+{
+  "tasniafarzana@iut-dhaka.edu": {
+    "name": "Nuzhat",
+    "password_salt": "7e163c437403eeeb612961e0e0c97d05",
+    "password_hash": "bda4e1e5c3355a1e36823ba249aebfe77135ac1e59239f8baf18c1bd04f5e04a",
+    "goal_hours": 2,
+    "academic_goal": "be more attentive",
+    "pet_theme": "Cat",
+    "pet_personality": "Sleepy but curious, learning one step at a time\ud83e\udd14\ud83d\udcad",
+    "health": 7,
+    "coins": 25,
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-02-14",
+    "mood_today": ""
+  }
+}
