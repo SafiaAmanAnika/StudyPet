@@ -1,310 +1,629 @@
-menu_label = "Quiz & Prediction 🧠"
-QUIZ_FILE = "data/quiz_marks.json"
-
 import json
+import os
+import unicodedata
 
-# ---------------- File Handling ----------------
-def write_json(path, data):
+BOX_INNER = 48   
+DATA_DIR = "data"
+DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
+
+CHART_COL_W = 5
+CHART_SPACING = 2
+CHART_MAX_BARS = 6
+CHART_HEIGHT = 6
+CHART_LABELS_POS = "above"
+CHART_SHOW_NUMBERS = True
+
+# -------- Minimal helpers --------
+def visible_width(s):
+    width = 0
+    for ch in s:
+        
+        if unicodedata.east_asian_width(ch) in ("F", "W"):
+            width += 2
+        else:
+            width += 1
+    return width
+
+def truncate_to_width(s, maxw):
+    if maxw <= 0:
+        return ""
+    return s[:maxw]
+
+def pad_to_width(s, width):
+    cur = visible_width(s)
+    if cur >= width:
+        return s
+    return s + " " * (width - cur)
+
+def wrap_text_to_width(s, maxw):
+    if maxw <= 0:
+        return [""]
+    words = s.split(" ")
+    lines = []
+    cur = ""
+    for w in words:
+        if cur == "":
+            if visible_width(w) <= maxw:
+                cur = w
+            else:
+                i = 0
+                while i < len(w):
+                    part = w[i:i+maxw]
+                    lines.append(part)
+                    i += maxw
+                cur = ""
+        else:
+            if visible_width(cur) + 1 + visible_width(w) <= maxw:
+                cur = cur + " " + w
+            else:
+                lines.append(cur)
+                if visible_width(w) <= maxw:
+                    cur = w
+                else:
+                    i = 0
+                    while i < len(w):
+                        part = w[i:i+maxw]
+                        lines.append(part)
+                        i += maxw
+                    cur = ""
+    if cur != "":
+        lines.append(cur)
+    return [truncate_to_width(line, maxw) for line in lines]
+
+def manual_strip(s):
+    start = 0
+    end = len(s) - 1
+    while start <= end and s[start] in " \t\n\r":
+        start += 1
+    while end >= start and s[end] in " \t\n\r":
+        end -= 1
+    return s[start:end+1]
+
+def manual_is_number(s):
+    if s == "":
+        return False
+    parts = s.split(".")
+    if len(parts) == 1:
+        return parts[0].isdigit()
+    if len(parts) == 2:
+        a,b = parts
+        return (a.isdigit() and b.isdigit() and b != "")
+    return False
+
+def date_valid_simple(s):
+    parts = s.split("-")
+    if len(parts) != 3:
+        return False
+    y,m,d = parts
+    if not (y.isdigit() and len(y) == 4): return False
+    if not (m.isdigit() and 1 <= len(m) <= 2): return False
+    if not (d.isdigit() and 1 <= len(d) <= 2): return False
+    return True
+
+# -------- File I/O --------
+def ensure_data_dir():
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
+
+def load_data():
+    ensure_data_dir()
+    if not os.path.exists(DATA_FILE):
+        return {"subjects": {}}
     try:
-        with open(path, "w") as f:
-            f.write(json.dumps(data, indent=4))
-    except Exception as e:
-        print("Error writing file:", e)
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"subjects": {}}
 
-def read_json(path):
+def save_data(data):
+    ensure_data_dir()
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+# -------- Screen & boxes (use fixed BOX_INNER) --------
+def clear_screen():
     try:
-        with open(path, "r") as f:
-            content = f.read()
-        data = json.loads(content)
-        if type(data) != dict:
-            print("⚠️ Invalid JSON format, resetting file")
-            return {}
-        return data
-    except FileNotFoundError:
-        return {}
-    except json.JSONDecodeError as e:
-        print("⚠️ JSON decode error:", e)
-        return {}
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            print("\033[2J\033[H", end="")
+    except Exception:
+        print("\n" * 60)
 
-# ---------------- Manual Utilities ----------------
+BORDER_FILL = "═" * (BOX_INNER + 2)
+def box_top(): print("╔" + BORDER_FILL + "╗")
+def box_title(title):
+    t = str(title)
+    t = truncate_to_width(t, BOX_INNER)
+    left = max(0, (BOX_INNER - visible_width(t)) // 2)
+    right = max(0, BOX_INNER - visible_width(t) - left)
+    print("║ " + " " * left + t + " " * right + " ║")
+def box_sep(): print("╠" + BORDER_FILL + "╣")
+def box_bottom(): print("╚" + BORDER_FILL + "╝")
+def box_line(text):
+    s = str(text)
+    s_trunc = truncate_to_width(s, BOX_INNER)
+    s_pad = pad_to_width(s_trunc, BOX_INNER)
+    print("║ " + s_pad + " ║")
+def box_kv(key, value):
+    k = str(key); v = str(value)
+    kw = visible_width(k)
+    if kw >= BOX_INNER:
+        ktr = truncate_to_width(k, BOX_INNER - 1)
+        print("║ " + pad_to_width(ktr + " ", BOX_INNER) + " ║")
+        wrapped = wrap_text_to_width(v, BOX_INNER)
+        for w in wrapped:
+            print("║ " + pad_to_width(w, BOX_INNER) + " ║")
+        return
+    first_value_width = BOX_INNER - kw - 1
+    wrapped = wrap_text_to_width(v, first_value_width)
+    if not wrapped:
+        print("║ " + pad_to_width(k + " " * (BOX_INNER - kw), BOX_INNER) + " ║")
+        return
+    first = wrapped[0]
+    line = k + " " + first
+    print("║ " + pad_to_width(line, BOX_INNER) + " ║")
+    for w in wrapped[1:]:
+        pad = " " * (kw + 1)
+        line = pad + w
+        print("║ " + pad_to_width(line, BOX_INNER) + " ║")
+
+# -------- Input helpers --------
+def ask_title(prompt):
+    while True:
+        v = manual_strip(input(prompt))
+        if v == "":
+            print("Enter a short title (e.g., quiz1)."); continue
+        if "\n" in v or "\r" in v:
+            print("Invalid title."); continue
+        return v
+
+def ask_float(prompt, min_v=None, max_v=None):
+    while True:
+        v = manual_strip(input(prompt))
+        if not manual_is_number(v):
+            print("Enter a valid number."); continue
+        num = float(v)
+        if min_v is not None and num < min_v:
+            print("Value must be >= ", min_v); continue
+        if max_v is not None and num > max_v:
+            print("Value must be <= ", max_v); continue
+        return num
+
+def ask_date(prompt):
+    while True:
+        v = manual_strip(input(prompt))
+        if date_valid_simple(v):
+            return v
+        print("Enter date as YYYY-MM-DD")
+
+# -------- Add marks --------
+def add_quiz_marks():
+    clear_screen(); box_top(); box_title("ADD QUIZ MARKS"); box_bottom()
+    data = load_data()
+    subject = ask_title("Subject name: ")
+    title = ask_title("Quiz title (e.g., quiz1): ")
+    total = ask_float("Total marks: ", 1)
+    obtained = ask_float("Obtained marks: ", 0, total)
+    syllabus = ask_float("Syllabus covered in this exam (%): ", 0, 100)
+    date_str = ask_date("Date (YYYY-MM-DD): ")
+    if subject not in data["subjects"]:
+        data["subjects"][subject] = {"quiz": [], "mid": []}
+    data["subjects"][subject]["quiz"].append({
+        "title": title, "total": total, "obtained": obtained, "syllabus": syllabus, "date": date_str
+    })
+    save_data(data)
+    print("\n✅ Quiz added."); input("Press Enter...")
+
+def add_mid_marks():
+    clear_screen(); box_top(); box_title("ADD MID MARKS"); box_bottom()
+    data = load_data()
+    subject = ask_title("Subject name: ")
+    title = ask_title("Mid title (e.g., mid1): ")
+    total = ask_float("Total marks: ", 1)
+    obtained = ask_float("Obtained marks: ", 0, total)
+    syllabus = ask_float("Syllabus covered in this exam (%): ", 0, 100)
+    date_str = ask_date("Date (YYYY-MM-DD): ")
+    if subject not in data["subjects"]:
+        data["subjects"][subject] = {"quiz": [], "mid": []}
+    data["subjects"][subject]["mid"].append({
+        "title": title, "total": total, "obtained": obtained, "syllabus": syllabus, "date": date_str
+    })
+    save_data(data)
+    print("\n✅ Mid added."); input("Press Enter...")
+
+def add_marks_menu():
+    while True:
+        clear_screen(); box_top(); box_title("ADD MARKS"); box_bottom()
+        print("[1] Add Quiz Marks"); print("[2] Add Mid Marks"); print("[0] Back")
+        c = manual_strip(input("Choose: "))
+        if c == "1": add_quiz_marks()
+        elif c == "2": add_mid_marks()
+        elif c == "0": return
+        else: print("Invalid choice"); input("Press Enter...")
+
+# -------- Syllabus tracker --------
+def syllabus_coverage_tracker():
+    clear_screen(); box_top(); box_title("CURRICULUM PROGRESS REPORT"); box_bottom()
+    data = load_data(); subjects = data["subjects"]
+    if manual_len(list(subjects.keys())) == 0:
+        print("\nNo subjects found."); input("Press Enter..."); return
+    for subject in subjects:
+        sub = subjects[subject]
+        quizzes = sub.get("quiz", []); mids = sub.get("mid", [])
+        total_completed = 0
+        for q in quizzes: total_completed += q.get("syllabus", 0)
+        for m in mids: total_completed += m.get("syllabus", 0)
+        if total_completed > 100: total_completed = 100
+        remaining = 100 - total_completed
+        box_top(); box_title(subject.upper()); box_sep()
+        if manual_len(quizzes) > 0:
+            box_line("📚 Quizzes:")
+            for q in quizzes:
+                box_line("  " + truncate_to_width(f"{q.get('title','Quiz')}: {q.get('obtained',0)} / {q.get('total',0)}  {q.get('syllabus',0)}% syllabus", BOX_INNER))
+        if manual_len(mids) > 0:
+            mid_total = sum(m.get("syllabus",0) for m in mids)
+            box_line("📝 Mid Coverage:"); box_line("  " + truncate_to_width(f"Total → {mid_total}%", BOX_INNER))
+        box_sep()
+        box_kv("Overall Progress :", f"{total_completed:.1f}%")
+        box_line("  " + truncate_to_width(print_progress_bar(total_completed, show_percent=False), BOX_INNER - 2))
+        box_kv("Syllabus Completed :", f"{total_completed:.1f}%")
+        box_kv("Syllabus Remaining :", f"{remaining:.1f}%")
+        box_bottom(); print()
+    input("Press Enter...")
+
+# -------- Grade calc --------
+def calculate_grade(percent):
+    if percent >= 80: return "A+"
+    if percent >= 75: return "A"
+    if percent >= 70: return "A-"
+    if percent >= 65: return "B+"
+    if percent >= 60: return "B"
+    if percent >= 50: return "C"
+    if percent >= 40: return "D"
+    return "F"
+
+# -------- Chart builders (always truncated/padded) --------
+def build_vertical_trend(records):
+    if manual_len(records) < 2:
+        return []
+    recs = sorted(records, key=lambda r: r.get("date",""))
+    last = recs[-CHART_MAX_BARS:]
+    pcts = []; titles = []
+    for idx, r in enumerate(last, start=1):
+        tot = r.get("total", 0); obt = r.get("obtained", 0)
+        pct = (obt / tot) * 100 if tot > 0 else 0
+        pcts.append(pct)
+        t = r.get("title") or (f"mid{idx}" if r.get("kind") == "mid" else f"quiz{idx}")
+        titles.append(str(t))
+    n = len(pcts)
+    base_w = CHART_COL_W; spacing = CHART_SPACING
+
+    desired_w = [max(base_w, visible_width(t)) for t in titles]
+    total_desired = sum(desired_w) + spacing * (n - 1)
+    use_variable = total_desired <= BOX_INNER
+    col_widths = desired_w if use_variable else [base_w] * n
+    total_w = sum(col_widths) + spacing * (n - 1)
+
+    max_pct = max(pcts) if pcts else 1
+    scale = max_pct if max_pct > 0 else 1
+    lines = []
+
+    label_cells = []
+    for i, title in enumerate(titles):
+        w = col_widths[i]
+        txt = title if use_variable else truncate_to_width(title, w)
+        left = max(0, (w - visible_width(txt)) // 2)
+        label_cells.append(" " * left + txt + " " * (w - left - visible_width(txt)))
+    label_line = (" " * spacing).join(label_cells)
+    left_pad_lbl = max(0, (BOX_INNER - visible_width(label_line)) // 2)
+    if CHART_LABELS_POS == "above":
+        lines.append(truncate_to_width(" " * left_pad_lbl + label_line, BOX_INNER))
+
+    for row in range(CHART_HEIGHT):
+        row_level = CHART_HEIGHT - row
+        cells = []
+        for i, pct in enumerate(pcts):
+            level = int((pct / scale) * CHART_HEIGHT + 0.0001)
+            w = col_widths[i]
+            cells.append("█" * w if level >= row_level else " " * w)
+        row_line = (" " * spacing).join(cells)
+        left_pad = max(0, (BOX_INNER - visible_width(row_line)) // 2)
+        lines.append(truncate_to_width(" " * left_pad + row_line, BOX_INNER))
+
+    baseline = "─" * total_w
+    left_pad_base = max(0, (BOX_INNER - visible_width(baseline)) // 2)
+    lines.append(truncate_to_width(" " * left_pad_base + baseline, BOX_INNER))
+
+    tick_chars = list(" " * total_w)
+    pos = 0
+    for w in col_widths:
+        center = pos + w // 2
+        if center < len(tick_chars):
+            tick_chars[center] = "|"
+        pos += w + spacing
+    tick_line = "".join(tick_chars)
+    lines.append(truncate_to_width(" " * left_pad_base + tick_line, BOX_INNER))
+
+    if CHART_SHOW_NUMBERS:
+        num_cells = []
+        for i, pct in enumerate(pcts):
+            w = col_widths[i]
+            t = f"{pct:.0f}%"
+            t = truncate_to_width(t, w)
+            left = max(0, (w - visible_width(t)) // 2)
+            num_cells.append(" " * left + t + " " * (w - left - visible_width(t)))
+        num_raw = (" " * spacing).join(num_cells)
+        left_pad_num = max(0, (BOX_INNER - visible_width(num_raw)) // 2)
+        lines.append(truncate_to_width(" " * left_pad_num + num_raw, BOX_INNER))
+
+    if CHART_LABELS_POS != "above":
+        lines.append(truncate_to_width(" " * left_pad_lbl + label_line, BOX_INNER))
+
+    return lines
+
+def build_overall_chart(subject_names, percentages, max_bars=None, col_w=None, spacing=None, height=None, show_numbers=True):
+    if not subject_names or not percentages:
+        return []
+    max_bars = CHART_MAX_BARS if max_bars is None else max_bars
+    base_col_w = CHART_COL_W if col_w is None else col_w
+    spacing = CHART_SPACING if spacing is None else spacing
+    height = CHART_HEIGHT if height is None else height
+
+    names = subject_names[-max_bars:]
+    pcts = percentages[-max_bars:]
+    n = len(pcts)
+
+    desired_w = [max(base_col_w, visible_width(name)) for name in names]
+    total_desired = sum(desired_w) + spacing * (n - 1)
+    use_variable = total_desired <= BOX_INNER
+    col_widths = desired_w if use_variable else [base_col_w] * n
+    total_w = sum(col_widths) + spacing * (n - 1)
+
+    max_pct = max(pcts) if pcts else 1
+    scale = max_pct if max_pct > 0 else 1
+    out = []
+    for row in range(height):
+        row_level = height - row
+        cells = []
+        for i, pct in enumerate(pcts):
+            level = int((pct / scale) * height + 0.0001)
+            w = col_widths[i]
+            cells.append("█" * w if level >= row_level else " " * w)
+        row_line = (" " * spacing).join(cells)
+        left_pad = max(0, (BOX_INNER - visible_width(row_line)) // 2)
+        out.append(truncate_to_width(" " * left_pad + row_line, BOX_INNER))
+
+    baseline = "─" * total_w
+    left_pad_base = max(0, (BOX_INNER - visible_width(baseline)) // 2)
+    out.append(truncate_to_width(" " * left_pad_base + baseline, BOX_INNER))
+
+    tick_chars = list(" " * total_w)
+    pos = 0
+    for w in col_widths:
+        center = pos + w // 2
+        if center < len(tick_chars):
+            tick_chars[center] = "|"
+        pos += w + spacing
+    tick_line = "".join(tick_chars)
+    out.append(truncate_to_width(" " * left_pad_base + tick_line, BOX_INNER))
+
+    if show_numbers:
+        num_cells = []
+        for i, pct in enumerate(pcts):
+            w = col_widths[i]
+            t = f"{pct:.0f}%"
+            t = truncate_to_width(t, w)
+            left = max(0, (w - visible_width(t)) // 2)
+            num_cells.append(" " * left + t + " " * (w - left - visible_width(t)))
+        num_raw = (" " * spacing).join(num_cells)
+        left_pad_num = max(0, (BOX_INNER - visible_width(num_raw)) // 2)
+        out.append(truncate_to_width(" " * left_pad_num + num_raw, BOX_INNER))
+
+    label_cells = []
+    for i, name in enumerate(names):
+        w = col_widths[i]
+        txt = name if use_variable else truncate_to_width(name, w)
+        left = max(0, (w - visible_width(txt)) // 2)
+        label_cells.append(" " * left + txt + " " * (w - left - visible_width(txt)))
+    label_line = (" " * spacing).join(label_cells)
+    left_pad_lbl = max(0, (BOX_INNER - visible_width(label_line)) // 2)
+    out.append(truncate_to_width(" " * left_pad_lbl + label_line, BOX_INNER))
+
+    return out
+
+# -------- Trend & views --------
+def determine_trend_label(percentages, threshold=0.5):
+    n = manual_len(percentages)
+    if n < 2:
+        return "⚠️ Not enough exams for trend"
+    if n == 2:
+        diff = percentages[-1] - percentages[-2]
+        if diff > threshold: return "📈 Improving"
+        if diff < -threshold: return "📉 Declining"
+        return "🔄 Stable"
+    diffs = []
+    for i in range(1, n):
+        diffs.append(percentages[i] - percentages[i-1])
+    pos = sum(1 for d in diffs if d > threshold)
+    neg = sum(1 for d in diffs if d < -threshold)
+    if pos == len(diffs): return "📈 Improving"
+    if neg == len(diffs): return "📉 Declining"
+    return "🔄 Stable"
+
+def result_overview_and_advisor():
+    clear_screen(); box_top(); box_title("PERFORMANCE TREND MONITOR"); box_bottom()
+    data = load_data(); subjects = data["subjects"]
+    if manual_len(list(subjects.keys())) == 0:
+        print("No subjects found."); input("Press Enter..."); return
+    for subject in subjects:
+        sub = subjects[subject]
+        quizzes = sub.get("quiz", []); mids = sub.get("mid", [])
+        if manual_len(quizzes) == 0 and manual_len(mids) == 0:
+            continue
+        combined = []
+        for q in quizzes:
+            r = dict(q); r['kind'] = 'quiz'; combined.append(r)
+        for m in mids:
+            r = dict(m); r['kind'] = 'mid'; combined.append(r)
+        combined.sort(key=lambda r: r.get("date",""))
+        qcnt = mcnt = 0
+        for r in combined:
+            if not r.get('title'):
+                if r.get('kind') == 'mid': mcnt += 1; r['title'] = f"mid{mcnt}"
+                else: qcnt += 1; r['title'] = f"quiz{qcnt}"
+        box_top(); box_title(subject.upper()); box_sep()
+        if manual_len(quizzes) > 0:
+            box_line("📚 Quizzes:")
+            for q in quizzes:
+                box_line("  " + truncate_to_width(f"{q.get('title','Quiz')}: {q.get('obtained',0)} / {q.get('total',0)}  {q.get('syllabus',0)}% syllabus", BOX_INNER))
+        if manual_len(mids) > 0:
+            mid_total = sum(m.get("syllabus",0) for m in mids)
+            box_line("📝 Mid Coverage:"); box_line("  " + truncate_to_width(f"Syllabus Covered: {mid_total}%", BOX_INNER))
+        total_marks = sum(r.get("total",0) for r in combined)
+        obtained_marks = sum(r.get("obtained",0) for r in combined)
+        total_syllabus_done = sum(r.get("syllabus",0) for r in combined)
+        if total_syllabus_done > 100: total_syllabus_done = 100
+        remaining = 100 - total_syllabus_done
+        percent = (obtained_marks / total_marks) * 100 if total_marks > 0 else 0
+        grade = calculate_grade(percent)
+        perc_list = []
+        for r in combined:
+            tot = r.get("total",0); obt = r.get("obtained",0)
+            perc_list.append((obt / tot) * 100 if tot > 0 else 0)
+        trend_label = determine_trend_label(perc_list)
+        box_sep()
+        box_kv("Total:", f"{obtained_marks} / {total_marks}")
+        box_kv("Percentage:", f"{percent:.2f}%")
+        box_kv("Grade:", grade)
+        box_kv("Remaining Syllabus:", f"{remaining}%")
+        if manual_len(combined) >= 2:
+            box_kv("Trend:", "")
+            chart_lines = build_vertical_trend(combined)
+            for ln in chart_lines:
+                # safe: truncate before printing inside box, with two-space indent
+                box_line("  " + truncate_to_width(ln, BOX_INNER - 2))
+            box_kv("Status:", trend_label)
+        else:
+            box_kv("Trend:", "Not enough exams to show the trend")
+            box_kv("Status:", "Not enough exams to show the status")
+        advice = []
+        if percent < 50:
+            advice.append("Focus on revising basics to improve grades.")
+        elif percent < 65:
+            advice.append("Maintain consistency and review weak topics.")
+        elif percent < 80:
+            advice.append("Push for mastery in upcoming exams to reach A+.")
+        else:
+            advice.append("Keep up the excellent work!")
+        if total_syllabus_done < 100:
+            advice.append(f"Cover remaining {100 - total_syllabus_done}% syllabus for full readiness.")
+        if manual_len(combined) >= 2:
+            if perc_list[-1] > perc_list[-2]:
+                advice.append("Recent exam improved vs previous.")
+            elif perc_list[-1] < perc_list[-2]:
+                advice.append("Recent exam declined vs previous.")
+        if advice:
+            box_line("Advice:")
+            for a in advice:
+                wrapped = wrap_text_to_width(a, BOX_INNER - 4)
+                for i, w in enumerate(wrapped):
+                    if i == 0:
+                        box_line("  - " + w)
+                    else:
+                        box_line("    " + w)
+        box_bottom(); print("-" * 60)
+    input("\nPress Enter...")
+
+def predict_final_grade(current_percent, syllabus_done):
+    if syllabus_done == 0: return "N/A"
+    remaining = 100 - syllabus_done
+    predicted = current_percent
+    if current_percent >= 75:
+        predicted += remaining * 0.05
+    elif current_percent < 50:
+        predicted -= remaining * 0.03
+    predicted = max(0, min(100, predicted))
+    return calculate_grade(predicted)
+
+def view_dashboard():
+    clear_screen(); box_top(); box_title("DASHBOARD"); box_bottom()
+    data = load_data(); subjects = data["subjects"]
+    if manual_len(list(subjects.keys())) == 0:
+        print("No subjects found."); input("Press Enter..."); return
+    overall_percents = []
+    subject_names = []
+    for subject in subjects:
+        sub = subjects[subject]
+        quizzes = sub.get("quiz", []); mids = sub.get("mid", [])
+        combined = quizzes + mids
+        total_marks = sum(r.get("total",0) for r in combined)
+        obtained_marks = sum(r.get("obtained",0) for r in combined)
+        total_syllabus_done = sum(r.get("syllabus",0) for r in combined)
+        if total_syllabus_done > 100: total_syllabus_done = 100
+        remaining = 100 - total_syllabus_done
+        if total_marks == 0:
+            continue
+        percent = (obtained_marks / total_marks) * 100
+        grade = calculate_grade(percent)
+        predicted = predict_final_grade(percent, total_syllabus_done)
+        overall_percents.append(percent)
+        subject_names.append(subject)
+        box_top(); box_title(subject.upper()); box_sep()
+        box_kv("Overall Percentage     :", f"{percent:6.2f}%")
+        box_kv("Current Grade          :", grade)
+        box_kv("Syllabus Completed     :", f"{total_syllabus_done:6.2f}%")
+        box_kv("Remaining Coverage     :", f"{remaining:6.2f}%")
+        box_kv("Predicted Final Grade  :", predicted)
+        box_bottom(); print()
+    if manual_len(overall_percents) > 0:
+        overall_avg = manual_sum(overall_percents) / manual_len(overall_percents)
+        print("════════════════════════════════════════")
+        print("📊 OVERALL PERFORMANCE CHART\n")
+        overall_chart_lines = build_overall_chart(subject_names, overall_percents, max_bars=len(subject_names), show_numbers=True)
+        for ln in overall_chart_lines:
+            print(truncate_to_width(ln, BOX_INNER))
+        print("\nOverall Average Across Subjects: {:.2f}%".format(overall_avg))
+    input("\nPress Enter...")
+
+def print_progress_bar(percent, total_blocks=20, show_percent=False):
+    filled = int(percent / 100 * total_blocks)
+    filled = max(0, min(total_blocks, filled))
+    bar = "█" * filled + "-" * (total_blocks - filled)
+    return f"[{bar}] {percent:.1f}%" if show_percent else f"[{bar}]"
+
 def manual_len(lst):
     count = 0
     for _ in lst: count += 1
     return count
 
-def manual_append(lst, item):
-    n = manual_len(lst)
-    new_lst = [0] * (n + 1)
-    for i in range(n):
-        new_lst[i] = lst[i]
-    new_lst[n] = item
-    return new_lst
+def manual_sum(lst):
+    total = 0
+    for v in lst: total += v
+    return total
 
-def strip(s):
-    whitespace = " \t\n\r"
-    start = 0
-    end = len(s) - 1
-    while start <= end and s[start] in whitespace: start += 1
-    while end >= start and s[end] in whitespace: end -= 1
-    return s[start:end+1]
-
-def round_num(x):
-    return int(x * 10) / 10
-
-# ---------------- Input Helpers ----------------
-def ask_non_empty_letters(prompt):
+# -------- Main menu --------
+def main():
     while True:
-        v = strip(input(prompt))
-        if v == "": print("Cannot be empty."); continue
-        has_letter = False
-        valid = True
-        for ch in v:
-            if ('a' <= ch <= 'z') or ('A' <= ch <= 'Z'): has_letter = True
-            elif ch == " " or ('0' <= ch <= '9'): pass
-            else: valid = False; break
-        if not has_letter: print("Must contain at least one letter."); continue
-        if not valid: print("Only letters, numbers and spaces allowed."); continue
-        return v
-
-def ask_int(prompt, min_v=None, max_v=None):
-    while True:
-        v = strip(input(prompt))
-        try: n = int(v)
-        except: print("Enter a valid integer."); continue
-        if min_v is not None and n < min_v: print("Must be >=", min_v); continue
-        if max_v is not None and n > max_v: print("Must be <=", max_v); continue
-        return n
-
-def ask_percent(prompt):
-    return ask_int(prompt, 0, 100)
-
-def ask_date(prompt):
-    while True:
-        d = strip(input(prompt))
-        if d == "": print("Date cannot be empty."); continue
-
-        parts = []
-        temp = ""
-        for ch in d:
-            if ch == "-":
-                parts = manual_append(parts, temp)
-                temp = ""
-            else:
-                temp += ch
-        parts = manual_append(parts, temp)
-        if manual_len(parts) != 3:
-            print("Invalid format. Use YYYY-MM-DD"); continue
-        try: y = int(parts[0]); m = int(parts[1]); day = int(parts[2])
-        except: print("Invalid numbers in date."); continue
-        if m < 1 or m > 12: print("Invalid month."); continue
-        if m == 2: is_leap = (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)); max_day = 29 if is_leap else 28
-        elif m in [1,3,5,7,8,10,12]: max_day = 31
-        else: max_day = 30
-        if day < 1 or day > max_day: print("Invalid day for month."); continue
-        return d
-
-# ---------------- Quiz Helpers ----------------
-def get_user_quizzes(db, user_id):
-    if user_id not in db: db[user_id] = {"quizzes":[]}
-    if "quizzes" not in db[user_id]: db[user_id]["quizzes"] = []
-    return db[user_id]["quizzes"]
-
-def quiz_percent(q):
-    try: return int(q["score"]) / int(q["max_score"]) * 100
-    except: return 0.0
-
-# ---------------- Add Quiz ----------------
-def add_quiz(user_id):
-    db = read_json(QUIZ_FILE)
-    quizzes = get_user_quizzes(db, user_id)
-
-    print("\n=== Add Quiz Marks ===")
-    title = ask_non_empty_letters("Quiz title: ")
-    topic = ask_non_empty_letters("Topic: ")
-    max_score = ask_int("Max marks: ", 1)
-    score = ask_int("Your marks: ", 0, max_score)
-    coverage = ask_percent("Syllabus covered % (0-100): ")
-    d = ask_date("Date (YYYY-MM-DD): ")
-
-    record = {"date":d, "title":title, "topic":topic, "score":score,
-              "max_score":max_score, "coverage_percent":coverage}
-
-    quizzes = manual_append(quizzes, record)
-    db[user_id]["quizzes"] = quizzes
-    write_json(QUIZ_FILE, db)
-    pct = round_num(score / max_score * 100)
-    print("✅ Saved:", title, "-", score, "/", max_score, "(", pct, "% )")
-
-# ---------------- Trend & Sparkline ----------------
-def detect_trend(quizzes, overall=False):
-    """
-    Determine trend: Improving ⬆️, Declining ⬇️, Stable ↔️
-    Minor fluctuations <=5% are ignored for stability.
-    """
-    n = manual_len(quizzes)
-    if n < 2: return "Need at least 2 quizzes"
-    
-    ups = downs = 0
-    threshold = 5  # Only changes >5% count
-    
-    for i in range(1, n):
-        prev = quiz_percent(quizzes[i-1]) if not overall else quizzes[i-1]["score"]
-        curr = quiz_percent(quizzes[i]) if not overall else quizzes[i]["score"]
-        diff = curr - prev
-        if diff > threshold: ups += 1
-        elif diff < -threshold: downs += 1
-
-    if ups > downs and ups >= n//2: return "⬆️ Improving"
-    elif downs > ups and downs >= n//2: return "⬇️ Declining"
-    else: return "↔️ Stable"
-
-def sparkline(values):
-    bars = "▁▂▃▄▅▆▇█"; n = manual_len(values)
-    if n==0: return ""
-    min_val = max_val = values[0]
-    for i in range(n):
-        if values[i]<min_val: min_val=values[i]
-        if values[i]>max_val: max_val=values[i]
-    line=""
-    for i in range(n):
-        if max_val==min_val: index = len(bars)//2
-        else: index = int((values[i]-min_val)/(max_val-min_val)*(len(bars)-1))
-        line += bars[index]
-    return line
-
-# ---------------- Group by subject ----------------
-def group_by_subject(quizzes):
-    subject_map = {}
-    for q in quizzes:
-        topic = q["topic"]
-        if topic not in subject_map: subject_map[topic] = []
-        subject_map[topic] = manual_append(subject_map[topic], q)
-    return subject_map
-
-# ---------------- Dashboard ----------------
-def view_dashboard(user_id, last_n=5):
-    db = read_json(QUIZ_FILE)
-    quizzes = get_user_quizzes(db, user_id)
-    if manual_len(quizzes) == 0:
-        print("⚠️ No quizzes yet."); return
-
-    # Sort by date
-    n_quiz = manual_len(quizzes)
-    for i in range(n_quiz-1):
-        for j in range(i+1, n_quiz):
-            if quizzes[i]["date"] > quizzes[j]["date"]:
-                temp = quizzes[i]; quizzes[i] = quizzes[j]; quizzes[j] = temp
-
-    subjects=[]
-    for q in quizzes:
-        topic = q["topic"]; found=False
-        for s in subjects:
-            if s == topic: found=True
-        if not found: subjects = manual_append(subjects, topic)
-
-    overall_scores=[]
-    print("\n=== Dashboard ===")
-    for sub in subjects:
-        sub_quizzes=[]
-        for q in quizzes:
-            if q["topic"]==sub: sub_quizzes = manual_append(sub_quizzes,q)
-
-        sub_scores=[]; sub_coverage=0
-        for q in sub_quizzes:
-            s = round_num(quiz_percent(q))
-            sub_scores = manual_append(sub_scores,s)
-            overall_scores = manual_append(overall_scores,{"score":s})
-            sub_coverage += q["coverage_percent"]
-        if sub_coverage>100: sub_coverage=100
-
-        total_score=0
-        for s in sub_scores: total_score += s
-        avg_score = total_score / manual_len(sub_scores)
-
-        recent_len = last_n if last_n < manual_len(sub_scores) else manual_len(sub_scores)
-        recent_scores=[]
-        for i in range(manual_len(sub_scores)-recent_len, manual_len(sub_scores)):
-            recent_scores = manual_append(recent_scores, sub_scores[i])
-
-        print("\n--- Subject:", sub, "---")
-        print("Average Score:", round_num(avg_score), "%")
-        print("Coverage:", sub_coverage, "%")
-        print("Recent Scores:", end=" ")
-        for sc in recent_scores: print(sc, end="  ")
-        print("\nLine:  ", sparkline(recent_scores))
-        print("Trend (last", recent_len, "):", detect_trend(sub_quizzes))
-
-    # Overall trend
-    overall_scores_list = []
-    for o in overall_scores:
-        overall_scores_list = manual_append(overall_scores_list, o["score"])
-
-    overall_avg = 0
-    for sc in overall_scores_list: overall_avg += sc
-    overall_avg = overall_avg / manual_len(overall_scores_list) if manual_len(overall_scores_list)>0 else 0
-
-    print("\n=== Overall ===")
-    print("Average Score:", round_num(overall_avg), "%")
-    print("Scores:", end=" ")
-    for sc in overall_scores_list: print(sc, end="  ")
-    print("\nLine:  ", sparkline(overall_scores_list))
-    print("Trend:", detect_trend([{"score":s,"max_score":100} for s in overall_scores_list], overall=True))
-
-# ---------------- Predict Performance ----------------
-def predict_performance(user_id):
-    db = read_json(QUIZ_FILE)
-    quizzes = get_user_quizzes(db, user_id)
-    if manual_len(quizzes)==0: print("⚠️ Add at least 1 quiz first."); return
-    subject_map = group_by_subject(quizzes)
-    print("\n=== Performance Prediction ===")
-    for subject in subject_map:
-        sub = subject_map[subject]
-        total = 0
-        for q in sub: total += quiz_percent(q)
-        avg = total/manual_len(sub)
-        total_coverage = 0
-        for q in sub: total_coverage += q["coverage_percent"]
-        if total_coverage>100: total_coverage=100
-        remaining = 100 - total_coverage
-        predicted = avg - remaining*0.05
-        if predicted<0: predicted=0
-        if predicted>100: predicted=100
-        low = predicted-5; high = predicted+5
-        if low<0: low=0
-        if high>100: high=100
-        print("\n---", subject, "---")
-        print("Average:", round_num(avg), "%")
-        print("Coverage remaining:", remaining, "%")
-        print("Predicted score range:", round_num(low), "% -", round_num(high), "%")
-
-# ---------------- Coverage ----------------
-def show_coverage(user_id):
-    db = read_json(QUIZ_FILE)
-    quizzes = get_user_quizzes(db, user_id)
-    if manual_len(quizzes)==0: print("⚠️ No quizzes yet."); return
-    subject_map = group_by_subject(quizzes)
-    print("\n=== Coverage per subject ===")
-    for subject in subject_map:
-        total=0
-        for q in subject_map[subject]: total+=q["coverage_percent"]
-        if total>100: total=100
-        print("-", subject, ":", total, "% covered |", 100-total, "% remaining")
-
-# ---------------- CLI ----------------
-def run(user_id, user_data):
-    while True:
-        print("\n=== Quiz & Prediction ===")
-        print("1. Add quiz")
-        print("2. View dashboard")
-        print("3. Coverage remaining")
-        print("4. Predict performance")
-        print("0. Exit")
-
-        choice = strip(input("Choose: "))
-        if choice=="1": add_quiz(user_id)
-        elif choice=="2": view_dashboard(user_id)
-        elif choice=="3": show_coverage(user_id)
-        elif choice=="4": predict_performance(user_id)
-        elif choice=="0": print("👋 Exiting Quiz Module..."); return user_data
-        else: print("❌ Invalid choice")
+        clear_screen(); box_top(); box_title("ACADEMIC PERFORMANCE TRACKER"); box_bottom()
+        print("[1] Add Marks")
+        print("[2] Curriculum Progress Report")
+        print("[3] Performance Trend Monitor")
+        print("[4] View Dashboard")
+        print("[0] Exit")
+        choice = manual_strip(input("Choose: "))
+        clear_screen()
+        if choice == "1":
+            add_marks_menu()
+        elif choice == "2":
+            syllabus_coverage_tracker()
+        elif choice == "3":
+            result_overview_and_advisor()
+        elif choice == "4":
+            view_dashboard()
+        elif choice == "0":
+            clear_screen(); print("Goodbye!"); break
+        else:
+            print("Invalid choice"); input("Press Enter...")
+        clear_screen()
 
