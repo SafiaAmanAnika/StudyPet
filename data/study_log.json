@@ -1,22 +1,75 @@
-[
-  {
-    "user_id": "tasniafarzana@iut-dhaka.edu",
-    "date": "2026-02-14",
-    "topic": "linear",
-    "difficulty": "Hard",
-    "study_minutes": 10,
-    "coins_earned": 20,
-    "health_lost": 3,
-    "mood": ""
-  },
-  {
-    "user_id": "tasniafarzana@iut-dhaka.edu",
-    "date": "2026-02-14",
-    "topic": "linear",
-    "difficulty": "Hard",
-    "study_minutes": 25,
-    "coins_earned": 50,
-    "health_lost": 3,
-    "mood": ""
-  }
-]
+{
+    "subjects": {
+        "dbms": {
+            "quiz": [
+                {
+                    "title": "quiz1",
+                    "total": 20.0,
+                    "obtained": 12.5,
+                    "syllabus": 30.0,
+                    "date": "2026-02-01"
+                },
+                {
+                    "title": "quiz2",
+                    "total": 20.0,
+                    "obtained": 16.0,
+                    "syllabus": 15.0,
+                    "date": "2026-02-10"
+                }
+            ],
+            "mid": [
+                {
+                    "title": "mid",
+                    "total": 120.0,
+                    "obtained": 85.0,
+                    "syllabus": 30.0,
+                    "date": "2026-02-28"
+                }
+            ]
+        },
+        "linear": {
+            "quiz": [
+                {
+                    "title": "quiz 1",
+                    "total": 20.0,
+                    "obtained": 10.0,
+                    "syllabus": 10.0,
+                    "date": "2026-02-17"
+                }
+            ],
+            "mid": [
+                {
+                    "title": "mid",
+                    "total": 120.0,
+                    "obtained": 50.0,
+                    "syllabus": 30.0,
+                    "date": "2026-03-01"
+                }
+            ]
+        },
+        "english": {
+            "quiz": [],
+            "mid": [
+                {
+                    "title": "mid",
+                    "total": 120.0,
+                    "obtained": 100.0,
+                    "syllabus": 30.0,
+                    "date": "2026-02-01"
+                }
+            ]
+        },
+        "coa": {
+            "quiz": [
+                {
+                    "title": "quiz1",
+                    "total": 20.0,
+                    "obtained": 15.0,
+                    "syllabus": 10.0,
+                    "date": "2026-02-06"
+                }
+            ],
+            "mid": []
+        }
+    }
+}

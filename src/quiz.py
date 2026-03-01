@@ -627,5 +627,3 @@ def main():
             print("Invalid choice"); input("Press Enter...")
         clear_screen()
 
-if __name__ == "__main__":
-    main()  
