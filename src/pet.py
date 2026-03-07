@@ -1,5 +1,4 @@
-# Pet-related logic: status, health, coins, warnings
-
+from src.evolution import get_pet_stage
 
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:
@@ -19,6 +18,12 @@ def ensure_pet_defaults(user_data: dict) -> dict:
 
     if "pet_personality" not in user_data:
         user_data["pet_personality"] = "Neutral"
+
+    if "level" not in user_data:
+        user_data["level"] = 1
+
+    if "total_study_hours" not in user_data:
+        user_data["total_study_hours"] = 0
 
     return user_data
 
@@ -75,6 +80,7 @@ def show_status(user_data: dict) -> None:
 
     print(f"Health : {user_data['health']}")
     print(f"Coins  : {user_data['coins']}")
+    print(f"Level  : {user_data['level']} ({get_pet_stage(user_data['level'])})")
     print("════════════════════════════════════════════")
 
     print("Inventory:")

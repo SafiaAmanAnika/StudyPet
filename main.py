@@ -8,6 +8,7 @@ from src.recreation import recreation_menu, count_today_sessions
 from src.quiz import run as quiz_run
 from src.analytics import run as analytics_run
 from src.weekly_report import run as weekly_run 
+from src.evolution import check_pet_evolution
 
 import json, os
 
@@ -66,18 +67,42 @@ def login_user():
 # ---------------- HANDLERS ---------------- #
 
 def handle_study_session(user_id, user_data):
+    from src.evolution import check_pet_evolution
+
+    # Start study session
     user_data, session_log = start_session(user_id, user_data)
 
-    #track number of sessions
+    # If session was cancelled
+    if session_log is None:
+        return user_data, None
+
+    # ---------------- UPDATE TOTAL STUDY HOURS ----------------
+    minutes = session_log.get("study_minutes", 0)
+    user_data["total_study_hours"] = user_data.get("total_study_hours", 0) + (minutes / 60)
+
+    # ---------------- TRACK SESSION COUNT ----------------
     session_count = count_today_sessions(user_id)
 
-    #after every session we check two conditions
+    # ---------------- CHECK TIRED STREAK ----------------
     tired_streak = tired_streak_days(user_id)
 
+    # ---------------- PET EVOLUTION CHECK ----------------
+    user_data, evolved = check_pet_evolution(user_data, tired_streak)
+
+    if evolved:
+        print("╔══════════════════════════════════════════╗")
+        print("║        ✨ YOUR PET EVOLVED! ✨           ║")
+        print("╚══════════════════════════════════════════╝")
+        print("Your study companion grew stronger! 🐾📚")
+
+        show_status(user_data)
+
+    # ---------------- RECREATION CHECK ----------------
     if tired_streak >= 5 or session_count >= 3:
         recreation_menu(user_id)
 
     return user_data, session_log
+
     
 def handle_feed_pet(user_data):
     return feed_pet(user_data)
