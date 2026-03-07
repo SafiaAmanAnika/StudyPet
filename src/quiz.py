@@ -603,7 +603,7 @@ def manual_sum(lst):
     return total
 
 # -------- Main menu --------
-def run():
+def run(user_id, user_data):
     while True:
         clear_screen(); box_top(); box_title("ACADEMIC PERFORMANCE TRACKER"); box_bottom()
         print("[1] Add Marks")
