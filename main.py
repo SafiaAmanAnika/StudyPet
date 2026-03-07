@@ -90,9 +90,9 @@ def handle_study_session(user_id, user_data):
     user_data, evolved = check_pet_evolution(user_data, tired_streak)
 
     if evolved:
-        print("╔══════════════════════════════════════════╗")
-        print("║        ✨ YOUR PET EVOLVED! ✨           ║")
-        print("╚══════════════════════════════════════════╝")
+        print("╔═════════════════════════════════════════════════════════════════════════╗")
+        print("║                         ✨ YOUR PET EVOLVED! ✨                         ║")
+        print("╚═════════════════════════════════════════════════════════════════════════╝")
         print("Your study companion grew stronger! 🐾📚")
 
         show_status(user_data)
@@ -111,9 +111,9 @@ def handle_shop(user_data):
     return open_shop(user_data)
 
 def handle_wellbeing(user_id, user_data):
-    print("╔═══════════════════════════════════════════╗")
-    print("║             Short Check-In 🤗             ║")
-    print("╚═══════════════════════════════════════════╝")
+    print("╔═════════════════════════════════════════════════════════════════════════╗")
+    print("║                             Short Check-In 🤗                           ║")
+    print("╚═════════════════════════════════════════════════════════════════════════╝")
     print(mood_message(user_data.get("mood_today", "")))
     pause()
     clear_screen()
@@ -133,73 +133,75 @@ def handle_wellbeing(user_id, user_data):
 def dashboard(user_id, user_data):
     while True:
         clear_screen()
-        print("╔══════════════════════════════════════╗")
-        print("║      🐾 STUDYPET DASHBOARD 🐾        ║")
-        print("╚══════════════════════════════════════╝")
+        print("╔═════════════════════════════════════════════════════════════════════════╗")
+        print("║                         🐾 STUDYPET DASHBOARD 🐾                        ║")
+        print("╠═════════════════════════════════════════════════════════════════════════╣")
         show_user_summary(user_data)
 
-        print("╔══════════════════════════════════════╗")
-        print("║       Your virtual pet awaits!       ║")
-        print("╚══════════════════════════════════════╝")
-        choice = menu([
-            "Start Study Session ⏳", 
-            "Feed Pet 🍖", 
-            "Pet Shop 🛒", 
-            "View Pet Status 🐱", 
-            "View Stats 📊", 
-            "Wellbeing 🌼", 
-            "Quiz 📚", 
-            "Analytics 📈", 
-            "Weekly Report 📅",
-            "Logout 👋"])
+        print("╔═════════════════════════════════════════════════════════════════════════╗")
+        print("║                         Your virtual pet awaits!                        ║")
+        print("╠═════════════════════════════════════════════════════════════════════════╣")
+        print("║ [1] Start Study Session ⏳                                              ║")
+        print("║ [2] Feed Pet 🍖                                                         ║")
+        print("║ [3] Pet Shop 🛒                                                         ║")
+        print("║ [4] View Pet Status 🐱                                                  ║")
+        print("║ [5] View User Status 📊                                                 ║")
+        print("║ [6] Mood Check-in 🌼                                                    ║")
+        print("║ [7] Quiz 📚                                                             ║")
+        print("║ [8] Analytics 📈                                                        ║")
+        print("║ [9] Weekly Report 📅                                                    ║")
+        print("║ [0] Logout 👋                                                           ║")
+        print("╚═════════════════════════════════════════════════════════════════════════╝")
+
+        choice = input("Choose your option: ").strip()
         clear_screen()
 
-        if choice == 1: 
+        if choice == "1": 
             user_data ,session_log = handle_study_session(user_id, user_data)
             save_user_data(user_id, user_data)
             append_study_log(session_log)
             pause()
             clear_screen()
 
-        elif choice == 2: 
+        elif choice == "2": 
             user_data = handle_feed_pet(user_data)
             save_user_data(user_id, user_data)
             pause()
             clear_screen()
 
-        elif choice == 3: 
+        elif choice == "3": 
             user_data = handle_shop(user_data)
             save_user_data(user_id, user_data)
             pause()
             clear_screen()
 
-        elif choice == 4: 
+        elif choice == "4": 
             show_status(user_data)
             pause()
             clear_screen()
         
-        elif choice == 5: 
+        elif choice == "5": 
             show_user_stats(user_id, user_data)
             pause()
             clear_screen()
         
-        elif choice == 6:
+        elif choice == "6":
             user_data = handle_wellbeing(user_id, user_data)
 
-        elif choice == 7: 
+        elif choice == "7": 
             quiz_run(user_id, user_data)
 
-        elif choice == 8: 
+        elif choice == "8": 
             user_data = analytics_run(user_id, user_data)
 
-        elif choice == 9: 
+        elif choice == "9": 
             weekly_run(user_id, user_data)
 
-        elif choice == 0: 
+        elif choice == "0": 
             clear_screen()
-            print("╔══════════════════════════════════════╗")
-            print("║   Logged out. Alvida mere dost 👋    ║")
-            print("╚══════════════════════════════════════╝")                
+            print("╔═════════════════════════════════════════════════════════════════════════╗")
+            print("║                   Logged out. Alvida mere dost 👋                       ║")
+            print("╚═════════════════════════════════════════════════════════════════════════╝")           
             pause()
             clear_screen()
             return 
@@ -207,32 +209,37 @@ def dashboard(user_id, user_data):
 def main(): 
     while True: 
         print(r"""
-        ███████╗ ████████╗ ██╗   ██╗ ██████╗  ██╗   ██╗ ██████╗  ███████╗ ████████╗
-        ██╔════╝ ╚══██╔══╝ ██║   ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ██╔════╝ ╚══██╔══╝
-        ███████╗    ██║    ██║   ██║ ██║  ██║  ╚████╔╝  ██████╔╝ █████╗      ██║   
-        ╚════██║    ██║    ██║   ██║ ██║  ██║   ╚██╔╝   ██╔═══╝  ██╔══╝      ██║   
-        ███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║   
-        ╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝   
-        """)
-        print("╔════════════════════════════════╗")
-        print("║           MAIN MENU            ║")
-        print("╚════════════════════════════════╝")
-        choice = menu(["Register 📝", "Login 💻", "Exit 🚪"])
+███████╗ ████████╗ ██╗   ██╗ ██████╗  ██╗   ██╗ ██████╗  ███████╗ ████████╗
+██╔════╝ ╚══██╔══╝ ██║   ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ██╔════╝ ╚══██╔══╝
+███████╗    ██║    ██║   ██║ ██║  ██║  ╚████╔╝  ██████╔╝ █████╗      ██║
+╚════██║    ██║    ██║   ██║ ██║  ██║   ╚██╔╝   ██╔═══╝  ██╔══╝      ██║
+███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║
+╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝
+""")
+        print("╔═════════════════════════════════════════════════════════════════════════╗")
+        print("║                                 MAIN MENU                               ║")
+        print("╠═════════════════════════════════════════════════════════════════════════╣")
+        print("║ [1] Register 📝                                                         ║")
+        print("║ [2] Login 💻                                                            ║")
+        print("║ [0] Exit 🚪                                                             ║")
+        print("╚═════════════════════════════════════════════════════════════════════════╝")
 
-        if choice == 1: 
+        choice = input("Choose your option : ").strip()
+
+        if choice == "1": 
             user_id, user_data = register_user()
             if user_id: 
                 dashboard(user_id, user_data)
 
-        elif choice == 2: 
+        elif choice == "2": 
             user_id, user_data = login_user()
             if user_id: 
                 mood = choose_mood(menu)
                 if mood != "Skip": 
                     user_data["mood_today"] = mood
-                    print("╔═══════════════════════════════════════════╗")
-                    print("║              Mood Check-in 🤗             ║")
-                    print("╚═══════════════════════════════════════════╝")
+                    print("╔═════════════════════════════════════════════════════════════════════════╗")
+                    print("║                             Mood Check-in 🤗                            ║")
+                    print("╚═════════════════════════════════════════════════════════════════════════╝")
                     print(mood_message(mood))
                     pause()
                     clear_screen()
@@ -248,7 +255,7 @@ def main():
                 save_user_data(user_id, user_data)    
                 dashboard(user_id, user_data)
 
-        elif choice == 0: 
+        elif choice == "0": 
             clear_screen()
             break 
 

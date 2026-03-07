@@ -35,54 +35,61 @@ def print_kv(label, value):
 def show_user_summary(user_data):
     name = user_data.get("name", "User")
     health = user_data.get("health", 10)
-    
-    if health <= 3: 
-        print("\n⚠️   Warning: Your pet is very weak! Feed it soon.")
-        print()
-    
     coins = user_data.get("coins", 5)
-    
     pet_theme = user_data.get("pet_theme", "Unknown")
     goal_hours = user_data.get("goal_hours", "?")
     academic_goal = user_data.get("academic_goal", "")
     pet_personality = user_data.get("pet_personality", "Neutral")
     mood = user_data.get("mood_today", "")
-    
-    if mood: 
-        print(f"Mood Today    : {mood}")
 
-    print(f"Name          : {name}")
-    print(f"Pet           : {pet_theme}")
-    print(f"Personality   : {pet_personality}")
-    print(f"Health        : {health}")
-    print(f"Coins         : {coins}")
-    print(f"Daily Goal    : {goal_hours} hours")
-    
-    if academic_goal: 
-        print(f"Academic Goal : {academic_goal}")
+    width = 73
+
+    if mood:
+        print("║ " + f"Mood Today    : {mood}".ljust(width - 2) + "║")
+
+    if health <= 3:
+        print("║ " + "⚠️ Warning: Your pet is very weak! Feed it soon.".ljust(width - 1) + "║")
+        print("║" + " " * width + "║")
+
+    print("║" + " " * width + "║")
+
+    print("║ " + f"Name          : {name}".ljust(width - 1) + "║")
+    print("║ " + f"Pet           : {pet_theme}".ljust(width - 1) + "║")
+    print("║ " + f"Personality   : {pet_personality}".ljust(width - 3) + "║")
+    print("║ " + f"Health        : {health}".ljust(width - 1) + "║")
+    print("║ " + f"Coins         : {coins}".ljust(width - 1) + "║")
+    print("║ " + f"Daily Goal    : {goal_hours} hours".ljust(width - 1) + "║")
+
+    if academic_goal:
+        print("║ " + f"Academic Goal : {academic_goal}".ljust(width - 1) + "║")
+
+    print("╚" + "═" * width + "╝")
 
 
 def show_user_stats(user_id, user_data):
-    print("╔═══════════════════════════════════════════╗")
-    print("║           🐱 USER STATISTICS 🐱           ║")
-    print("╚═══════════════════════════════════════════╝")
-    print_kv("🐱 Email", user_id)
-    print_kv("🐱 Nickname", user_data.get("name", "User"))
-    print_kv("🐱 Goal Hours", user_data.get("goal_hours", "?"))
-    print_kv("🐱 Academic Goal", user_data.get("academic_goal", ""))
-    print_kv("🐱 Pet Theme", user_data.get("pet_theme", "Unknown"))
-    print_kv("🐱 Personality", user_data.get("pet_personality", "Neutral"))
-    print_kv("🐱 Health", user_data.get("health", 10))
-    print_kv("🐱 Coins", user_data.get("coins", 5))
-    print_kv("🐱 Last Login", user_data.get("last_login", ""))
-    print_kv("🐱 Mood Today", user_data.get("mood_today", ""))
+    width = 73
+
+    print("╔═════════════════════════════════════════════════════════════════════════╗")
+    print("║                         🐱 USER STATISTICS 🐱                           ║")
+    print("╠═════════════════════════════════════════════════════════════════════════╣")
+    print(f"║ 🐱 Email        : {user_id.ljust(54)}║")
+    print(f"║ 🐱 Nickname     : {user_data.get('name', 'User').ljust(54)}║")
+    print(f"║ 🐱 Goal Hours   : {str(user_data.get('goal_hours', '?')).ljust(54)}║")
+    print(f"║ 🐱 Academic Goal: {user_data.get('academic_goal', '').ljust(54)}║")
+    print(f"║ 🐱 Pet Theme    : {user_data.get('pet_theme', 'Unknown').ljust(54)}║")
+    print(f"║ 🐱 Personality  : {user_data.get('pet_personality', 'Neutral').ljust(53)}║")
+    print(f"║ 🐱 Health       : {str(user_data.get('health', 10)).ljust(54)}║")
+    print(f"║ 🐱 Coins        : {str(user_data.get('coins', 5)).ljust(54)}║")
+    print(f"║ 🐱 Last Login   : {user_data.get('last_login', '').ljust(54)}║")
+    print(f"║ 🐱 Mood Today   : {user_data.get('mood_today', '').ljust(53)}║")
+    print("╚═════════════════════════════════════════════════════════════════════════╝")
     
 
 def choose_mood(menu_func): 
     moods = ["Happy 😊", "Neutral 😐", "Tired 😞", "Stressed 😫", "Motivated 🥳", "Skip"]
-    print("╔═══════════════════════════════════════════╗")
-    print("║      How are you feeling today, dear?     ║")
-    print("╚═══════════════════════════════════════════╝")
+    print("╔═════════════════════════════════════════════════════════════════════════╗")
+    print("║                     How are you feeling today, dear?                    ║")
+    print("╚═════════════════════════════════════════════════════════════════════════╝")
     choice = menu_func(moods)
 
     return moods[choice -1]
@@ -90,9 +97,9 @@ def choose_mood(menu_func):
 # ---------------- ANALYTICS UI ---------------- #
 
 def analytics_menu():
-    print("╔═══════════════════════════════════════════╗ ")
-    print("║          📈 STUDY ANALYTICS 📈             ║")
-    print("╚═══════════════════════════════════════════╝")
+    print("╔═════════════════════════════════════════════════════════════════════════╗")
+    print("║                         📈 STUDY ANALYTICS 📈                           ║")
+    print("╚═════════════════════════════════════════════════════════════════════════╝")
 
     options = [
         "View last 7 days",
