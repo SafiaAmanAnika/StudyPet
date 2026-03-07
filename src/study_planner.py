@@ -925,4 +925,3 @@ def main_menu():
             print()
             print("Please enter a valid option (0-8)")
             input("\nPress Enter to continue...")
-
