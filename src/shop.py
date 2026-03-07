@@ -15,6 +15,8 @@ def open_shop(user_data: dict) -> dict:
         print("╔═══════════════════════════════╗")
         print("║           PET SHOP            ║")
         print("╚═══════════════════════════════╝")
+        print(f"💰 Current Coins: {user_data['coins']}")
+        print()
         print("[1] Buy Normal Food  (50 coins)")
         print("[2] Buy Premium Food (75 coins)")
         print("[0] Back")
@@ -72,6 +74,10 @@ def feed_pet(user_data: dict) -> dict:
         print("╔═══════════════════════════════╗")
         print("║           FEED PET            ║")
         print("╚═══════════════════════════════╝")
+        normal = user_data["inventory"]["normal_food"]
+        premium = user_data["inventory"]["premium_food"]
+        print(f"🍎 Normal Food: {normal} | 🍗 Premium Food: {premium}")
+        print()
         print("[1] Use Normal Food  (+3 health)")
         print("[2] Use Premium Food (+5 health)")
         print("[0] Cancel")
