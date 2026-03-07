@@ -108,3 +108,11 @@ def change_coins(user_data: dict, delta: int) -> dict:
         user_data["coins"] = -100
 
     return user_data
+
+# applying pet abilities based on pet theme
+
+# dog -> +10% more coins on long sessions
+# cat ->  study streak >= 5, more coins
+# bunny -> 
+def apply_pet_abilities(user_data):
+    pet = user_data.get('pet_theme', 'Cat');
