@@ -1,8 +1,5 @@
-import json 
-import os 
+import json, os 
 from datetime import date, timedelta
-import time
-import random 
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 MOOD_FILE = os.path.join(DATA_DIR, "mood_log.json")

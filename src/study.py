@@ -1,5 +1,5 @@
 from src.ui import clear_screen
-from src.animation import PETS_FRAMES
+from src.animation import get_animation_frame, clear
 import time
 
 DEV_MODE = True
@@ -126,12 +126,10 @@ def select_pomodoro():
 
 # ------------------ COUNTDOWNS ------------------ #
 
-def animated_countdown(seconds: int, label: str, mood: str = "Neutral", pet_type: str = "Cat") -> bool:
+
+def animated_countdown(seconds: int, label: str, mood: str = "Neutral", pet_type: str = "Cat", level: int = 1) -> bool:
     if seconds <= 0:
         return True
-
-    frames = PETS_FRAMES.get(pet_type, PETS_FRAMES["Cat"]).get(mood, PETS_FRAMES["Cat"]["Neutral"])
-    frame_i = 0
 
     try:
         for remaining in range(seconds, 0, -1):
@@ -139,22 +137,25 @@ def animated_countdown(seconds: int, label: str, mood: str = "Neutral", pet_type
             secs = remaining % 60
             time_str = f"{mins:02d}:{secs:02d}"
 
-            frame = frames[frame_i % len(frames)]
-            frame_i += 1
+            frame = get_animation_frame(pet_type, mood, level)
 
-            clear_screen()
+            clear()
+            print("╔══════════════════════════════════════╗")
+            print("║           Study in Progress          ║")
+            print("╚══════════════════════════════════════╝")
+            print()
             print(frame)
             print()
             print(f"{label} - time left: {time_str}")
 
             time.sleep(1)
 
-        clear_screen()
+        clear()
         print(f"{label} finished. Well done!👍\n")
         return True
 
     except KeyboardInterrupt:
-        clear_screen()
+        clear()
         print(f"{label} cancelled.\n")
         return False
 

@@ -98,7 +98,7 @@ def ask_password() -> str:
     """Ask until user enters a valid password."""
     while True:
         password = masked_input(
-            "🔒 Create password (Min 8 characters, 1 capital letter and 1 number): "
+            "🔒 Create password (Min 8 characters, 1 capital letter and 1 number): \n"
         )
 
         if is_valid_password(password):
