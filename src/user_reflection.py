@@ -185,3 +185,18 @@ def check_achievements(user_data):
 
     display_achievements(user_data)
     return user_data
+
+# ---------------- RANDOM ENCOURAGEMENT ---------------- #
+def random_encouragement(user_data):
+    """Triggers every 4 total sessions as a surprise reward."""
+    total = user_data.get('total_sessions', 0)
+    if total > 0 and total % 4 == 0:  
+        events = [
+            ("Your pet found a rare study note! +20 coins", 20),
+            ("Bonus coins discovered! +30 coins", 30),
+            ("Surprise reward! +15 coins", 15)
+        ]
+        event, coins = random.choice(events)
+        user_data["coins"] = user_data.get("coins", 0) + coins
+        print(f"✨ {event}\n")
+    return user_data
