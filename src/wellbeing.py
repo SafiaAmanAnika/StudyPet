@@ -135,7 +135,7 @@ def apply_tired_penalty(user_id: str, user_data: dict):
         if isinstance(r, dict) and r.get("date") == today and r.get("penalty_applied"):
             return user_data, None
     
-    if tired_streak_days(user_id) >= 5: 
+    if tired_streak_days(user_id) >= 3: 
         user_data["health"] = max(0, user_data.get("health", 10) - 2)
 
         #penalty marked on today's record, create penalty if missing
@@ -157,6 +157,49 @@ def apply_tired_penalty(user_id: str, user_data: dict):
             )
 
             save_mood_db(db)
-            return user_data, "😷 You’ve been tired for 5 days straight. Pet health -2. Please rest! Take a chill pill~"
+            return user_data, "😷 You’ve been tired for 3 days straight. Pet health -2. Please rest! Take a chill pill~"
     
     return user_data, None 
+
+# if user studies for more than 5 hours / tired for more than 3 days
+def detect_burnout(user_id, user_data):
+    total_minutes = int(user_data.get("total_study_hours", 0) * 60)
+    if total_minutes > 300: 
+        print("⚠️ Burnout detected: You have studied for more than 5 hours. Please rest.")
+        return True
+    
+    if tired_streak_days(user_id) >= 3:
+        print("⚠️ Burnout detected: You have been tired for multiple days. Please rest.")
+        return True
+    
+    return False
+
+def handle_burnout(user_id, user_data):
+    if detect_burnout(user_id, user_data):
+        today = today_str()
+
+        # Prevent repeated burnout penalties in a single day.
+        if user_data.get("last_burnout_penalty_date") == today:
+            print("Burnout already handled today. Please take a break before studying again.")
+            return True
+
+        user_data["health"] = max(0, user_data.get("health", 10) - 2)
+        user_data["last_burnout_penalty_date"] = today
+        print("Your pet insists you take a rest. Burnout penalty applied (-2 health).")
+        return True
+    return False 
+
+# energy will decrease 0.5 times per minute 
+def update_energy(user_data, study_minutes):
+    energy = user_data.get('energy', 100)
+    energy_spent = study_minutes * 0.5
+    user_data['energy'] = max(0, energy - energy_spent)
+    if user_data['energy'] <= 0: 
+        print("⚠️ Your energy is depleted. Please take a break and restore your energy!")
+    return user_data
+
+def restore_energy(user_data):
+    energy = user_data.get('energy', 0)
+    user_data['energy'] = min(100, energy + 20)
+    print(f"Energy restored! Current energy: {user_data['energy']}")
+    return user_data

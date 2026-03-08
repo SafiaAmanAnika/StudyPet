@@ -3,7 +3,14 @@ from src.storage import load_users, save_users
 from src.pet import show_status
 from src.shop import feed_pet, open_shop
 from src.study import start_session
-from src.wellbeing import log_mood, apply_tired_penalty, tired_streak_days
+from src.wellbeing import (
+    log_mood,
+    apply_tired_penalty,
+    tired_streak_days,
+    handle_burnout,
+    update_energy,
+    restore_energy,
+)
 from src.recreation import recreation_menu, count_today_sessions
 from src.quiz import run as quiz_run
 from src.analytics import run as analytics_run
@@ -79,6 +86,16 @@ def handle_study_session(user_id, user_data):
     # ---------------- UPDATE TOTAL STUDY HOURS ----------------
     minutes = session_log.get("study_minutes", 0)
     user_data["total_study_hours"] = user_data.get("total_study_hours", 0) + (minutes / 60)
+
+    # ---------------- ENERGY UPDATE ----------------
+    user_data = update_energy(user_data, minutes)
+    if session_log.get("break_minutes", 0) > 0:
+        user_data = restore_energy(user_data)
+
+    # ---------------- BURNOUT CHECK ----------------
+    burnout_detected = handle_burnout(user_id, user_data)
+    if burnout_detected:
+        pause()
 
     # ---------------- TRACK SESSION COUNT ----------------
     session_count = count_today_sessions(user_id)

@@ -117,8 +117,27 @@ def change_coins(user_data: dict, delta: int) -> dict:
 
 # applying pet abilities based on pet theme
 
-# dog -> +10% more coins on long sessions
+# dog -> +10% more coins on long sessions like an hour
 # cat ->  study streak >= 5, more coins
-# bunny -> 
+# bunny -> increases health by 1 
 def apply_pet_abilities(user_data):
     pet = user_data.get('pet_theme', 'Cat');
+    study_minutes = user_data.get('total_study_minutes', 0)
+
+    if pet == 'Dog':
+        if study_minutes >= 60:
+            coins_earned = user_data.get('coins', 0) * 1.1
+            user_data['coins'] = int(coins_earned)
+            print("Your doggo gives you extra coins 🪙")
+
+    elif pet == 'Bunny':
+        user_data['health'] = user_data.get('health', 0) + 1
+        print("Your bunnyyy gives you extra health 🏥")
+
+    elif pet == 'Cat':
+        streak = user_data.get('study_streak', 0)
+        if streak >= 5: 
+            user_data['coins'] += 50
+            print("Your catto gives you extra coins 🪙")
+
+                                          

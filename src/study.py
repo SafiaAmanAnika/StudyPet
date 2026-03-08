@@ -233,6 +233,7 @@ def start_session(user_id, user_data):
         "topic": topic,
         "difficulty": diff_name,
         "study_minutes": study_minutes,
+        "break_minutes": break_minutes,
         "coins_earned": coins_earned,
         "health_lost": health_loss,
         "mood": raw_mood
