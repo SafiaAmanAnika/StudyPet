@@ -65,6 +65,15 @@ def log_reflection(user_data):
         user_data['reflections'].append(entry)
         print("\nReflection saved!\n")
 
+    #  Surprise achievement: 5 sessions in a single day
+    if user_data['daily_sessions'][study_date] == 5:
+        surprise_coins = random.choice([20, 25, 30])
+        user_data['coins'] = user_data.get('coins', 0) + surprise_coins
+        print(f"✨ Surprise Achievement Unlocked! You completed 5 sessions today! +{surprise_coins} coins\n")
+
+    return user_data
+
+
         
 # ---------------- STREAK & INACTIVITY ---------------- #
 def calculate_streaks(user_data):
