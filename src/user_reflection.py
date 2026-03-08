@@ -64,3 +64,15 @@ def log_reflection(user_data):
         }
         user_data['reflections'].append(entry)
         print("\nReflection saved!\n")
+
+        
+# ---------------- STREAK & INACTIVITY ---------------- #
+def calculate_streaks(user_data):
+    daily_sessions = user_data.get('daily_sessions', {})
+    
+    # ✅ Check daily_sessions instead of reflections so skipped journals don't break the streak
+    if not daily_sessions:
+        user_data['current_streak'] = 0
+        user_data['max_streak'] = 0
+        user_data['inactivity_days'] = 0
+        return user_data
