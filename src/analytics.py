@@ -119,37 +119,35 @@ WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 def build_heatmap_grid(date_list: list, minutes_by_date: dict):
     weeks = []
-    week = ["·"] * 7
+    week = []
 
     for dstr in date_list:
-        try:
-            d = date.fromisoformat(dstr)
-        except Exception:
-            continue
-
-        weekday = d.weekday()  # 0 = Mon
         mins = minutes_by_date.get(dstr, 0)
+        week.append(intensity_char(mins))
 
-        week[weekday] = intensity_char(mins)
-
-        if weekday == 6:  # Sunday → end of week
+        if len(week) == 7:
             weeks.append(week)
-            week = ["·"] * 7
+            week = []
 
-    if week != ["·"] * 7:
+    # leftover days (for ranges not divisible by 7)
+    if week:
+        while len(week) < 7:
+            week.append(" ")
         weeks.append(week)
 
     return weeks
+
 
 def print_heatmap(date_list: list, weeks: list):
     print("\n===== STUDY HEATMAP =====")
     print("Legend: ·=0  ░=1-24  ▒=25-49  ▓=50-99  █=100+ minutes")
     print(f"Range : {date_list[0]}  to  {date_list[-1]}\n")
 
-    print("Mon Tue Wed Thu Fri Sat Sun")
+    header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    print(" ".join(f"{h:>3}" for h in header))
 
     for week in weeks:
-        print(" ".join(week))
+        print(" ".join(f"{cell:>3}" for cell in week))
 
     print("==========================\n")
 
