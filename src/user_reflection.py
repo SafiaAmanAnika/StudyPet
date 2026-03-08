@@ -86,3 +86,23 @@ def calculate_streaks(user_data):
     max_streak = 0
     inactivity_days = 0
     streak = 0
+
+    day = first_day
+    while day <= today:
+        day_str = day.strftime("%Y-%m-%d")
+        # If they have 1 or more sessions this day, they studied
+        if daily_sessions.get(day_str, 0) > 0:
+            streak += 1
+            inactivity_days = 0  # ✅ Reset inactivity gap because they studied!
+            if streak > max_streak:
+                max_streak = streak
+        else:
+            streak = 0
+            inactivity_days += 1 # ✅ Add 1 for every single day missed
+        day += timedelta(days=1)
+
+    user_data['current_streak'] = streak
+    user_data['max_streak'] = max_streak
+    user_data['inactivity_days'] = inactivity_days
+
+    return user_data
