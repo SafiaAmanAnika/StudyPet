@@ -236,6 +236,7 @@ def dashboard(user_id, user_data):
         
         elif choice == "6":
             user_data = handle_wellbeing(user_id, user_data)
+            save_user_data(user_id, user_data)
 
         elif choice == "7": 
             user_data = quiz_run(user_id, user_data)
