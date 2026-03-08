@@ -70,7 +70,7 @@ def log_reflection(user_data):
 def calculate_streaks(user_data):
     daily_sessions = user_data.get('daily_sessions', {})
     
-    # ✅ Check daily_sessions instead of reflections so skipped journals don't break the streak
+    # Check daily_sessions instead of reflections so skipped journals don't break the streak
     if not daily_sessions:
         user_data['current_streak'] = 0
         user_data['max_streak'] = 0
@@ -93,12 +93,12 @@ def calculate_streaks(user_data):
         # If they have 1 or more sessions this day, they studied
         if daily_sessions.get(day_str, 0) > 0:
             streak += 1
-            inactivity_days = 0  # ✅ Reset inactivity gap because they studied!
+            inactivity_days = 0  
             if streak > max_streak:
                 max_streak = streak
         else:
             streak = 0
-            inactivity_days += 1 # ✅ Add 1 for every single day missed
+            inactivity_days += 1 
         day += timedelta(days=1)
 
     user_data['current_streak'] = streak
@@ -106,3 +106,50 @@ def calculate_streaks(user_data):
     user_data['inactivity_days'] = inactivity_days
 
     return user_data
+
+# ---------------- ACHIEVEMENTS & BADGES ---------------- #
+STREAK_BADGES = [
+    (3,  "Momentum Builder"),
+    (7,  "Weekly Warrior"),
+    (15, "Persistent Learner"),
+    (30, "Master of Habits"),
+    (31, "Learning Legend"),   
+]
+
+def check_and_award_achievements(user_data):
+    """Silently checks and adds newly earned badges. Returns list of new ones."""
+    if 'achievements' not in user_data:
+        user_data['achievements'] = []
+
+    streak = user_data.get('current_streak', 0)
+    new_achievements = []
+
+    for days, name in STREAK_BADGES:
+        if streak >= days and name not in user_data['achievements']:
+            new_achievements.append(name)
+            user_data['achievements'].append(name)
+
+    return user_data, new_achievements
+
+def display_achievements(user_data):
+    """Shows the user their current badges and progress toward next badge."""
+    print("╔════════════════════════════════╗")
+    print("║        Your Achievements       ║")
+    print("╚════════════════════════════════╝")
+
+    streak = user_data.get('current_streak', 0)
+    achievements = user_data.get('achievements', [])
+
+    if achievements:
+        print("🏆 Badges Earned:")
+        for a in achievements:
+            print(f"   🎖️  {a}")
+    else:
+        print("No badges unlocked yet. Keep studying!")
+
+    next_badge = None
+    for days, name in STREAK_BADGES:
+        if streak < days:
+            next_badge = (days, name)
+            break
+
