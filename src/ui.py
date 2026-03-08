@@ -112,3 +112,18 @@ def analytics_menu():
     ]
 
     return menu(options)
+
+# ---------------- REFLECTION MENU ---------------- #
+
+def reflection_menu():
+    print("╔═════════════════════════════════════════════════════════════════════════╗")
+    print("║                     📓 REFLECTION JOURNAL MENU                          ║ ")
+    print("╚═════════════════════════════════════════════════════════════════════════╝")
+
+    options = [
+        "Log Study Session & Reflection",
+        "View Achievements",
+        "Back"
+    ]
+
+    return menu(options)

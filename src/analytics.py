@@ -30,7 +30,7 @@ def _safe_load_json(path: str, default):
             json.dump(default, f, indent=2)
         return default
 
-# ← Add this helper to fix import errors
+#  Add this helper to fix import errors
 def _safe_save_json(path: str, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
@@ -39,9 +39,8 @@ def _safe_save_json(path: str, data):
 def today_str():
     return str(date.today())
 
-# =========================
+
 # Load + Filter Logs
-# =========================
 
 def load_study_logs():
     path = _data_path("study_log.json")
@@ -53,9 +52,9 @@ def filter_user_logs(all_logs: list, user_id: str) -> list:
         if isinstance(log, dict) and log.get("user_id") == user_id
     ]
 
-# =========================
+
 # Build Daily Maps
-# =========================
+
 
 def build_daily_maps(user_logs: list):
     minutes_by_date = {}
@@ -112,39 +111,45 @@ def date_range_list(days: int):
         cur += timedelta(days=1)
     return out
 
-# =========================
+
 # Heatmap Grid
-# =========================
+
 
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 def build_heatmap_grid(date_list: list, minutes_by_date: dict):
-    grid = [["·" for _ in range(len(date_list))] for _ in range(7)]
+    weeks = []
+    week = []
 
-    for col, dstr in enumerate(date_list):
-        try:
-            d = date.fromisoformat(dstr)
-        except Exception:
-            continue
-
-        row = d.weekday()
+    for dstr in date_list:
         mins = minutes_by_date.get(dstr, 0)
-        grid[row][col] = intensity_char(mins)
+        week.append(intensity_char(mins))
 
-    return grid
+        if len(week) == 7:
+            weeks.append(week)
+            week = []
 
-def print_heatmap(date_list: list, grid: list):
+    # leftover days (for ranges not divisible by 7)
+    if week:
+        while len(week) < 7:
+            week.append(" ")
+        weeks.append(week)
+
+    return weeks
+
+
+def print_heatmap(date_list: list, weeks: list):
     print("\n===== STUDY HEATMAP =====")
     print("Legend: ·=0  ░=1-24  ▒=25-49  ▓=50-99  █=100+ minutes")
     print(f"Range : {date_list[0]}  to  {date_list[-1]}\n")
 
-    for r in range(7):
-        row_label = f"{WEEKDAYS[r]:>3} "
-        row_cells = "".join(grid[r])
-        print(row_label + row_cells)
+    header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    print(" ".join(f"{h:>3}" for h in header))
+
+    for week in weeks:
+        print(" ".join(f"{cell:>3}" for cell in week))
 
     print("==========================\n")
-
 
 # Stats Computation
 
