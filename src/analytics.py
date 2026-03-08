@@ -30,7 +30,7 @@ def _safe_load_json(path: str, default):
             json.dump(default, f, indent=2)
         return default
 
-# ← Add this helper to fix import errors
+#  Add this helper to fix import errors
 def _safe_save_json(path: str, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
@@ -39,9 +39,8 @@ def _safe_save_json(path: str, data):
 def today_str():
     return str(date.today())
 
-# =========================
+
 # Load + Filter Logs
-# =========================
 
 def load_study_logs():
     path = _data_path("study_log.json")
@@ -53,9 +52,9 @@ def filter_user_logs(all_logs: list, user_id: str) -> list:
         if isinstance(log, dict) and log.get("user_id") == user_id
     ]
 
-# =========================
+
 # Build Daily Maps
-# =========================
+
 
 def build_daily_maps(user_logs: list):
     minutes_by_date = {}
@@ -112,26 +111,35 @@ def date_range_list(days: int):
         cur += timedelta(days=1)
     return out
 
-# =========================
+
 # Heatmap Grid
-# =========================
+
 
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 def build_heatmap_grid(date_list: list, minutes_by_date: dict):
-    grid = [["·" for _ in range(len(date_list))] for _ in range(7)]
+    weeks = []
+    week = ["·"] * 7
 
-    for col, dstr in enumerate(date_list):
+    for dstr in date_list:
         try:
             d = date.fromisoformat(dstr)
         except Exception:
             continue
 
-        row = d.weekday()
+        weekday = d.weekday()  # 0 = Mon
         mins = minutes_by_date.get(dstr, 0)
-        grid[row][col] = intensity_char(mins)
 
-    return grid
+        week[weekday] = intensity_char(mins)
+
+        if weekday == 6:  # Sunday → end of week
+            weeks.append(week)
+            week = ["·"] * 7
+
+    if week != ["·"] * 7:
+        weeks.append(week)
+
+    return weeks
 
 def print_heatmap(date_list: list, grid: list):
     print("\n===== STUDY HEATMAP =====")
