@@ -141,18 +141,17 @@ def build_heatmap_grid(date_list: list, minutes_by_date: dict):
 
     return weeks
 
-def print_heatmap(date_list: list, grid: list):
+def print_heatmap(date_list: list, weeks: list):
     print("\n===== STUDY HEATMAP =====")
     print("Legend: ·=0  ░=1-24  ▒=25-49  ▓=50-99  █=100+ minutes")
     print(f"Range : {date_list[0]}  to  {date_list[-1]}\n")
 
-    for r in range(7):
-        row_label = f"{WEEKDAYS[r]:>3} "
-        row_cells = "".join(grid[r])
-        print(row_label + row_cells)
+    print("Mon Tue Wed Thu Fri Sat Sun")
+
+    for week in weeks:
+        print(" ".join(week))
 
     print("==========================\n")
-
 
 # Stats Computation
 
