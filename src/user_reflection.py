@@ -209,3 +209,11 @@ def handle_post_study(user_data):
     user_data = check_achievements(user_data)
     user_data = random_encouragement(user_data)
     return user_data
+
+# ---------------- MENU HANDLER (for Achievement option in menu) ---------------- #
+def handle_view_achievements(user_data):
+    """Called when user selects 'Achievements' from the main menu."""
+    user_data = calculate_streaks(user_data)  # Recalculate in case day changed
+    user_data, _ = check_and_award_achievements(user_data)  # Award any pending badges
+    display_achievements(user_data)
+    return user_data
