@@ -31,7 +31,7 @@ def input_study_hours():
         except:
             print("Please enter a valid number between 1 and 24.")
 
-            
+
 # ---------------- REFLECTION JOURNAL ---------------- #
 def log_reflection(user_data):
     if 'reflections' not in user_data:
@@ -45,3 +45,22 @@ def log_reflection(user_data):
 
     study_date = input_study_date()
     hours = input_study_hours()
+
+    user_data['daily_sessions'][study_date] = user_data['daily_sessions'].get(study_date, 0) + 1
+    user_data['total_study_hours'] = user_data.get('total_study_hours', 0) + hours
+    user_data['total_sessions'] = user_data.get('total_sessions', 0) + 1 
+
+    positive_feedback = input("What went well today?\n> ").strip()
+    challenges = input("What was hard?\n> ").strip()
+
+    if positive_feedback == "" and challenges == "":
+        print("\nNo reflection entered, but study time was logged.\n")
+    else:
+        entry = {
+            "date": study_date,
+            "positive_feedback": positive_feedback,
+            "challenges": challenges,
+            "hours": hours
+        }
+        user_data['reflections'].append(entry)
+        print("\nReflection saved!\n")
