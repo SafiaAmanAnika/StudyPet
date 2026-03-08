@@ -2,8 +2,8 @@
 STUDY_PLANNER Module - Part 6: Missed Goal Recovery System
 Lines: 150+
 """
-from study_planner_config_helpers import load_data, save_data
-from study_planner_ui_input import (
+from src.study_planner_config_helpers import load_data, save_data
+from src.study_planner_ui_input import (
     clear_screen, box_top, box_title, box_sep, box_bottom, box_line, BOX_INNER, truncate_to_width
 )
 

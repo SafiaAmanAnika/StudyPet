@@ -2,10 +2,10 @@
 STUDY_PLANNER Module - Part 4: Study Plan Generation
 Lines: 200+
 """
-from study_planner_config_helpers import (
+from src.study_planner_config_helpers import (
     load_data, save_data, manual_len
 )
-from study_planner_ui_input import (
+from src.study_planner_ui_input import (
     clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
     box_line, box_kv, ask_float, ask_int
 )

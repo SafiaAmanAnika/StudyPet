@@ -3,7 +3,7 @@ STUDY_PLANNER Module - Part 2: UI and Input Functions
 Lines: 200+
 """
 import os
-from study_planner_config_helpers import (
+from src.study_planner_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width,
     wrap_text_to_width, manual_strip, manual_is_number, is_only_letters,
     load_data, save_data, manual_len

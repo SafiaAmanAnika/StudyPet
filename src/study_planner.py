@@ -2,18 +2,18 @@
 STUDY_PLANNER Module - Main Menu and Entry Point
 Lines: 100+
 """
-from study_planner_config_helpers import manual_strip
-from study_planner_ui_input import clear_screen, box_title_only
-from study_planner_profile import (
+from src.study_planner_config_helpers import manual_strip
+from src.study_planner_ui_input import clear_screen, box_title_only
+from src.study_planner_profile import (
     setup_profile, view_profile, view_user_dashboard
 )
-from study_planner_plan import (
+from src.study_planner_plan import (
     set_mood_and_generate_plan, view_study_plan
 )
-from study_planner_progress import (
+from src.study_planner_progress import (
     log_study_session, view_progress_dashboard
 )
-from study_planner_recovery import check_missed_goal_recovery
+from src.study_planner_recovery import check_missed_goal_recovery
 
 # ============================================================================
 # MAIN MENU
@@ -85,4 +85,3 @@ def main_menu():
 def main():
     """Entry point for Study Planner program"""
     main_menu()
-

@@ -47,7 +47,3 @@ def run(user_id: str, user_data: dict) -> dict:
     main()
     return user_data
 
-
-if __name__ == "__main__":
-    main()
-
