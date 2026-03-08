@@ -153,3 +153,18 @@ def display_achievements(user_data):
             next_badge = (days, name)
             break
 
+    print()
+    if next_badge:
+        days_needed = next_badge[0] - streak
+        print(f"📈 Current Streak : {streak} day(s)")
+        print(f"🎯 Next Badge     : {next_badge[1]} (in {days_needed} more consecutive day(s))")
+    else:
+        print(f"📈 Current Streak : {streak} day(s)")
+        print("🌟 You've unlocked ALL badges! You're a Learning Legend!")
+
+    inactivity = user_data.get('inactivity_days', 0)
+    if inactivity > 0:
+        print(f"⚠️  Inactive Days  : {inactivity} day(s) (streak breaks on inactive days)")
+
+    print()
+
