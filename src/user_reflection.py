@@ -168,3 +168,20 @@ def display_achievements(user_data):
 
     print()
 
+def check_achievements(user_data):
+    """
+    Called after a study session — awards new badges and displays all achievements.
+    This is the main function called from the menu/post-study flow.
+    """
+    user_data, new_achievements = check_and_award_achievements(user_data)
+
+    if new_achievements:
+        print("╔════════════════════════════════╗")
+        print("║    🎉 New Badge Unlocked!      ║")
+        print("╚════════════════════════════════╝")
+        for a in new_achievements:
+            print(f"   🏆 {a}")
+        print()
+
+    display_achievements(user_data)
+    return user_data
