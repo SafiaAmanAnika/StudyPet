@@ -30,3 +30,18 @@ def input_study_hours():
                 print("Please enter a valid number between 1 and 24.")
         except:
             print("Please enter a valid number between 1 and 24.")
+
+            
+# ---------------- REFLECTION JOURNAL ---------------- #
+def log_reflection(user_data):
+    if 'reflections' not in user_data:
+        user_data['reflections'] = []
+    if 'daily_sessions' not in user_data:
+        user_data['daily_sessions'] = {}
+
+    print("╔════════════════════════════════╗")
+    print("║        Reflection Journal      ║")
+    print("╚════════════════════════════════╝")
+
+    study_date = input_study_date()
+    hours = input_study_hours()
