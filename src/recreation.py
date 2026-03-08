@@ -6,7 +6,7 @@ from src.wellbeing import load_study_logs, today_str, tired_streak_days
 #counting sessions 
 def count_today_sessions(user_id: str) -> int: 
     logs = load_study_logs()
-    today = today_str
+    today = today_str()
 
     count = 0
     for log in logs: 

@@ -25,6 +25,18 @@ def ensure_pet_defaults(user_data: dict) -> dict:
     if "total_study_hours" not in user_data:
         user_data["total_study_hours"] = 0
 
+    if "total_study_minutes" not in user_data:
+        user_data["total_study_minutes"] = 0
+
+    if "study_streak" not in user_data:
+        user_data["study_streak"] = 0
+
+    if "last_study_date" not in user_data:
+        user_data["last_study_date"] = ""
+
+    if "energy" not in user_data:
+        user_data["energy"] = 100
+
     return user_data
 
 
@@ -121,8 +133,8 @@ def change_coins(user_data: dict, delta: int) -> dict:
 # cat ->  study streak >= 5, more coins
 # bunny -> increases health by 1 
 def apply_pet_abilities(user_data):
-    pet = user_data.get('pet_theme', 'Cat');
-    study_minutes = user_data.get('total_study_minutes', 0)
+    pet = user_data.get('pet_theme', 'Cat')
+    study_minutes = user_data.get('last_study_minutes', user_data.get('total_study_minutes', 0))
 
     if pet == 'Dog':
         if study_minutes >= 60:
@@ -131,7 +143,7 @@ def apply_pet_abilities(user_data):
             print("Your doggo gives you extra coins 🪙")
 
     elif pet == 'Bunny':
-        user_data['health'] = user_data.get('health', 0) + 1
+        user_data['health'] = min(20, user_data.get('health', 0) + 1)
         print("Your bunnyyy gives you extra health 🏥")
 
     elif pet == 'Cat':
@@ -139,5 +151,7 @@ def apply_pet_abilities(user_data):
         if streak >= 5: 
             user_data['coins'] += 50
             print("Your catto gives you extra coins 🪙")
+
+    return user_data
 
                                           

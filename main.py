@@ -1,6 +1,6 @@
 from src.ui import menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen
 from src.storage import load_users, save_users
-from src.pet import show_status
+from src.pet import show_status, apply_pet_abilities
 from src.shop import feed_pet, open_shop
 from src.study import start_session
 from src.wellbeing import (
@@ -16,8 +16,10 @@ from src.quiz import run as quiz_run
 from src.analytics import run as analytics_run
 from src.weekly_report import run as weekly_run 
 from src.evolution import check_pet_evolution
+from src.study_planner import main_menu as study_planner_menu
 
 import json, os
+from datetime import date, timedelta
 
 LOG_FILE = "data/study_log.json"
 
@@ -71,6 +73,29 @@ def login_user():
     return login()
 
 
+def update_study_streak(user_data: dict) -> dict:
+    today = str(date.today())
+    yesterday = str(date.today() - timedelta(days=1))
+
+    last_study_date = str(user_data.get("last_study_date", ""))
+
+    try:
+        current_streak = int(user_data.get("study_streak", 0))
+    except (TypeError, ValueError):
+        current_streak = 0
+
+    if last_study_date == today:
+        return user_data
+
+    if last_study_date == yesterday:
+        user_data["study_streak"] = current_streak + 1
+    else:
+        user_data["study_streak"] = 1
+
+    user_data["last_study_date"] = today
+    return user_data
+
+
 # ---------------- HANDLERS ---------------- #
 
 def handle_study_session(user_id, user_data):
@@ -86,6 +111,12 @@ def handle_study_session(user_id, user_data):
     # ---------------- UPDATE TOTAL STUDY HOURS ----------------
     minutes = session_log.get("study_minutes", 0)
     user_data["total_study_hours"] = user_data.get("total_study_hours", 0) + (minutes / 60)
+    user_data["total_study_minutes"] = user_data.get("total_study_minutes", 0) + minutes
+    user_data["last_study_minutes"] = minutes
+
+    # ---------------- STREAK + PET ABILITIES ----------------
+    user_data = update_study_streak(user_data)
+    user_data = apply_pet_abilities(user_data)
 
     # ---------------- ENERGY UPDATE ----------------
     user_data = update_energy(user_data, minutes)
@@ -167,6 +198,7 @@ def dashboard(user_id, user_data):
         print("║ [7] Quiz 📚                                                             ║")
         print("║ [8] Analytics 📈                                                        ║")
         print("║ [9] Weekly Report 📅                                                    ║")
+        print("║ [10] Study Planner 🗓️                                                  ║")
         print("║ [0] Logout 👋                                                           ║")
         print("╚═════════════════════════════════════════════════════════════════════════╝")
 
@@ -206,13 +238,16 @@ def dashboard(user_id, user_data):
             user_data = handle_wellbeing(user_id, user_data)
 
         elif choice == "7": 
-            quiz_run(user_id, user_data)
+            user_data = quiz_run(user_id, user_data)
 
         elif choice == "8": 
             user_data = analytics_run(user_id, user_data)
 
         elif choice == "9": 
-            weekly_run(user_id, user_data)
+            user_data = weekly_run(user_id, user_data)
+
+        elif choice == "10":
+            study_planner_menu()
 
         elif choice == "0": 
             clear_screen()

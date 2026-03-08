@@ -1,12 +1,12 @@
 
-from quiz_config_helpers import (
+from src.quiz_config_helpers import (
     load_data, calculate_grade, print_progress_bar, manual_len, manual_sum
 )
-from quiz_ui_input import (
+from src.quiz_ui_input import (
     clear_screen, box_top, box_title, box_sep, box_bottom, box_line, box_kv,
     wrap_text_to_width, truncate_to_width, BOX_INNER
 )
-from quiz_charts import build_vertical_trend, build_overall_chart
+from src.quiz_charts import build_vertical_trend, build_overall_chart
 
 # ============================================================================
 # TREND ANALYSIS FUNCTIONS

@@ -35,6 +35,7 @@ def print_kv(label, value):
 def show_user_summary(user_data):
     name = user_data.get("name", "User")
     health = user_data.get("health", 10)
+    energy = user_data.get("energy", 100)
     coins = user_data.get("coins", 5)
     pet_theme = user_data.get("pet_theme", "Unknown")
     goal_hours = user_data.get("goal_hours", "?")
@@ -57,6 +58,7 @@ def show_user_summary(user_data):
     print("║ " + f"Pet           : {pet_theme}".ljust(width - 1) + "║")
     print("║ " + f"Personality   : {pet_personality}".ljust(width - 3) + "║")
     print("║ " + f"Health        : {health}".ljust(width - 1) + "║")
+    print("║ " + f"Energy        : {energy}".ljust(width - 1) + "║")
     print("║ " + f"Coins         : {coins}".ljust(width - 1) + "║")
     print("║ " + f"Daily Goal    : {goal_hours} hours".ljust(width - 1) + "║")
 
@@ -79,6 +81,7 @@ def show_user_stats(user_id, user_data):
     print(f"║ 🐱 Pet Theme    : {user_data.get('pet_theme', 'Unknown').ljust(54)}║")
     print(f"║ 🐱 Personality  : {user_data.get('pet_personality', 'Neutral').ljust(53)}║")
     print(f"║ 🐱 Health       : {str(user_data.get('health', 10)).ljust(54)}║")
+    print(f"║ 🐱 Energy       : {str(user_data.get('energy', 100)).ljust(54)}║")
     print(f"║ 🐱 Coins        : {str(user_data.get('coins', 5)).ljust(54)}║")
     print(f"║ 🐱 Last Login   : {user_data.get('last_login', '').ljust(54)}║")
     print(f"║ 🐱 Mood Today   : {user_data.get('mood_today', '').ljust(53)}║")

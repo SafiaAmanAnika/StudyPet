@@ -237,7 +237,12 @@ def register():
         "pet_theme": pet_theme,
         "pet_personality": personality,
         "health": 10,
+        "energy": 100,
         "coins": 5,
+        "study_streak": 0,
+        "total_study_hours": 0,
+        "total_study_minutes": 0,
+        "last_study_date": "",
         "inventory": {
             "normal_food": 0,
             "premium_food": 0

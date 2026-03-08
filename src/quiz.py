@@ -1,7 +1,7 @@
 
-from quiz_config_helpers import manual_strip
-from quiz_ui_input import clear_screen, box_top, box_title, box_bottom, add_marks_menu
-from quiz_analytics import (
+from src.quiz_config_helpers import manual_strip
+from src.quiz_ui_input import clear_screen, box_top, box_title, box_bottom, add_marks_menu
+from src.quiz_analytics import (
     syllabus_coverage_tracker,
     result_overview_and_advisor,
     view_dashboard
@@ -41,4 +41,13 @@ def main():
             input("Press Enter...")
         
         clear_screen()
+
+
+def run(user_id: str, user_data: dict) -> dict:
+    main()
+    return user_data
+
+
+if __name__ == "__main__":
+    main()
 
