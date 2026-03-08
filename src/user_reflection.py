@@ -200,3 +200,12 @@ def random_encouragement(user_data):
         user_data["coins"] = user_data.get("coins", 0) + coins
         print(f"✨ {event}\n")
     return user_data
+
+# ---------------- INTEGRATED HANDLER ---------------- #
+def handle_post_study(user_data):
+    """Called after a study session completes."""
+    user_data = log_reflection(user_data)
+    user_data = calculate_streaks(user_data)
+    user_data = check_achievements(user_data)
+    user_data = random_encouragement(user_data)
+    return user_data
