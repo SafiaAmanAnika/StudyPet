@@ -76,3 +76,13 @@ def calculate_streaks(user_data):
         user_data['max_streak'] = 0
         user_data['inactivity_days'] = 0
         return user_data
+
+    active_dates = list(daily_sessions.keys())
+    all_dates = sorted([datetime.strptime(d, "%Y-%m-%d") for d in active_dates])
+    first_day = all_dates[0]
+    today = datetime.strptime(today_str(), "%Y-%m-%d")
+
+    current_streak = 0
+    max_streak = 0
+    inactivity_days = 0
+    streak = 0
