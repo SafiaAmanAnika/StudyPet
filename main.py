@@ -205,7 +205,49 @@ def handle_wellbeing(user_id, user_data):
     recreation_menu(user_id)
     return user_data
 
+
+def handle_delete_account(user_id, user_data):
+    from src.auth import masked_input, verify_password
+    clear_screen()
+    print_fancy_box(
+        "⚠️ DELETE ACCOUNT",
+        [
+            "This will permanently delete your account.",
+            "This action cannot be undone!",
+        ],
+        theme="magenta",
+    )
+    confirm = input("Type 'DELETE' to confirm, or anything else to cancel: ").strip()
+    if confirm != "DELETE":
+        clear_screen()
+        print_fancy_box("Cancelled", ["Account deletion cancelled."], theme="green")
+        pause()
+        return False
+
+    password = masked_input("🔑 Enter your password to confirm: ")
+    if not verify_password(password, user_data["password_salt"], user_data["password_hash"]):
+        clear_screen()
+        print_fancy_box("❌ Wrong Password", ["Account deletion cancelled."], theme="magenta")
+        pause()
+        return False
+
+    users = load_users()
+    if user_id in users:
+        del users[user_id]
+        save_users(users)
+
+    clear_screen()
+    print_fancy_box(
+        "Account Deleted 👋",
+        ["Your account has been permanently deleted.", "Goodbye!"],
+        theme="magenta",
+    )
+    pause()
+    return True
+
+
 # ---------------- DASHBOARD ---------------- #
+
 
 def dashboard(user_id, user_data):
     set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
@@ -234,12 +276,13 @@ def dashboard(user_id, user_data):
                 "[10] Study Planner 🗓️  ",
                 "[11] Reflection Journal 📓",
                 "[12] Theme Studio 🎨",
+                "[13] Delete Account 🗑️",
                 "[0] Logout 👋",
             ]
             print_fancy_box("Your virtual pet awaits!", dashboard_options, theme="cyan")
             print("Tip: type ':back' to return to dashboard, ':exit' to close the app.")
 
-            choice = input("Choose your option: ").strip()
+            choice = input("Choose your option              : ").strip()
             clear_screen()
 
             if choice == "1": 
@@ -349,6 +392,11 @@ def dashboard(user_id, user_data):
                             pause()
                     elif studio_choice == 0:
                         break
+
+            elif choice == "13":
+                deleted = handle_delete_account(user_id, user_data)
+                if deleted:
+                    return
 
             elif choice == "0": 
                 clear_screen()
