@@ -47,8 +47,9 @@ def log_reflection(user_data):
     hours = input_study_hours()
 
     user_data['daily_sessions'][study_date] = user_data['daily_sessions'].get(study_date, 0) + 1
-    user_data['total_study_hours'] = user_data.get('total_study_hours', 0) + hours
-    user_data['total_sessions'] = user_data.get('total_sessions', 0) + 1 
+    # Keep reflection metrics separate from core study-session totals.
+    user_data['reflection_total_hours'] = user_data.get('reflection_total_hours', 0) + hours
+    user_data['reflection_total_sessions'] = user_data.get('reflection_total_sessions', 0) + 1
 
     positive_feedback = input("What went well today?\n> ").strip()
     challenges = input("What was hard?\n> ").strip()
@@ -198,7 +199,7 @@ def check_achievements(user_data):
 # ---------------- RANDOM ENCOURAGEMENT ---------------- #
 def random_encouragement(user_data):
     """Triggers every 4 total sessions as a surprise reward."""
-    total = user_data.get('total_sessions', 0)
+    total = user_data.get('reflection_total_sessions', user_data.get('total_sessions', 0))
     if total > 0 and total % 4 == 0:  
         events = [
             ("Your pet found a rare study note! +20 coins", 20),
@@ -212,7 +213,7 @@ def random_encouragement(user_data):
 
 # ---------------- INTEGRATED HANDLER ---------------- #
 def handle_post_study(user_data):
-    """Called after a study session completes."""
+    """Called from reflection journal flow."""
     user_data = log_reflection(user_data)
     user_data = calculate_streaks(user_data)
     user_data = check_achievements(user_data)

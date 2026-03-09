@@ -191,15 +191,28 @@ def handle_burnout(user_id, user_data):
 
 # energy will decrease 0.5 times per minute 
 def update_energy(user_data, study_minutes):
-    energy = user_data.get('energy', 100)
-    energy_spent = study_minutes * 0.5
-    user_data['energy'] = max(0, energy - energy_spent)
+    try:
+        energy = float(user_data.get('energy', 100))
+    except (TypeError, ValueError):
+        energy = 100.0
+
+    try:
+        minutes = float(study_minutes)
+    except (TypeError, ValueError):
+        minutes = 0.0
+
+    energy_spent = minutes * 0.5
+    user_data['energy'] = max(0.0, round(energy - energy_spent, 1))
     if user_data['energy'] <= 0: 
         print("⚠️ Your energy is depleted. Please take a break and restore your energy!")
     return user_data
 
 def restore_energy(user_data):
-    energy = user_data.get('energy', 0)
-    user_data['energy'] = min(100, energy + 20)
+    try:
+        energy = float(user_data.get('energy', 0))
+    except (TypeError, ValueError):
+        energy = 0.0
+
+    user_data['energy'] = min(100.0, round(energy + 20, 1))
     print(f"Energy restored! Current energy: {user_data['energy']}")
     return user_data

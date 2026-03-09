@@ -1,4 +1,4 @@
-from src.ui import menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen
+from src.ui import menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen, reflection_menu
 from src.storage import load_users, save_users
 from src.pet import show_status, apply_pet_abilities
 from src.shop import feed_pet, open_shop
@@ -17,6 +17,7 @@ from src.analytics import run as analytics_run
 from src.weekly_report import run as weekly_run 
 from src.evolution import check_pet_evolution
 from src.study_planner import main_menu as study_planner_menu
+from src.user_reflection import handle_post_study, handle_view_achievements
 
 import json, os
 from datetime import date, timedelta
@@ -129,7 +130,8 @@ def handle_study_session(user_id, user_data):
         pause()
 
     # ---------------- TRACK SESSION COUNT ----------------
-    session_count = count_today_sessions(user_id)
+    # Current session is not written to study_log yet, so include it here.
+    session_count = count_today_sessions(user_id) + 1
 
     # ---------------- CHECK TIRED STREAK ----------------
     tired_streak = tired_streak_days(user_id)
@@ -162,11 +164,20 @@ def handle_wellbeing(user_id, user_data):
     print("╔═════════════════════════════════════════════════════════════════════════╗")
     print("║                             Short Check-In 🤗                           ║")
     print("╚═════════════════════════════════════════════════════════════════════════╝")
-    print(mood_message(user_data.get("mood_today", "")))
-    pause()
-    clear_screen()
-    
-    log_mood(user_id, user_data.get("mood_today", ""))
+    mood = choose_mood(menu)
+
+    if mood != "Skip":
+        user_data["mood_today"] = mood
+        clear_screen()
+        print("╔═════════════════════════════════════════════════════════════════════════╗")
+        print("║                             Mood Check-in 🤗                            ║")
+        print("╚═════════════════════════════════════════════════════════════════════════╝")
+        print(mood_message(mood))
+        pause()
+        clear_screen()
+        log_mood(user_id, mood)
+    else:
+        log_mood(user_id, user_data.get("mood_today", ""))
     
     user_data, penalty_message = apply_tired_penalty(user_id, user_data)
     if penalty_message: 
@@ -195,10 +206,11 @@ def dashboard(user_id, user_data):
         print("║ [4] View Pet Status 🐱                                                  ║")
         print("║ [5] View User Status 📊                                                 ║")
         print("║ [6] Mood Check-in 🌼                                                    ║")
-        print("║ [7] Quiz 📚                                                             ║")
+        print("║ [7] Study Performance Tracker 📚                                                             ║")
         print("║ [8] Analytics 📈                                                        ║")
         print("║ [9] Weekly Report 📅                                                    ║")
-        print("║ [10] Study Planner 🗓️                                                  ║")
+        print("║ [10] Study Planner 🗓️                                                   ║")
+        print("║ [11] Reflection Journal 📓                                              ║")
         print("║ [0] Logout 👋                                                           ║")
         print("╚═════════════════════════════════════════════════════════════════════════╝")
 
@@ -249,6 +261,22 @@ def dashboard(user_id, user_data):
 
         elif choice == "10":
             study_planner_menu()
+
+        elif choice == "11":
+            while True:
+                reflection_choice = reflection_menu()
+                clear_screen()
+
+                if reflection_choice == 1:
+                    user_data = handle_post_study(user_data)
+                    save_user_data(user_id, user_data)
+                    pause()
+                elif reflection_choice == 2:
+                    user_data = handle_view_achievements(user_data)
+                    save_user_data(user_id, user_data)
+                    pause()
+                elif reflection_choice == 0:
+                    break
 
         elif choice == "0": 
             clear_screen()
