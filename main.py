@@ -285,7 +285,7 @@ def dashboard(user_id, user_data):
                 user_data = weekly_run(user_id, user_data)
 
             elif choice == "10":
-                study_planner_menu()
+                study_planner_menu(user_id=user_id, user_data=user_data)
 
             elif choice == "11":
                 while True:

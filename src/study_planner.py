@@ -1,66 +1,59 @@
 from .study_planner_config_helpers import manual_strip
 from .study_planner_ui_input import clear_screen, box_title_only
-from .study_planner_profile import (
-    setup_profile, view_profile, view_user_dashboard
-)
 from .study_planner_plan import (
-    set_mood_and_generate_plan, view_study_plan
+    generate_study_plan, view_study_plan
 )
 from .study_planner_progress import (
     log_study_session, view_progress_dashboard
 )
 from .study_planner_recovery import check_missed_goal_recovery
+from .study_planner_profile import view_user_dashboard
 
 # ============================================================================
 # MAIN MENU
 # ============================================================================
 
-def main_menu():
+def main_menu(user_id=None, user_data=None):
     """
-    Main menu for Study Planner
+    Main menu for Study Planner.
+    Accepts user_id and user_data from the main app so that
+    name and mood are not re-collected here.
+
     Options:
-    1. Setup Profile
-    2. View Profile
-    3. Set Mood & Generate Plan
-    4. View Today's Study Plan
-    5. Log Study Session
-    6. View Progress Dashboard
-    7. Check Missed Goal Recovery
-    8. View User Dashboard
+    1. Generate Study Plan
+    2. View Today's Study Plan
+    3. Log Study Session
+    4. View Progress Dashboard
+    5. Check Missed Goal Recovery
+    6. View User Dashboard
     0. Exit
     """
     while True:
         clear_screen()
         box_title_only("📚 STUDY PLANNER")
         print()
-        print("[1] Setup Profile")
-        print("[2] View Profile")
-        print("[3] Set Mood & Generate Plan")
-        print("[4] View Today's Study Plan")
-        print("[5] Log Study Session")
-        print("[6] View Progress Dashboard")
-        print("[7] Check Missed Goal Recovery")
-        print("[8] View User Dashboard")
+        print("[1] Generate Study Plan")
+        print("[2] View Today's Study Plan")
+        print("[3] Log Study Session")
+        print("[4] View Progress Dashboard")
+        print("[5] Check Missed Goal Recovery")
+        print("[6] View User Dashboard")
         print("[0] Exit")
-        
+
         choice = manual_strip(input("\nChoose: "))
-        
+
         if choice == "1":
-            setup_profile()
+            generate_study_plan(user_id=user_id, user_data=user_data)
         elif choice == "2":
-            view_profile()
-        elif choice == "3":
-            set_mood_and_generate_plan()
-        elif choice == "4":
             view_study_plan()
-        elif choice == "5":
+        elif choice == "3":
             log_study_session()
-        elif choice == "6":
+        elif choice == "4":
             view_progress_dashboard()
-        elif choice == "7":
+        elif choice == "5":
             check_missed_goal_recovery()
-        elif choice == "8":
-            view_user_dashboard()
+        elif choice == "6":
+            view_user_dashboard(user_data=user_data)
         elif choice == "0":
             clear_screen()
             box_title_only("Thank You!")
@@ -71,7 +64,7 @@ def main_menu():
             clear_screen()
             box_title_only("⚠️ INVALID CHOICE")
             print()
-            print("Please enter a valid option (0-8)")
+            print("Please enter a valid option (0-6)")
             input("\nPress Enter to continue...")
 
 # ============================================================================
