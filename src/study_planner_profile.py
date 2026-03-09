@@ -1,14 +1,10 @@
-"""
-STUDY_PLANNER Module - Part 3: Profile Setup and Management
-Lines: 200+
-"""
-from src.study_planner_config_helpers import (
-    load_data, save_data, manual_len
+from .study_planner_config_helpers import (
+    load_data, save_data
 )
-from src.study_planner_ui_input import (
+from .study_planner_ui_input import (
     clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
     box_line, box_kv, ask_name, ask_subjects_type, ask_single_subject_with_difficulty,
-    ask_multiple_subjects_with_difficulty, BOX_INNER, truncate_to_width
+    ask_multiple_subjects_with_difficulty, BOX_INNER
 )
 
 # ============================================================================

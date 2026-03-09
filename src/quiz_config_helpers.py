@@ -107,17 +107,45 @@ def manual_is_number(s):
     return False
 
 def date_valid_simple(s):
-    """Validate date format YYYY-MM-DD"""
+    """Validate date format YYYY-MM-DD and check calendar constraints."""
     parts = s.split("-")
     if len(parts) != 3:
         return False
-    y, m, d = parts
-    if not (y.isdigit() and len(y) == 4):
+    
+    y_str, m_str, d_str = parts
+
+    if not (y_str.isdigit() and len(y_str) == 4):
         return False
-    if not (m.isdigit() and 1 <= len(m) <= 2):
+    if not (m_str.isdigit() and 1 <= len(m_str) <= 2):
         return False
-    if not (d.isdigit() and 1 <= len(d) <= 2):
+    if not (d_str.isdigit() and 1 <= len(d_str) <= 2):
         return False
+
+    year = int(y_str)
+    month = int(m_str)
+    day = int(d_str)
+
+    if year <= 0 or month <= 0 or day <= 0:
+        return False
+    
+    if month > 12:
+        return False
+
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        max_days = 31
+    elif month in [4, 6, 9, 11]:
+        max_days = 30
+    elif month == 2:
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            max_days = 29
+        else:
+            max_days = 28
+    else:
+        return False
+
+    if day > max_days:
+        return False
+
     return True
 
 # ============================================================================
@@ -154,7 +182,11 @@ def load_data():
         return {"subjects": {}}
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            # Ensure data is a dict; if not, return default
+            if not isinstance(data, dict):
+                return {"subjects": {}}
+            return data
     except Exception:
         return {"subjects": {}}
 
