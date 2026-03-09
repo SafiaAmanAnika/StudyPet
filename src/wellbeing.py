@@ -214,5 +214,6 @@ def restore_energy(user_data):
         energy = 0.0
 
     user_data['energy'] = min(100.0, round(energy + 20, 1))
-    print(f"Energy restored! Current energy: {user_data['energy']}")
+    print("Energy restored!")
+    print(f"Current energy: {user_data['energy']}")
     return user_data

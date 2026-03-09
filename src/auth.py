@@ -41,12 +41,13 @@ def masked_input(prompt: str) -> str:
 
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
+        submitted = False
         try:
             tty.setraw(fd)
             while True:
                 ch = sys.stdin.read(1)
                 if ch in ("\n", "\r"):
-                    print()
+                    submitted = True
                     break
                 elif ch == "\x7f":  # backspace
                     if password:
@@ -57,6 +58,10 @@ def masked_input(prompt: str) -> str:
                     print("*", end="", flush=True)
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+        # Print newline after restoring terminal settings so next prompt is left-aligned.
+        if submitted:
+            print()
 
     return password.strip()
 
@@ -98,7 +103,7 @@ def ask_password() -> str:
     """Ask until user enters a valid password."""
     while True:
         password = masked_input(
-            "🔒 Create password (Min 8 characters, 1 capital letter and 1 number): \n"
+            "🔒 Create password (Min 8 characters, 1 capital letter and 1 number): "
         )
 
         if is_valid_password(password):
@@ -114,7 +119,7 @@ def ask_password() -> str:
 def ask_email() -> str:
     """Ask until user enters a valid email."""
     while True:
-        email = input("Enter email address: ").strip().lower()
+        email = input("📧 Enter email address          : ").strip().lower()
         if EMAIL_REGEX.fullmatch(email):
             return email
         
@@ -131,12 +136,12 @@ def ask_non_empty(prompt: str) -> str:
             return value
         print("⚠️ This field cannot be empty.")
 
-
+                 
 def ask_goal_hours() -> int:
     """Ask for valid study hours (1–24)."""
     while True:
         try:
-            hours = int(input("Enter daily study hours: "))
+            hours = int(input("📘 Enter daily study hours (1-24): "))
             if 1 <= hours <= 24:
                 return hours
             print("❌ Invalid input. Please enter a number between 1 and 24.")
@@ -217,12 +222,12 @@ def register():
         print("╚═══════════════════════════════════════════════════════╝")
         return None, None
 
-    name = ask_non_empty("Enter nickname     : ")
+    name = ask_non_empty("👤 Enter nickname               : ")
     password = ask_password()
     salt, password_hash = hash_password(password)
-
+    
     goal_hours = ask_goal_hours()
-    academic_goal = ask_non_empty("Enter academic goal: ")
+    academic_goal = ask_non_empty("🎯 Enter academic goal          : ")
     clear_screen()
     pet_theme = ask_pet_theme()
     clear_screen()
@@ -274,7 +279,7 @@ def login():
     user_data = users[email]
 
     while True:
-        password = masked_input("🔑 Enter password  : ")
+        password = masked_input("🔑 Enter password               : ")
         if verify_password(
             password,
             user_data["password_salt"],

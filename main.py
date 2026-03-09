@@ -18,9 +18,12 @@ from src.weekly_report import run as weekly_run
 from src.evolution import check_pet_evolution
 from src.study_planner import main_menu as study_planner_menu
 from src.user_reflection import handle_post_study, handle_view_achievements
+from src.navigation import install_global_navigation_input, NavigateBack, ExitApplication
 
 import json, os
 from datetime import date, timedelta
+
+install_global_navigation_input()
 
 LOG_FILE = "data/study_log.json"
 
@@ -191,105 +194,114 @@ def handle_wellbeing(user_id, user_data):
 
 def dashboard(user_id, user_data):
     while True:
-        clear_screen()
-        print("╔═════════════════════════════════════════════════════════════════════════╗")
-        print("║                         🐾 STUDYPET DASHBOARD 🐾                        ║")
-        print("╠═════════════════════════════════════════════════════════════════════════╣")
-        show_user_summary(user_data)
-
-        print("╔═════════════════════════════════════════════════════════════════════════╗")
-        print("║                         Your virtual pet awaits!                        ║")
-        print("╠═════════════════════════════════════════════════════════════════════════╣")
-        print("║ [1] Start Study Session ⏳                                              ║")
-        print("║ [2] Feed Pet 🍖                                                         ║")
-        print("║ [3] Pet Shop 🛒                                                         ║")
-        print("║ [4] View Pet Status 🐱                                                  ║")
-        print("║ [5] View User Status 📊                                                 ║")
-        print("║ [6] Mood Check-in 🌼                                                    ║")
-        print("║ [7] Study Performance Tracker 📚                                                             ║")
-        print("║ [8] Analytics 📈                                                        ║")
-        print("║ [9] Weekly Report 📅                                                    ║")
-        print("║ [10] Study Planner 🗓️                                                   ║")
-        print("║ [11] Reflection Journal 📓                                              ║")
-        print("║ [0] Logout 👋                                                           ║")
-        print("╚═════════════════════════════════════════════════════════════════════════╝")
-
-        choice = input("Choose your option: ").strip()
-        clear_screen()
-
-        if choice == "1": 
-            user_data ,session_log = handle_study_session(user_id, user_data)
-            save_user_data(user_id, user_data)
-            append_study_log(session_log)
-            pause()
-            clear_screen()
-
-        elif choice == "2": 
-            user_data = handle_feed_pet(user_data)
-            save_user_data(user_id, user_data)
-            pause()
-            clear_screen()
-
-        elif choice == "3": 
-            user_data = handle_shop(user_data)
-            save_user_data(user_id, user_data)
-            pause()
-            clear_screen()
-
-        elif choice == "4": 
-            show_status(user_data)
-            pause()
-            clear_screen()
-        
-        elif choice == "5": 
-            show_user_stats(user_id, user_data)
-            pause()
-            clear_screen()
-        
-        elif choice == "6":
-            user_data = handle_wellbeing(user_id, user_data)
-            save_user_data(user_id, user_data)
-
-        elif choice == "7": 
-            user_data = quiz_run(user_id, user_data)
-
-        elif choice == "8": 
-            user_data = analytics_run(user_id, user_data)
-
-        elif choice == "9": 
-            user_data = weekly_run(user_id, user_data)
-
-        elif choice == "10":
-            study_planner_menu()
-
-        elif choice == "11":
-            while True:
-                reflection_choice = reflection_menu()
-                clear_screen()
-
-                if reflection_choice == 1:
-                    user_data = handle_post_study(user_data)
-                    save_user_data(user_id, user_data)
-                    pause()
-                elif reflection_choice == 2:
-                    user_data = handle_view_achievements(user_data)
-                    save_user_data(user_id, user_data)
-                    pause()
-                elif reflection_choice == 0:
-                    break
-
-        elif choice == "0": 
+        try:
             clear_screen()
             print("╔═════════════════════════════════════════════════════════════════════════╗")
-            print("║                   Logged out. Alvida mere dost 👋                       ║")
-            print("╚═════════════════════════════════════════════════════════════════════════╝")           
-            pause()
+            print("║                         🐾 STUDYPET DASHBOARD 🐾                        ║")
+            print("╠═════════════════════════════════════════════════════════════════════════╣")
+            show_user_summary(user_data)
+
+            print("╔═════════════════════════════════════════════════════════════════════════╗")
+            print("║                         Your virtual pet awaits!                        ║")
+            print("╠═════════════════════════════════════════════════════════════════════════╣")
+            print("║ [1] Start Study Session ⏳                                              ║")
+            print("║ [2] Feed Pet 🍖                                                         ║")
+            print("║ [3] Pet Shop 🛒                                                         ║")
+            print("║ [4] View Pet Status 🐱                                                  ║")
+            print("║ [5] View User Status 📊                                                 ║")
+            print("║ [6] Mood Check-in 🌼                                                    ║")
+            print("║ [7] Study Performance Tracker 📚                                        ║")
+            print("║ [8] Analytics 📈                                                        ║")
+            print("║ [9] Weekly Report 📅                                                    ║")
+            print("║ [10] Study Planner 🗓️                                                   ║")
+            print("║ [11] Reflection Journal 📓                                              ║")
+            print("║ [0] Logout 👋                                                           ║")
+            print("╚═════════════════════════════════════════════════════════════════════════╝")
+            print("Tip: type ':back' to return to dashboard, ':exit' to close the app.")
+
+            choice = input("Choose your option: ").strip()
             clear_screen()
-            return 
+
+            if choice == "1": 
+                user_data ,session_log = handle_study_session(user_id, user_data)
+                save_user_data(user_id, user_data)
+                append_study_log(session_log)
+                pause()
+                clear_screen()
+
+            elif choice == "2": 
+                user_data = handle_feed_pet(user_data)
+                save_user_data(user_id, user_data)
+                pause()
+                clear_screen()
+
+            elif choice == "3": 
+                user_data = handle_shop(user_data)
+                save_user_data(user_id, user_data)
+                pause()
+                clear_screen()
+
+            elif choice == "4": 
+                show_status(user_data)
+                pause()
+                clear_screen()
+            
+            elif choice == "5": 
+                show_user_stats(user_id, user_data)
+                pause()
+                clear_screen()
+            
+            elif choice == "6":
+                user_data = handle_wellbeing(user_id, user_data)
+                save_user_data(user_id, user_data)
+
+            elif choice == "7": 
+                user_data = quiz_run(user_id, user_data)
+
+            elif choice == "8": 
+                user_data = analytics_run(user_id, user_data)
+
+            elif choice == "9": 
+                user_data = weekly_run(user_id, user_data)
+
+            elif choice == "10":
+                study_planner_menu()
+
+            elif choice == "11":
+                while True:
+                    reflection_choice = reflection_menu()
+                    clear_screen()
+
+                    if reflection_choice == 1:
+                        user_data = handle_post_study(user_data)
+                        save_user_data(user_id, user_data)
+                        pause()
+                    elif reflection_choice == 2:
+                        user_data = handle_view_achievements(user_data)
+                        save_user_data(user_id, user_data)
+                        pause()
+                    elif reflection_choice == 0:
+                        break
+
+            elif choice == "0": 
+                clear_screen()
+                print("╔═════════════════════════════════════════════════════════════════════════╗")
+                print("║                   Logged out. Alvida mere dost 👋                       ║")
+                print("╚═════════════════════════════════════════════════════════════════════════╝")           
+                pause()
+                clear_screen()
+                return
+        except NavigateBack:
+            clear_screen()
+            print("↩ Returning to dashboard...")
+            continue
+        except ExitApplication:
+            raise
         
 def main(): 
     while True: 
-        print(r"""
+        try:
+            print(r"""
 ███████╗ ████████╗ ██╗   ██╗ ██████╗  ██╗   ██╗ ██████╗  ███████╗ ████████╗
 ██╔════╝ ╚══██╔══╝ ██║   ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ██╔════╝ ╚══██╔══╝
 ███████╗    ██║    ██║   ██║ ██║  ██║  ╚████╔╝  ██████╔╝ █████╗      ██║
@@ -297,48 +309,55 @@ def main():
 ███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║
 ╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝
 """)
-        print("╔═════════════════════════════════════════════════════════════════════════╗")
-        print("║                                 MAIN MENU                               ║")
-        print("╠═════════════════════════════════════════════════════════════════════════╣")
-        print("║ [1] Register 📝                                                         ║")
-        print("║ [2] Login 💻                                                            ║")
-        print("║ [0] Exit 🚪                                                             ║")
-        print("╚═════════════════════════════════════════════════════════════════════════╝")
+            print("╔═════════════════════════════════════════════════════════════════════════╗")
+            print("║                                 MAIN MENU                               ║")
+            print("╠═════════════════════════════════════════════════════════════════════════╣")
+            print("║ [1] Register 📝                                                         ║")
+            print("║ [2] Login 💻                                                            ║")
+            print("║ [0] Exit 🚪                                                             ║")
+            print("╚═════════════════════════════════════════════════════════════════════════╝")
+            print("Tip: type ':back' to refresh menu, ':exit' to close the app.")
 
-        choice = input("Choose your option : ").strip()
+            choice = input("Choose your option : ").strip()
 
-        if choice == "1": 
-            user_id, user_data = register_user()
-            if user_id: 
-                dashboard(user_id, user_data)
+            if choice == "1": 
+                user_id, user_data = register_user()
+                if user_id: 
+                    dashboard(user_id, user_data)
 
-        elif choice == "2": 
-            user_id, user_data = login_user()
-            if user_id: 
-                mood = choose_mood(menu)
-                if mood != "Skip": 
-                    user_data["mood_today"] = mood
-                    print("╔═════════════════════════════════════════════════════════════════════════╗")
-                    print("║                             Mood Check-in 🤗                            ║")
-                    print("╚═════════════════════════════════════════════════════════════════════════╝")
-                    print(mood_message(mood))
-                    pause()
-                    clear_screen()
-                    log_mood(user_id, mood)
-    
-                user_data, penalty_message = apply_tired_penalty(user_id, user_data)
-                if penalty_message: 
-                    print(penalty_message)
-                    pause()
-    
-                recreation_menu(user_id)
+            elif choice == "2": 
+                user_id, user_data = login_user()
+                if user_id: 
+                    mood = choose_mood(menu)
+                    if mood != "Skip": 
+                        user_data["mood_today"] = mood
+                        print("╔═════════════════════════════════════════════════════════════════════════╗")
+                        print("║                             Mood Check-in 🤗                            ║")
+                        print("╚═════════════════════════════════════════════════════════════════════════╝")
+                        print(mood_message(mood))
+                        pause()
+                        clear_screen()
+                        log_mood(user_id, mood)
+        
+                    user_data, penalty_message = apply_tired_penalty(user_id, user_data)
+                    if penalty_message: 
+                        print(penalty_message)
+                        pause()
+        
+                    recreation_menu(user_id)
 
-                save_user_data(user_id, user_data)    
-                dashboard(user_id, user_data)
+                    save_user_data(user_id, user_data)    
+                    dashboard(user_id, user_data)
 
-        elif choice == "0": 
+            elif choice == "0": 
+                clear_screen()
+                break
+        except NavigateBack:
             clear_screen()
-            break 
+            continue
+        except ExitApplication:
+            clear_screen()
+            break
 
 if __name__ == "__main__": 
     main()

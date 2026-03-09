@@ -86,7 +86,7 @@ def compute_daily_minutes_and_sessions(user_logs: list, dates: list):
         mins = log.get("study_minutes", 0)
         try:
             mins = int(mins)
-        except:
+        except (TypeError, ValueError):
             mins = 0
         minutes_by_date[d] += max(0, mins)
         sessions_by_date[d] += 1
@@ -104,7 +104,7 @@ def compute_goal_rate(minutes_by_date: dict, dates: list, user_data: dict):
     goal_hours = user_data.get("goal_hours", 0)
     try:
         goal_hours = int(goal_hours)
-    except:
+    except (TypeError, ValueError):
         goal_hours = 0
 
     goal_minutes = max(0, goal_hours * 60)

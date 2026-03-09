@@ -125,7 +125,7 @@ def mini_game():
     for _ in range(3):
         try: 
             guess = int(input("Your guess: "))
-        except: 
+        except (TypeError, ValueError): 
             print("Invalid input.")
             continue 
 

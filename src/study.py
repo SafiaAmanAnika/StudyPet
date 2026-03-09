@@ -115,7 +115,7 @@ def select_pomodoro():
             try:
                 s = int(trim(input("Study minutes (1–180): ")))
                 b = int(trim(input("Break minutes  (0–60): ")))
-            except:
+            except (TypeError, ValueError):
                 print("❌ Invalid input. Enter valid integers.\n")
                 continue
 

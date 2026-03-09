@@ -14,7 +14,7 @@ def input_study_date():
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
         return date_str
-    except:
+    except ValueError:
         print("Invalid date format. Using today.")
         return today_str()
     
@@ -28,7 +28,7 @@ def input_study_hours():
                 return hours
             else:
                 print("Please enter a valid number between 1 and 24.")
-        except:
+        except ValueError:
             print("Please enter a valid number between 1 and 24.")
 
 

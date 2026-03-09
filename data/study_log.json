@@ -1,0 +1,24 @@
+[
+  {
+    "user_id": "z@gmail.com",
+    "date": "2026-03-09",
+    "topic": "den",
+    "difficulty": "Easy",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 25,
+    "health_lost": 1,
+    "mood": ""
+  },
+  {
+    "user_id": "z@gmail.com",
+    "date": "2026-03-09",
+    "topic": "den",
+    "difficulty": "Easy",
+    "study_minutes": 50,
+    "break_minutes": 10,
+    "coins_earned": 50,
+    "health_lost": 1,
+    "mood": ""
+  }
+]

@@ -1,1 +1,26 @@
-{}
+{
+  "z@gmail.com": {
+    "name": "z",
+    "password_salt": "75b7c421640e0feaa0e8ca55f59a7132",
+    "password_hash": "e15040cba57502a6d626246f2066a17d83d3e54baa3795cca7fcc9c2b4bf5ea5",
+    "goal_hours": 23,
+    "academic_goal": "12",
+    "pet_theme": "Dog",
+    "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
+    "health": 8,
+    "energy": 95.0,
+    "coins": 80,
+    "study_streak": 1,
+    "total_study_hours": 1.25,
+    "total_study_minutes": 75,
+    "last_study_date": "2026-03-09",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-03-09",
+    "mood_today": "Neutral \ud83d\ude10",
+    "last_study_minutes": 50,
+    "level": 1
+  }
+}
