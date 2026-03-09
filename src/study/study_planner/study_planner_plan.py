@@ -1,7 +1,7 @@
 from .study_planner_config_helpers import load_data, save_data
 from .study_planner_ui_input import (
     clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
-    box_line, box_kv, ask_float, ask_int,
+    box_line, box_kv, ask_float,
     ask_subjects_type, ask_single_subject_with_difficulty,
     ask_multiple_subjects_with_difficulty
 )
@@ -11,13 +11,9 @@ from .study_planner_ui_input import (
 # ============================================================================
 
 def generate_study_plan(user_id=None, user_data=None):
-    """
-    Merged option: collect subjects/difficulty, then generate plan.
-    Name and mood are taken from the main app's user_data (not re-asked).
-    """
+
     planner_data = load_data()
 
-    # ---- PULL NAME & MOOD FROM MAIN APP, FALL BACK TO PLANNER STORAGE ----
     if user_data:
         name = user_data.get("user_name") or user_data.get("name") or planner_data.get("user_name", "")
         mood = user_data.get("mood_today") or planner_data.get("mood_today", "Neutral")
@@ -28,7 +24,6 @@ def generate_study_plan(user_id=None, user_data=None):
     planner_data["user_name"] = name
     planner_data["mood_today"] = mood
 
-    # ---- COLLECT SUBJECTS & DIFFICULTY (same as original setup_profile) ----
     clear_screen()
     box_title_only("📋 SUBJECT SETUP")
 

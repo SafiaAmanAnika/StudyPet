@@ -1,8 +1,7 @@
-import os
+import os, re
 from .study_planner_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width,
-    wrap_text_to_width, manual_strip, manual_is_number, is_only_letters,
-    load_data, save_data, manual_len
+    wrap_text_to_width, manual_strip, manual_is_number, is_only_letters
 )
 
 # ============================================================================
@@ -25,15 +24,27 @@ BORDER_FILL = "═" * (BOX_INNER + 2)
 # BOX DRAWING
 # ============================================================================
 
+EMOJI_PATTERN = re.compile(r"[\U0001F300-\U0001FAFF]")
+
 def box_title_only(title):
     """Display title in box (top and bottom borders only)"""
-    print("╔" + BORDER_FILL + "╗")
     t = str(title)
-    t = truncate_to_width(t, BOX_INNER)
-    left = max(0, (BOX_INNER - visible_width(t)) // 2)
-    right = max(0, BOX_INNER - visible_width(t) - left)
+
+    emoji_count = len(EMOJI_PATTERN.findall(t))
+
+    # Only adjust when emoji count is odd
+    extra = emoji_count % 2
+    inner_width = BOX_INNER + extra
+
+    print("╔" + "═" * inner_width + "╗")
+
+    t = truncate_to_width(t, inner_width)
+    left = max(0, (inner_width - visible_width(t)) // 2)
+    right = max(0, inner_width - visible_width(t) - left)
+
     print("║ " + " " * left + t + " " * right + " ║")
-    print("╚" + BORDER_FILL + "╝")
+    print("╚" + "═" * inner_width + "╝")
+
 
 def box_top():
     """Print top border of box"""

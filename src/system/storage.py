@@ -1,5 +1,4 @@
-import json
-import os
+import json, os
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "users.json")
 

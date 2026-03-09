@@ -1,9 +1,6 @@
-from .study_planner_config_helpers import (
-    load_data, save_data
-)
+from .study_planner_config_helpers import load_data
 from .study_planner_ui_input import (
-    clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
-    box_line, box_kv, BOX_INNER
+    clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom, box_kv
 )
 
 # ============================================================================
@@ -11,23 +8,10 @@ from .study_planner_ui_input import (
 # ============================================================================
 
 def view_user_dashboard(user_data=None):
-    """
-    View complete user dashboard.
-    Name and mood are taken from the main app's user_data when available,
-    falling back to planner storage otherwise.
 
-    Shows:
-    - Name
-    - Subjects
-    - Study goal
-    - Current mood
-    - Study minutes today
-    - Last study date
-    """
     clear_screen()
     planner_data = load_data()
-
-    # Merge: prefer live user_data for name/mood
+    
     if user_data:
         name = user_data.get("user_name") or user_data.get("name") or planner_data.get("user_name", "")
         mood = user_data.get("mood_today") or planner_data.get("mood_today", "")

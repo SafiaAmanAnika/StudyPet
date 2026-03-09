@@ -1,4 +1,4 @@
-from src.quiz_config_helpers import (
+from src.study.quiz.quiz_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width, 
     wrap_text_to_width, manual_strip, manual_is_number, date_valid_simple,
     load_data, save_data

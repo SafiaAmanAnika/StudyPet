@@ -1,5 +1,4 @@
-import json
-import os
+import json, os
 from datetime import date, datetime, timedelta
 from src.ui import analytics_menu, clear_screen
 

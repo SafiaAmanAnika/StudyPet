@@ -1,5 +1,4 @@
-
-from src.quiz_config_helpers import (
+from src.study.quiz.quiz_config_helpers import (
     BOX_INNER, CHART_COL_W, CHART_SPACING, CHART_MAX_BARS, CHART_HEIGHT,
     CHART_LABELS_POS, CHART_SHOW_NUMBERS, visible_width, truncate_to_width,
     manual_len

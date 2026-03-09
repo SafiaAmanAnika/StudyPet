@@ -1,4 +1,4 @@
-from src.evolution import get_pet_stage
+from .evolution import get_pet_stage
 
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:

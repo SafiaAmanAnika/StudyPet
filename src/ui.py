@@ -310,7 +310,7 @@ def choose_theme(menu_func):
 
 
 def choose_animation_style(menu_func):
-    from src.animation import (
+    from src.pet.animation import (
         list_animation_style_options,
         get_animation_style,
         get_animation_style_display,

@@ -1,5 +1,5 @@
 from src.ui import clear_screen, print_fancy_box
-from src.animation import clear, render_countdown_scene
+from src.pet.animation import clear, render_countdown_scene
 import time
 
 DEV_MODE = True

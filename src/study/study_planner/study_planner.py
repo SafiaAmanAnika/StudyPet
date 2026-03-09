@@ -14,20 +14,7 @@ from .study_planner_profile import view_user_dashboard
 # ============================================================================
 
 def main_menu(user_id=None, user_data=None):
-    """
-    Main menu for Study Planner.
-    Accepts user_id and user_data from the main app so that
-    name and mood are not re-collected here.
 
-    Options:
-    1. Generate Study Plan
-    2. View Today's Study Plan
-    3. Log Study Session
-    4. View Progress Dashboard
-    5. Check Missed Goal Recovery
-    6. View User Dashboard
-    0. Exit
-    """
     while True:
         clear_screen()
         box_title_only("📚 STUDY PLANNER")

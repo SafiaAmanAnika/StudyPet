@@ -13,8 +13,8 @@ from src.ui import (
     set_ui_theme,
     get_theme_display_name,
 )
-from src.animation import set_animation_style, get_animation_style_display
-from src.storage import load_users, save_users
+from src.pet.animation import set_animation_style, get_animation_style_display
+from src.system.storage import load_users, save_users
 from src.pet import show_status, apply_pet_abilities
 from src.shop import feed_pet, open_shop
 from src.study import start_session
@@ -26,14 +26,14 @@ from src.wellbeing import (
     update_energy,
     restore_energy,
 )
-from src.recreation import recreation_menu, count_today_sessions
-from src.quiz import run as quiz_run
+from src.wellbeing.recreation import recreation_menu, count_today_sessions
+from src.study.quiz import run as quiz_run
 from src.analytics import run as analytics_run
-from src.weekly_report import run as weekly_run 
-from src.evolution import check_pet_evolution
-from src.study_planner import main_menu as study_planner_menu
-from src.user_reflection import handle_post_study, handle_view_achievements
-from src.navigation import install_global_navigation_input, NavigateBack, ExitApplication
+from src.study.weekly_report import run as weekly_run 
+from src.pet.evolution import check_pet_evolution
+from src.study.study_planner import main_menu as study_planner_menu
+from src.study.user_reflection import handle_post_study, handle_view_achievements
+from src.system.navigation import install_global_navigation_input, NavigateBack, ExitApplication
 
 import json, os
 from datetime import date, timedelta
@@ -84,11 +84,11 @@ def save_user_data(user_id, user_data):
     save_users(users)
 
 def register_user():
-    from src.auth import register
+    from src.system.auth import register
     return register()
 
 def login_user():
-    from src.auth import login
+    from src.system.auth import login
     return login()
 
 
@@ -118,7 +118,7 @@ def update_study_streak(user_data: dict) -> dict:
 # ---------------- HANDLERS ---------------- #
 
 def handle_study_session(user_id, user_data):
-    from src.evolution import check_pet_evolution
+    from src.pet.evolution import check_pet_evolution
 
     # Start study session
     user_data, session_log = start_session(user_id, user_data)
@@ -207,7 +207,7 @@ def handle_wellbeing(user_id, user_data):
 
 
 def handle_delete_account(user_id, user_data):
-    from src.auth import masked_input, verify_password
+    from src.system.auth import masked_input, verify_password
     clear_screen()
     print_fancy_box(
         "⚠️ DELETE ACCOUNT",
@@ -431,7 +431,7 @@ def main():
             )
             print("Tip: type ':back' to refresh menu, ':exit' to close the app.")
 
-            choice = input("Choose your option : ").strip()
+            choice = input("Choose your option              : ").strip()
 
             if choice == "1": 
                 user_id, user_data = register_user()

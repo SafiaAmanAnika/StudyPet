@@ -1,26 +1,26 @@
-"""
-STUDY_PLANNER Module - Part 1: Configuration, Helpers, and File I/O
-Lines: 200+
-"""
-import json
-import os
-import unicodedata
-from datetime import datetime
+import json, os, unicodedata
 
 # ============================================================================
-# CONFIGURATION
+# CONFIGURATION & CONSTANTS
 # ============================================================================
 
-BOX_INNER = 48
+BOX_INNER = 48   
 DATA_DIR = "data"
-DATA_FILE = os.path.join(DATA_DIR, "study_planner.json")
+DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
+
+CHART_COL_W = 5
+CHART_SPACING = 2
+CHART_MAX_BARS = 6
+CHART_HEIGHT = 6
+CHART_LABELS_POS = "above"
+CHART_SHOW_NUMBERS = True
 
 # ============================================================================
-# TEXT WIDTH & FORMATTING
+# TEXT FORMATTING & WIDTH HELPERS
 # ============================================================================
 
 def visible_width(s):
-    """Calculate visible width accounting for wide characters"""
+    """Calculate visible width of string considering wide characters (CJK)"""
     width = 0
     for ch in s:
         if unicodedata.east_asian_width(ch) in ("F", "W"):
@@ -43,7 +43,7 @@ def pad_to_width(s, width):
     return s + " " * (width - cur)
 
 def wrap_text_to_width(s, maxw):
-    """Wrap text to fit within maximum width"""
+    """Wrap text to fit within maximum width, respecting word boundaries"""
     if maxw <= 0:
         return [""]
     words = s.split(" ")
@@ -79,11 +79,11 @@ def wrap_text_to_width(s, maxw):
     return [truncate_to_width(line, maxw) for line in lines]
 
 # ============================================================================
-# INPUT VALIDATION
+# INPUT VALIDATION HELPERS
 # ============================================================================
 
 def manual_strip(s):
-    """Remove leading and trailing whitespace"""
+    """Remove leading and trailing whitespace without using strip()"""
     start = 0
     end = len(s) - 1
     while start <= end and s[start] in " \t\n\r":
@@ -93,7 +93,7 @@ def manual_strip(s):
     return s[start:end+1]
 
 def manual_is_number(s):
-    """Check if string is a valid number"""
+    """Check if string is a valid number (integer or float)"""
     if s == "":
         return False
     parts = s.split(".")
@@ -104,91 +104,124 @@ def manual_is_number(s):
         return (a.isdigit() and b.isdigit() and b != "")
     return False
 
-def is_only_letters(s):
-    """Check if string contains only letters and spaces"""
-    s = manual_strip(s)
-    if s == "":
+def date_valid_simple(s):
+    """Validate date format YYYY-MM-DD and check calendar constraints."""
+    parts = s.split("-")
+    if len(parts) != 3:
         return False
-    for ch in s:
-        if not (ch.isalpha() or ch == " "):
-            return False
+    
+    y_str, m_str, d_str = parts
+
+    if not (y_str.isdigit() and len(y_str) == 4):
+        return False
+    if not (m_str.isdigit() and 1 <= len(m_str) <= 2):
+        return False
+    if not (d_str.isdigit() and 1 <= len(d_str) <= 2):
+        return False
+
+    year = int(y_str)
+    month = int(m_str)
+    day = int(d_str)
+
+    if year <= 0 or month <= 0 or day <= 0:
+        return False
+    
+    if month > 12:
+        return False
+
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        max_days = 31
+    elif month in [4, 6, 9, 11]:
+        max_days = 30
+    elif month == 2:
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            max_days = 29
+        else:
+            max_days = 28
+    else:
+        return False
+
+    if day > max_days:
+        return False
+
     return True
 
 # ============================================================================
-# LIST UTILITIES
+# LIST UTILITY FUNCTIONS
 # ============================================================================
 
 def manual_len(lst):
-    """Get list length without using len()"""
+    """Get length of list without using len() builtin"""
     count = 0
     for _ in lst:
         count += 1
     return count
 
 def manual_sum(lst):
-    """Sum list elements without using sum()"""
+    """Sum list elements without using sum() builtin"""
     total = 0
     for v in lst:
         total += v
     return total
 
 # ============================================================================
-# FILE I/O
+# FILE I/O OPERATIONS
 # ============================================================================
 
 def ensure_data_dir():
-    """Create data directory if needed"""
+    """Create data directory if it doesn't exist"""
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-def get_default_data():
-    """Return default data structure"""
-    return {
-        "user_name": "",
-        "subjects": [],
-        "subject_difficulty": {},
-        "subject_study_minutes": {},
-        "goal_hours": 0,
-        "mood_today": "",
-        "study_minutes_today": 0,
-        "missed_goal": False,
-        "goal_recovery_increase": 0,
-        "last_study_date": "",
-        "study_plan": []
-    }
-
 def load_data():
-    """Load study planner data from JSON file"""
+    """Load study log data from JSON file"""
     ensure_data_dir()
     if not os.path.exists(DATA_FILE):
-        default_data = get_default_data()
-        save_data(default_data)
-        return default_data
+        return {"subjects": {}}
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            # Ensure data is a dict; if not, return default
+            if not isinstance(data, dict):
+                return {"subjects": {}}
+            return data
     except Exception:
-        default_data = get_default_data()
-        save_data(default_data)
-        return default_data
+        return {"subjects": {}}
 
 def save_data(data):
-    """Save study planner data to JSON file"""
+    """Save study log data to JSON file"""
     ensure_data_dir()
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+        json.dump(data, f, indent=4)
 
 # ============================================================================
-# PROGRESS BAR
+# GRADE CALCULATION
 # ============================================================================
 
-def print_progress_bar(percent, total_blocks=15):
-    """Create visual progress bar string"""
-    if percent > 0:
-        filled = int(percent / 100 * total_blocks)
-        filled = max(1, min(total_blocks, filled))
-    else:
-        filled = 0
-    
-    bar = "█" * filled + "░" * (total_blocks - filled)
-    return f"[{bar}] {percent:.0f}%"
+def calculate_grade(percent):
+    """
+    Convert percentage to letter grade
+    A+ >= 80, A >= 75, A- >= 70, B+ >= 65, B >= 60, C >= 50, D >= 40, F < 40
+    """
+    if percent >= 80:
+        return "A+"
+    if percent >= 75:
+        return "A"
+    if percent >= 70:
+        return "A-"
+    if percent >= 65:
+        return "B+"
+    if percent >= 60:
+        return "B"
+    if percent >= 50:
+        return "C"
+    if percent >= 40:
+        return "D"
+    return "F"
+
+def print_progress_bar(percent, total_blocks=20, show_percent=False):
+    """Create visual progress bar with blocks"""
+    filled = int(percent / 100 * total_blocks)
+    filled = max(0, min(total_blocks, filled))
+    bar = "█" * filled + "-" * (total_blocks - filled)
+    return f"[{bar}] {percent:.1f}%" if show_percent else f"[{bar}]"

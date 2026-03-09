@@ -12,10 +12,7 @@ from .study_planner_ui_input import (
 # ============================================================================
 
 def log_study_session():
-    """
-    Log study session and track minutes per subject
-    Checks if goal was met and saves data
-    """
+
     clear_screen()
     data = load_data()
     

@@ -1,5 +1,4 @@
-import time
-import random
+import time, random
 from datetime import datetime, timedelta
 
 # ---------------- UTILITY ---------------- #

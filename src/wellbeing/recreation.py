@@ -1,8 +1,7 @@
-import time
-import random 
+import time, random 
 from src.ui import clear_screen
 from src.ui import print_fancy_box
-from src.wellbeing import load_study_logs, today_str, tired_streak_days
+from .wellbeing import load_study_logs, today_str, tired_streak_days
 
 #counting sessions 
 def count_today_sessions(user_id: str) -> int: 
