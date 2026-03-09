@@ -7,20 +7,39 @@
     "academic_goal": "12",
     "pet_theme": "Dog",
     "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
-    "health": 8,
-    "energy": 95.0,
-    "coins": 80,
+    "health": 2,
+    "energy": 100.0,
+    "coins": 191,
     "study_streak": 1,
-    "total_study_hours": 1.25,
-    "total_study_minutes": 75,
+    "total_study_hours": 2.5,
+    "total_study_minutes": 150,
     "last_study_date": "2026-03-09",
     "inventory": {
       "normal_food": 0,
       "premium_food": 0
     },
     "last_login": "2026-03-09",
-    "mood_today": "Neutral \ud83d\ude10",
-    "last_study_minutes": 50,
-    "level": 1
+    "mood_today": "Tired \ud83d\ude1e",
+    "last_study_minutes": 25,
+    "level": 1,
+    "reflections": [
+      {
+        "date": "2026-03-09",
+        "positive_feedback": "idk",
+        "challenges": "idk",
+        "hours": 23.0
+      }
+    ],
+    "daily_sessions": {
+      "2026-03-09": 1
+    },
+    "reflection_total_hours": 23.0,
+    "reflection_total_sessions": 1,
+    "current_streak": 1,
+    "max_streak": 1,
+    "inactivity_days": 0,
+    "achievements": [],
+    "ui_theme": "sunset_glow",
+    "animation_style": "sparkly"
   }
 }

@@ -1,4 +1,19 @@
-from src.ui import menu, pause, show_user_summary, show_user_stats, choose_mood, clear_screen, reflection_menu
+from src.ui import (
+    menu,
+    pause,
+    show_user_summary,
+    show_user_stats,
+    choose_mood,
+    clear_screen,
+    reflection_menu,
+    print_fancy_box,
+    print_brand_header,
+    choose_theme,
+    choose_animation_style,
+    set_ui_theme,
+    get_theme_display_name,
+)
+from src.animation import set_animation_style, get_animation_style_display
 from src.storage import load_users, save_users
 from src.pet import show_status, apply_pet_abilities
 from src.shop import feed_pet, open_shop
@@ -143,10 +158,11 @@ def handle_study_session(user_id, user_data):
     user_data, evolved = check_pet_evolution(user_data, tired_streak)
 
     if evolved:
-        print("╔═════════════════════════════════════════════════════════════════════════╗")
-        print("║                         ✨ YOUR PET EVOLVED! ✨                         ║")
-        print("╚═════════════════════════════════════════════════════════════════════════╝")
-        print("Your study companion grew stronger! 🐾📚")
+        print_fancy_box(
+            "✨ YOUR PET EVOLVED! ✨",
+            ["Your study companion grew stronger! 🐾📚"],
+            theme="yellow",
+        )
 
         show_status(user_data)
 
@@ -164,18 +180,17 @@ def handle_shop(user_data):
     return open_shop(user_data)
 
 def handle_wellbeing(user_id, user_data):
-    print("╔═════════════════════════════════════════════════════════════════════════╗")
-    print("║                             Short Check-In 🤗                           ║")
-    print("╚═════════════════════════════════════════════════════════════════════════╝")
+    print_fancy_box(
+        "Short Check-In 🤗",
+        ["Let’s capture your mood before the next study burst."],
+        theme="green",
+    )
     mood = choose_mood(menu)
 
     if mood != "Skip":
         user_data["mood_today"] = mood
         clear_screen()
-        print("╔═════════════════════════════════════════════════════════════════════════╗")
-        print("║                             Mood Check-in 🤗                            ║")
-        print("╚═════════════════════════════════════════════════════════════════════════╝")
-        print(mood_message(mood))
+        print_fancy_box("Mood Check-in 🤗", [mood_message(mood)], theme="yellow")
         pause()
         clear_screen()
         log_mood(user_id, mood)
@@ -193,30 +208,35 @@ def handle_wellbeing(user_id, user_data):
 # ---------------- DASHBOARD ---------------- #
 
 def dashboard(user_id, user_data):
+    set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
+    set_animation_style(user_data.get("animation_style", "sparkly"))
+
     while True:
         try:
             clear_screen()
-            print("╔═════════════════════════════════════════════════════════════════════════╗")
-            print("║                         🐾 STUDYPET DASHBOARD 🐾                        ║")
-            print("╠═════════════════════════════════════════════════════════════════════════╣")
+            print_fancy_box(
+                "🐾 STUDYPET DASHBOARD 🐾",
+                ["Your virtual pet is waiting. Let’s make today count."],
+                theme="magenta",
+            )
             show_user_summary(user_data)
 
-            print("╔═════════════════════════════════════════════════════════════════════════╗")
-            print("║                         Your virtual pet awaits!                        ║")
-            print("╠═════════════════════════════════════════════════════════════════════════╣")
-            print("║ [1] Start Study Session ⏳                                              ║")
-            print("║ [2] Feed Pet 🍖                                                         ║")
-            print("║ [3] Pet Shop 🛒                                                         ║")
-            print("║ [4] View Pet Status 🐱                                                  ║")
-            print("║ [5] View User Status 📊                                                 ║")
-            print("║ [6] Mood Check-in 🌼                                                    ║")
-            print("║ [7] Study Performance Tracker 📚                                        ║")
-            print("║ [8] Analytics 📈                                                        ║")
-            print("║ [9] Weekly Report 📅                                                    ║")
-            print("║ [10] Study Planner 🗓️                                                   ║")
-            print("║ [11] Reflection Journal 📓                                              ║")
-            print("║ [0] Logout 👋                                                           ║")
-            print("╚═════════════════════════════════════════════════════════════════════════╝")
+            dashboard_options = [
+                "[1] Start Study Session ⏳",
+                "[2] Feed Pet 🍖",
+                "[3] Pet Shop 🛒",
+                "[4] View Pet Status 🐱",
+                "[5] View User Status 📊",
+                "[6] Mood Check-in 🌼",
+                "[7] Study Performance Tracker 📚",
+                "[8] Analytics 📈",
+                "[9] Weekly Report 📅",
+                "[10] Study Planner 🗓️  ",
+                "[11] Reflection Journal 📓",
+                "[12] Theme Studio 🎨",
+                "[0] Logout 👋",
+            ]
+            print_fancy_box("Your virtual pet awaits!", dashboard_options, theme="cyan")
             print("Tip: type ':back' to return to dashboard, ':exit' to close the app.")
 
             choice = input("Choose your option: ").strip()
@@ -283,6 +303,53 @@ def dashboard(user_id, user_data):
                     elif reflection_choice == 0:
                         break
 
+            elif choice == "12":
+                while True:
+                    clear_screen()
+                    print_fancy_box(
+                        "Theme Studio 🎨",
+                        [
+                            f"Color Theme     : {get_theme_display_name(user_data.get('ui_theme', 'pastel_pink'))}",
+                            f"Animation Style : {get_animation_style_display(user_data.get('animation_style', 'sparkly'))}",
+                            "",
+                            "Customize both colors and motion style.",
+                        ],
+                        theme="magenta",
+                    )
+                    studio_choice = menu([
+                        "Change Color Theme",
+                        "Change Animation Style",
+                        "Back",
+                    ])
+                    clear_screen()
+
+                    if studio_choice == 1:
+                        selected_theme = choose_theme(menu)
+                        if selected_theme:
+                            user_data["ui_theme"] = selected_theme
+                            save_user_data(user_id, user_data)
+                            clear_screen()
+                            print_fancy_box(
+                                "Theme Updated ✨",
+                                [f"Current theme: {get_theme_display_name(selected_theme)}"],
+                                theme="magenta",
+                            )
+                            pause()
+                    elif studio_choice == 2:
+                        selected_style = choose_animation_style(menu)
+                        if selected_style:
+                            user_data["animation_style"] = selected_style
+                            save_user_data(user_id, user_data)
+                            clear_screen()
+                            print_fancy_box(
+                                "Animation Updated ✨",
+                                [f"Current style: {get_animation_style_display(selected_style)}"],
+                                theme="cyan",
+                            )
+                            pause()
+                    elif studio_choice == 0:
+                        break
+
             elif choice == "0": 
                 clear_screen()
                 print("╔═════════════════════════════════════════════════════════════════════════╗")
@@ -301,21 +368,19 @@ def dashboard(user_id, user_data):
 def main(): 
     while True: 
         try:
-            print(r"""
-███████╗ ████████╗ ██╗   ██╗ ██████╗  ██╗   ██╗ ██████╗  ███████╗ ████████╗
-██╔════╝ ╚══██╔══╝ ██║   ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ██╔════╝ ╚══██╔══╝
-███████╗    ██║    ██║   ██║ ██║  ██║  ╚████╔╝  ██████╔╝ █████╗      ██║
-╚════██║    ██║    ██║   ██║ ██║  ██║   ╚██╔╝   ██╔═══╝  ██╔══╝      ██║
-███████║    ██║    ╚██████╔╝ ██████╔╝    ██║    ██║      ███████╗    ██║
-╚══════╝    ╚═╝     ╚═════╝  ╚═════╝     ╚═╝    ╚═╝      ╚══════╝    ╚═╝
-""")
-            print("╔═════════════════════════════════════════════════════════════════════════╗")
-            print("║                                 MAIN MENU                               ║")
-            print("╠═════════════════════════════════════════════════════════════════════════╣")
-            print("║ [1] Register 📝                                                         ║")
-            print("║ [2] Login 💻                                                            ║")
-            print("║ [0] Exit 🚪                                                             ║")
-            print("╚═════════════════════════════════════════════════════════════════════════╝")
+            set_ui_theme("pastel_pink")
+            set_animation_style("sparkly")
+            clear_screen()
+            print_brand_header()
+            print_fancy_box(
+                "MAIN MENU",
+                [
+                    "[1] Register 📝",
+                    "[2] Login 💻",
+                    "[0] Exit 🚪",
+                ],
+                theme="green",
+            )
             print("Tip: type ':back' to refresh menu, ':exit' to close the app.")
 
             choice = input("Choose your option : ").strip()
@@ -323,18 +388,19 @@ def main():
             if choice == "1": 
                 user_id, user_data = register_user()
                 if user_id: 
+                    set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
+                    set_animation_style(user_data.get("animation_style", "sparkly"))
                     dashboard(user_id, user_data)
 
             elif choice == "2": 
                 user_id, user_data = login_user()
                 if user_id: 
+                    set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
+                    set_animation_style(user_data.get("animation_style", "sparkly"))
                     mood = choose_mood(menu)
                     if mood != "Skip": 
                         user_data["mood_today"] = mood
-                        print("╔═════════════════════════════════════════════════════════════════════════╗")
-                        print("║                             Mood Check-in 🤗                            ║")
-                        print("╚═════════════════════════════════════════════════════════════════════════╝")
-                        print(mood_message(mood))
+                        print_fancy_box("Mood Check-in 🤗", [mood_message(mood)], theme="yellow")
                         pause()
                         clear_screen()
                         log_mood(user_id, mood)

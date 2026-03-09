@@ -1,6 +1,7 @@
 import time
 import random 
 from src.ui import clear_screen
+from src.ui import print_fancy_box
 from src.wellbeing import load_study_logs, today_str, tired_streak_days
 
 #counting sessions 
@@ -17,12 +18,17 @@ def count_today_sessions(user_id: str) -> int:
 #meditation
 
 def meditation_menu():
-    print("\n🌿 Meditation Zone")
-    print("1. Mindfulness Meditation")
-    print("2. Guided Meditation")
-    print("3. Body Scan Meditation")
-    print("4. Short Meditation")
-    print("5. Back")
+    print_fancy_box(
+        "🌿 Meditation Zone",
+        [
+            "[1] Mindfulness Meditation",
+            "[2] Guided Meditation",
+            "[3] Body Scan Meditation",
+            "[4] Short Meditation",
+            "[5] Back",
+        ],
+        theme="blue",
+    )
 
     choice = input("Choose a meditation type fren: ").strip()
 
@@ -147,22 +153,36 @@ def recreation_menu(user_id: str):
 
     #unless you finish 3 sessions or more you can't access this feature
     if tired_streak >= 5 or sessions >= 3: 
-        print(f"\n 🌿 Recreation Zone Unlocked!!!")
+        print_fancy_box(
+            "🌿 Recreation Zone Unlocked",
+            ["Take a mindful pause before your next sprint."],
+            theme="green",
+        )
         while True: 
-            print("Welcome to Recreation Menu!")
-            print("Choose of the following ~")
-            print("1. Guided meditation")
-            print("2. Mini game")
-            print("3. Back")
+            print_fancy_box(
+                "Recreation Menu",
+                [
+                    "[1] Guided Meditation",
+                    "[2] Mini Game",
+                    "[3] Back",
+                ],
+                theme="cyan",
+            )
 
             choice = input("Choose: ").strip()
             if choice == "1":
+                clear_screen()
                 meditation_menu()
             elif choice == "2":
+                clear_screen()
                 mini_game()
             elif choice == "3":
                 return
             else:
                 print("❌ Invalid choice.")
     else: 
-                print(f"\n🔒 Recreation locked. im so sorryyy ☹️. Complete {3- sessions} more today to access it 🤗")
+                print_fancy_box(
+                    "🔒 Recreation Locked",
+                    [f"Complete {3 - sessions} more session(s) today to unlock it."],
+                    theme="yellow",
+                )

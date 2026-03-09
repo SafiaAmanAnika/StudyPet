@@ -1,5 +1,5 @@
-from src.ui import clear_screen
-from src.animation import get_animation_frame, clear
+from src.ui import clear_screen, print_fancy_box
+from src.animation import clear, render_countdown_scene
 import time
 
 DEV_MODE = True
@@ -85,20 +85,31 @@ DIFFICULTY = {
 
 
 def select_difficulty():
-    print("╔════════════════════════════════╗")
-    print("║           DIFFICULTY           ║")
-    print("╚════════════════════════════════╝")
-    print("[1] Easy\n[2] Medium\n[3] Hard")
+    print_fancy_box(
+        "DIFFICULTY",
+        [
+            "[1] Easy",
+            "[2] Medium",
+            "[3] Hard",
+        ],
+        theme="yellow",
+    )
     choice = get_choice("Choose a difficulty: ", {"1", "2", "3"})
     clear_screen()
     return DIFFICULTY[choice]  # returns (diff_name, diff_multiplier, health_loss)
 
 
 def select_pomodoro():
-    print("╔════════════════════════════════╗")
-    print("║          POMODORO MODE         ║")
-    print("╚════════════════════════════════╝")
-    print("[1] 25 min Study/ 5 min Break\n[2] 50 min Study / 10 min Break \n[3] Custom\n[0] Cancel")
+    print_fancy_box(
+        "POMODORO MODE",
+        [
+            "[1] 25 min Study / 5 min Break",
+            "[2] 50 min Study / 10 min Break",
+            "[3] Custom",
+            "[0] Cancel",
+        ],
+        theme="green",
+    )
     
     pm = get_choice("Choose your option: ", {"1", "2", "3", "0"})
     clear_screen()
@@ -137,16 +148,10 @@ def animated_countdown(seconds: int, label: str, mood: str = "Neutral", pet_type
             secs = remaining % 60
             time_str = f"{mins:02d}:{secs:02d}"
 
-            frame = get_animation_frame(pet_type, mood, level)
+            scene = render_countdown_scene(label, time_str, pet_type, mood, level, remaining, seconds)
 
             clear()
-            print("╔══════════════════════════════════════╗")
-            print("║           Study in Progress          ║")
-            print("╚══════════════════════════════════════╝")
-            print()
-            print(frame)
-            print()
-            print(f"{label} - time left: {time_str}")
+            print(scene)
 
             time.sleep(1)
 
@@ -187,16 +192,19 @@ def calculate_rewards(user_data, study_minutes, diff_multiplier, health_loss):
 
 
 def display_session_summary(topic, diff_name, study_minutes, coins_earned, health_loss, user_data):
-    print("╔═════════════════════════════════════╗")
-    print("║          Session complete!          ║")
-    print("╚═════════════════════════════════════╝")
-    print("Topic          :", topic)
-    print("Difficulty     :", diff_name)
-    print("Study time     :", study_minutes, "minutes")
-    print("Coins earned   :", coins_earned)
-    print("Health lost    :", health_loss)
-    print("Current coins  :", user_data["coins"])
-    print("Current health :", user_data["health"])
+    print_fancy_box(
+        "Session Complete ✅",
+        [
+            f"Topic          : {topic}",
+            f"Difficulty     : {diff_name}",
+            f"Study time     : {study_minutes} minutes",
+            f"Coins earned   : {coins_earned}",
+            f"Health lost    : {health_loss}",
+            f"Current coins  : {user_data['coins']}",
+            f"Current health : {user_data['health']}",
+        ],
+        theme="magenta",
+    )
 
 
 # ------------------ MAIN SESSION ------------------ #

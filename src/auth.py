@@ -1,5 +1,5 @@
 from datetime import date
-from src.ui import clear_screen
+from src.ui import clear_screen, print_fancy_box
 from src.storage import load_users, save_users
 import re, os, hashlib, sys
 
@@ -161,12 +161,15 @@ def ask_pet_theme() -> str:
     }
 
     while True:
-        print("╔═══════════════════════════════╗")
-        print("║           PET THEME           ║")
-        print("╚═══════════════════════════════╝")
-        print("[1] Cat😸")
-        print("[2] Dog🐶")
-        print("[3] Bunny🐰")
+        print_fancy_box(
+            "PET THEME",
+            [
+                "[1] Cat 😸",
+                "[2] Dog 🐶",
+                "[3] Bunny 🐰",
+            ],
+            theme="yellow",
+        )
 
         choice = input("Choose a pet theme (1–3): ").strip()
         if choice in options:
@@ -217,9 +220,11 @@ def register():
     email = ask_email()
     if email in users:
         clear_screen()
-        print("╔═══════════════════════════════════════════════════════╗")
-        print("║  ⚠️  Email already registered. Please login instead!   ║")
-        print("╚═══════════════════════════════════════════════════════╝")
+        print_fancy_box(
+            "⚠️ Registration Blocked",
+            ["Email already registered.", "Please login instead."],
+            theme="yellow",
+        )
         return None, None
 
     name = ask_non_empty("👤 Enter nickname               : ")
@@ -253,7 +258,9 @@ def register():
             "premium_food": 0
         },
         "last_login": str(date.today()),
-        "mood_today": ""
+        "mood_today": "",
+        "ui_theme": "pastel_pink",
+        "animation_style": "sparkly",
     }
 
 
@@ -271,9 +278,11 @@ def login():
     email = ask_email()
     if email not in users:
         clear_screen()
-        print("╔══════════════════════════════════════════════════╗")
-        print("║   ⚠️  User not found. Please register instead!    ║")
-        print("╚══════════════════════════════════════════════════╝")
+        print_fancy_box(
+            "⚠️ User Not Found",
+            ["Please register first and try login again."],
+            theme="yellow",
+        )
         return None, None
 
     user_data = users[email]
@@ -293,11 +302,15 @@ def login():
     if penalized:
         save_users(users)
         clear_screen()
-        print("╔══════════════════════════════════════════════════╗")
-        print("║          ⚠️   Inactive for 7+ days                ║")
-        print("║                  Pet died💀⚰️                     ║")
-        print("║          Negative coins due to inactivity        ║")
-        print("╚══════════════════════════════════════════════════╝")
+        print_fancy_box(
+            "⚠️ Inactivity Penalty",
+            [
+                "Inactive for 7+ days.",
+                "Pet died 💀⚰️",
+                "Negative coins applied.",
+            ],
+            theme="magenta",
+        )
         input("\nPress Enter to continue...")
 
     user_data["last_login"] = str(date.today())
@@ -305,7 +318,6 @@ def login():
     save_users(users)
 
     clear_screen()
-    print("✅ Login successful!")
-    print()
+    print_fancy_box("✅ Login Successful", ["Welcome back to StudyPet!"], theme="green")
     
     return email, user_data
