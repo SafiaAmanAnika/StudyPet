@@ -4,7 +4,6 @@ from datetime import date, datetime, timedelta
 from src.ui import analytics_menu, clear_screen
 
 
-
 # Safe File Handling
 
 
@@ -29,12 +28,6 @@ def _safe_load_json(path: str, default):
         with open(path, "w") as f:
             json.dump(default, f, indent=2)
         return default
-
-#  Add this helper to fix import errors
-def _safe_save_json(path: str, data):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
 
 def today_str():
     return str(date.today())
