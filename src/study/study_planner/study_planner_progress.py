@@ -1,11 +1,11 @@
 from datetime import datetime
 from .study_planner_config_helpers import (
-    load_data, save_data, manual_len, print_progress_bar, BOX_INNER, truncate_to_width
+    load_data, save_data, manual_len, print_progress_bar
 )
 from .study_planner_ui_input import (
-    clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
-    box_line, box_kv, ask_float
+    clear_screen, ask_float
 )
+from src.ui import print_fancy_box, pause
 
 # ============================================================================
 # LOG STUDY SESSION
@@ -18,18 +18,20 @@ def log_study_session():
     
     if not data.get("study_plan"):
         clear_screen()
-        box_title_only("⚠️ ERROR")
-        print()
-        print("No study plan generated yet!")
-        input("\nPress Enter to continue...")
+        print_fancy_box(
+            "⚠️ No Study Plan",
+            ["No study plan generated yet."],
+            theme="yellow",
+        )
+        pause()
         return
     
     clear_screen()
-    box_title_only("📝 LOG YOUR STUDY SESSION")
-    
-    print()
-    print("How many minutes did you study today?")
-    print()
+    print_fancy_box(
+        "Today's Session",
+        ["How many minutes did you study today?"],
+        theme="cyan",
+    )
     total_minutes = ask_float("Total minutes: ", 0, 1440)
     
     # ---- INITIALIZE SUBJECT STUDY MINUTES ----
@@ -48,12 +50,14 @@ def log_study_session():
     else:
         # Multiple subjects - ask breakdown
         clear_screen()
-        box_title_only("📚 STUDY BREAKDOWN BY SUBJECT")
-        
-        print()
-        print(f"Total minutes studied: {int(total_minutes)} min")
-        print("Now, how many minutes for each subject?")
-        print()
+        print_fancy_box(
+            "Subject Breakdown",
+            [
+                f"Total minutes studied: {int(total_minutes)} min",
+                "Now enter minutes for each subject.",
+            ],
+            theme="blue",
+        )
         
         subject_minutes = {}
         total_entered = 0
@@ -64,7 +68,11 @@ def log_study_session():
                 minutes = ask_float(f"Minutes for {subject}: ", 0, int(total_minutes))
                 if total_entered + minutes > total_minutes:
                     remaining = int(total_minutes - total_entered)
-                    print(f"❌ You only have {remaining} minutes left!")
+                    print_fancy_box(
+                        "Minutes Exceeded",
+                        [f"You only have {remaining} minutes left."],
+                        theme="yellow",
+                    )
                     continue
                 subject_minutes[subject] = int(minutes)
                 total_entered += int(minutes)
@@ -83,27 +91,30 @@ def log_study_session():
     
     if total_minutes < goal_minutes:
         data["missed_goal"] = True
-        box_top()
-        box_title("GOAL NOT MET!!!")
-        box_sep()
-        box_kv("Studied", f"{int(total_minutes)} min")
-        box_kv("Goal", f"{goal_minutes} min")
-        box_kv("Shortfall", f"{goal_minutes - int(total_minutes)} min")
-        box_sep()
-        box_line(truncate_to_width("Don't worry! Recovery plan ready tomorrow.", BOX_INNER))
-        box_bottom()
+        print_fancy_box(
+            "⚠️ Goal Not Met",
+            [
+                f"Studied: {int(total_minutes)} min",
+                f"Goal: {goal_minutes} min",
+                f"Shortfall: {goal_minutes - int(total_minutes)} min",
+                "Don't worry! Recovery plan is ready for tomorrow.",
+            ],
+            theme="yellow",
+        )
     else:
         data["missed_goal"] = False
-        box_top()
-        box_title("✅ CONGRATULATIONS!")
-        box_sep()
-        box_kv("Studied", f"{int(total_minutes)} min")
-        box_kv("Goal", f"{goal_minutes} min")
-        box_line(truncate_to_width("You met your goal! Great job! 🎉", BOX_INNER))
-        box_bottom()
+        print_fancy_box(
+            "✅ Goal Met",
+            [
+                f"Studied: {int(total_minutes)} min",
+                f"Goal: {goal_minutes} min",
+                "You met your goal! Great job! 🎉",
+            ],
+            theme="green",
+        )
     
     save_data(data)
-    input("\nPress Enter to continue...")
+    pause()
 
 # ============================================================================
 # VIEW PROGRESS DASHBOARD
@@ -121,10 +132,12 @@ def view_progress_dashboard():
     
     if not data["subjects"]:
         clear_screen()
-        box_title_only("⚠️ ERROR")
-        print()
-        print("Please setup your profile first!")
-        input("\nPress Enter to continue...")
+        print_fancy_box(
+            "⚠️ Profile Required",
+            ["Please set up your profile first."],
+            theme="yellow",
+        )
+        pause()
         return
     
     goal_hours = data.get("goal_hours", 0)
@@ -147,24 +160,16 @@ def view_progress_dashboard():
             subject = session.get("subject", "")
             if subject in planned_minutes:
                 planned_minutes[subject] += session.get("duration", 0)
-    
-    box_top()
-    box_title("📊 PROGRESS DASHBOARD")
-    box_sep()
-    
-    # ---- OVERALL PROGRESS SECTION ----
-    box_line(truncate_to_width("📈 OVERALL DAILY PROGRESS", BOX_INNER))
-    box_line("")
+
+    lines = ["📈 Overall Daily Progress", ""]
     bar = print_progress_bar(progress_percentage)
-    box_kv("Progress", bar)
-    box_kv("Studied Today", f"{study_minutes} min")
-    box_kv("Daily Goal", f"{goal_minutes} min")
-    box_kv("Remaining", f"{max(0, goal_minutes - study_minutes)} min")
-    box_sep()
-    
-    # ---- SUBJECT-WISE SECTION ----
-    box_line(truncate_to_width("📚 SUBJECT-WISE (Planned vs Actual)", BOX_INNER))
-    box_line("")
+    lines.append(f"Progress: {bar}")
+    lines.append(f"Studied Today: {study_minutes} min")
+    lines.append(f"Daily Goal: {goal_minutes} min")
+    lines.append(f"Remaining: {max(0, goal_minutes - study_minutes)} min")
+    lines.append("")
+    lines.append("📚 Subject-wise (Planned vs Actual)")
+    lines.append("")
     
     for subject in data["subjects"]:
         actual_minutes = subject_minutes.get(subject, 0)
@@ -177,13 +182,11 @@ def view_progress_dashboard():
         sub_bar = print_progress_bar(subject_percentage)
         
         # Show subject name with percentage
-        subject_line = f"  {subject}: {sub_bar}"
-        box_line(truncate_to_width(subject_line, BOX_INNER))
+        lines.append(f"{subject}: {sub_bar}")
         
         # Show comparison: Planned vs Actual
         comparison = f"Planned: {planned} min | Actual: {actual_minutes} min"
-        comparison_line = f"    ↳ {comparison}"
-        box_line(truncate_to_width(comparison_line, BOX_INNER))
+        lines.append(f"↳ {comparison}")
         
         # Show status
         if actual_minutes >= planned:
@@ -193,10 +196,8 @@ def view_progress_dashboard():
         else:
             status = f"❌ Not started"
         
-        status_line = f"    ↳ {status}"
-        box_line(truncate_to_width(status_line, BOX_INNER))
-        box_line("")
-    
-    box_sep()
-    box_bottom()
-    input("\nPress Enter to continue...")
+        lines.append(f"↳ {status}")
+        lines.append("")
+
+    print_fancy_box("📊 Progress Dashboard", lines, theme="magenta")
+    pause()

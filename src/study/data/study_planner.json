@@ -1,0 +1,309 @@
+{
+    "user_name": "z",
+    "subjects": [
+        "spl",
+        "toc"
+    ],
+    "subject_difficulty": {
+        "spl": "Easy",
+        "toc": "Hard"
+    },
+    "subject_study_minutes": {
+        "spl": 23,
+        "toc": 23
+    },
+    "goal_hours": 12.0,
+    "mood_today": "Stressed 😫",
+    "study_minutes_today": 50,
+    "missed_goal": true,
+    "goal_recovery_increase": 0,
+    "last_study_date": "2026-03-10",
+    "study_plan": [
+        {
+            "session": 1,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 2,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 3,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 4,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 5,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 6,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 7,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 8,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 9,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 10,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 11,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 12,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 13,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 14,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 15,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 16,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 17,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 18,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 19,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 20,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 21,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 22,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 23,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 24,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 25,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 26,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 27,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 28,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 29,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 30,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 31,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 32,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 33,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 34,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 35,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 36,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 37,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 38,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 39,
+            "subject": "toc",
+            "duration": 45,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 40,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 41,
+            "subject": "spl",
+            "duration": 22,
+            "difficulty": "Easy",
+            "type": "study"
+        },
+        {
+            "session": 42,
+            "subject": "Break",
+            "duration": 8,
+            "type": "break"
+        },
+        {
+            "session": 43,
+            "subject": "toc",
+            "duration": 18,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 44,
+            "subject": "Revision",
+            "duration": 10,
+            "type": "revision"
+        }
+    ]
+}

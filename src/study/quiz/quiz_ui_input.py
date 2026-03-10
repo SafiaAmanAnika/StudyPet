@@ -3,7 +3,12 @@ from src.study.quiz.quiz_config_helpers import (
     wrap_text_to_width, manual_strip, manual_is_number, date_valid_simple,
     load_data, save_data
 )
-import os
+from src.ui import (
+    clear_screen as shared_clear_screen,
+    print_fancy_box,
+    menu as ui_menu,
+    pause,
+)
 
 # ============================================================================
 # SCREEN MANAGEMENT
@@ -11,13 +16,11 @@ import os
 
 def clear_screen():
     """Clear terminal screen"""
-    try:
-        if os.name == "nt":
-            os.system("cls")
-        else:
-            print("\033[2J\033[H", end="")
-    except Exception:
-        print("\n" * 60)
+    shared_clear_screen()
+
+
+def _error_box(message: str):
+    print_fancy_box("❌ Invalid Input", [message], theme="yellow")
 
 BORDER_FILL = "═" * (BOX_INNER + 2)
 
@@ -95,10 +98,10 @@ def ask_title(prompt):
     while True:
         v = manual_strip(input(prompt))
         if v == "":
-            print("Enter a short title (e.g., quiz1).")
+            _error_box("Enter a short title (e.g., quiz1).")
             continue
         if "\n" in v or "\r" in v:
-            print("Invalid title.")
+            _error_box("Invalid title.")
             continue
         return v
 
@@ -107,14 +110,14 @@ def ask_float(prompt, min_v=None, max_v=None):
     while True:
         v = manual_strip(input(prompt))
         if not manual_is_number(v):
-            print("Enter a valid number.")
+            _error_box("Enter a valid number.")
             continue
         num = float(v)
         if min_v is not None and num < min_v:
-            print(f"Value must be >= {min_v}")
+            _error_box(f"Value must be >= {min_v}")
             continue
         if max_v is not None and num > max_v:
-            print(f"Value must be <= {max_v}")
+            _error_box(f"Value must be <= {max_v}")
             continue
         return num
 
@@ -124,7 +127,7 @@ def ask_date(prompt):
         v = manual_strip(input(prompt))
         if date_valid_simple(v):
             return v
-        print("Enter date as YYYY-MM-DD")
+        _error_box("Enter date as YYYY-MM-DD")
 
 # ============================================================================
 # MARKS ENTRY FUNCTIONS
@@ -158,8 +161,9 @@ def add_quiz_marks():
     })
     
     save_data(data)
-    print("\n✅ Quiz added.")
-    input("Press Enter...")
+    clear_screen()
+    print_fancy_box("✅ Quiz Added", [f"{subject} - {title} saved successfully."], theme="green")
+    pause()
 
 def add_mid_marks():
     """Add mid exam marks for a subject"""
@@ -189,29 +193,24 @@ def add_mid_marks():
     })
     
     save_data(data)
-    print("\n✅ Mid added.")
-    input("Press Enter...")
+    clear_screen()
+    print_fancy_box("✅ Mid Added", [f"{subject} - {title} saved successfully."], theme="green")
+    pause()
 
 def add_marks_menu():
     """Menu for adding quiz or mid marks"""
     while True:
         clear_screen()
-        box_top()
-        box_title("ADD MARKS")
-        box_bottom()
-        
-        print("[1] Add Quiz Marks")
-        print("[2] Add Mid Marks")
-        print("[0] Back")
-        
-        c = manual_strip(input("Choose: "))
-        
-        if c == "1":
+        print_fancy_box(
+            "📝 Add Marks",
+            ["Choose which exam type to record."],
+            theme="cyan",
+        )
+        c = ui_menu(["Add Quiz Marks", "Add Mid Marks", "Back"])
+
+        if c == 1:
             add_quiz_marks()
-        elif c == "2":
+        elif c == 2:
             add_mid_marks()
-        elif c == "0":
+        elif c == 0:
             return
-        else:
-            print("Invalid choice")
-            input("Press Enter...")

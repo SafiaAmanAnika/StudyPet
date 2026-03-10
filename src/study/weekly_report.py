@@ -1,5 +1,6 @@
 import json, os
 from datetime import date, timedelta
+from src.ui import clear_screen, print_fancy_box, menu, pause
 
 # ---------------- PATH + SAFE JSON HELPERS ---------------- #
 
@@ -225,50 +226,56 @@ def print_report(start: str, end: str, dates: list,
                  score: int, score_label: str,
                  minutes_score, consistency_score, goal_score,
                  tips: list):
-    
-    print()
-    print("╔══════════════════════════════════════════════════════╗")
-    print("║               WEEKLY PERFORMANCE REPORT              ║")
-    print("╚══════════════════════════════════════════════════════╝")
-    print(f"Range: {start}  →  {end}")
-    print("════════════════════════════════════════════════════════")
-    print(f"Pomodoro sessions completed: {total_sessions}")
-    print(f"Total study minutes        : {total_minutes}")
-    print(f"Days studied               : {days_studied}/7")
+    summary_lines = [
+        f"Range: {start} -> {end}",
+        f"Pomodoro sessions completed: {total_sessions}",
+        f"Total study minutes: {total_minutes}",
+        f"Days studied: {days_studied}/7",
+    ]
 
     if goal_rate is None:
-        print("Goal achievement rate       : (goal not set)")
+        summary_lines.append("Goal achievement rate: (goal not set)")
     else:
-        print(f"Goal achievement rate      : {met_days}/7 = {round(goal_rate*100,1)}%")
-        print(f"Daily goal                 : {goal_minutes} minutes/day")
+        summary_lines.append(f"Goal achievement rate: {met_days}/7 = {round(goal_rate*100, 1)}%")
+        summary_lines.append(f"Daily goal: {goal_minutes} minutes/day")
 
-    print("════════════════════════════════════════════════════════")
-    print("Mood trends:")
+    print_fancy_box("🗓️ Weekly Performance Report", summary_lines, theme="cyan")
+
+    mood_lines = []
     if top_mood is None:
-        print("- No mood data recorded this week.")
+        mood_lines.append("No mood data recorded this week.")
     else:
-        print(f"- Top mood: {top_mood}")
+        mood_lines.append(f"Top mood: {top_mood}")
         for k in sorted(mood_dist.keys(), key=lambda x: mood_dist[x], reverse=True):
-            print(f"  • {k}: {mood_dist[k]} day(s)")
+            mood_lines.append(f"{k}: {mood_dist[k]} day(s)")
+    print_fancy_box("🌈 Mood Trends", mood_lines, theme="blue")
 
-    print("════════════════════════════════════════════════════════")
+    breakdown_lines = [
+        f"{d}: {minutes_by_date.get(d, 0)} min | {sessions_by_date.get(d, 0)} session(s)"
+        for d in dates
+    ]
+    print_fancy_box("📅 Daily Breakdown (Last 7 Days)", breakdown_lines, theme="yellow")
+
     health = user_data.get("health", 10)
     coins = user_data.get("coins", 0)
-    print(f"Pet health                  : {health}")
+    pet_lines = [
+        f"Pet health: {health}",
+        f"Coins: {coins}",
+    ]
     if isinstance(health, int) and health <= 3:
-        print("⚠️  Pet is weak! Feed it soon.")
-    print(f"Coins                       : {coins}")
+        pet_lines.append("⚠️ Pet is weak! Feed it soon.")
+    print_fancy_box("🐾 Pet Snapshot", pet_lines, theme="magenta")
 
-    print("════════════════════════════════════════════════════════")
-    print(f"Productivity score          : {score}/100  ({score_label})")
-    print(f"Score breakdown             : minutes {minutes_score}/40, consistency {consistency_score}/30, goal {goal_score}/30")
+    score_lines = [
+        f"Productivity score: {score}/100 ({score_label})",
+        f"Breakdown: minutes {minutes_score}/40, consistency {consistency_score}/30, goal {goal_score}/30",
+    ]
+    print_fancy_box("📈 Productivity Score", score_lines, theme="green")
 
-    print("════════════════════════════════════════════════════════")
-    print("3 tips for next week:")
+    tips_lines = []
     for i, t in enumerate(tips, start=1):
-        print(f"{i}. {t}")
-
-    print("════════════════════════════════════════════════════════\n")
+        tips_lines.append(f"{i}. {t}")
+    print_fancy_box("💡 3 Tips For Next Week", tips_lines, theme="cyan")
 
 
 # ---------------- SNAPSHOT SAVING ---------------- #
@@ -327,24 +334,23 @@ def run(user_id: str, user_data: dict) -> dict:
 
     tips = generate_tips(goal_rate, days_studied, total_minutes, top_mood)
 
-    print_report(
-        start, end, dates,
-        minutes_by_date, sessions_by_date,
-        total_minutes, total_sessions, days_studied,
-        goal_rate, goal_minutes, met_days,
-        top_mood, mood_dist,
-        user_data,
-        score, label,
-        ms, cs, gs,
-        tips
-    )
-
     while True:
-        print("[1] Save this report snapshot")
-        print("[0] Back")
-        c = input("Choose: ").strip()
+        clear_screen()
+        print_report(
+            start, end, dates,
+            minutes_by_date, sessions_by_date,
+            total_minutes, total_sessions, days_studied,
+            goal_rate, goal_minutes, met_days,
+            top_mood, mood_dist,
+            user_data,
+            score, label,
+            ms, cs, gs,
+            tips
+        )
 
-        if c == "1":
+        c = menu(["Save this report snapshot", "Back"])
+
+        if c == 1:
             health = user_data.get("health", 10)
             save_snapshot(
                 user_id, start, end,
@@ -352,8 +358,13 @@ def run(user_id: str, user_data: dict) -> dict:
                 goal_rate, top_mood,
                 health, score
             )
-            print("✅ Snapshot saved.")
-        elif c == "0":
+            clear_screen()
+            print_fancy_box(
+                "✅ Snapshot Saved",
+                [f"Weekly snapshot stored for {start} -> {end}."],
+                theme="green",
+            )
+            pause()
+        elif c == 0:
+            clear_screen()
             return user_data
-        else:
-            print("❌ Invalid option.")

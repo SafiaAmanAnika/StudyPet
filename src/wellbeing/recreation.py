@@ -1,6 +1,5 @@
 import time, random 
-from src.ui import clear_screen
-from src.ui import print_fancy_box
+from src.ui import clear_screen, print_fancy_box, menu, pause
 from .wellbeing import load_study_logs, today_str, tired_streak_days
 
 #counting sessions 
@@ -17,133 +16,139 @@ def count_today_sessions(user_id: str) -> int:
 #meditation
 
 def meditation_menu():
-    print_fancy_box(
-        "🌿 Meditation Zone",
-        [
-            "[1] Mindfulness Meditation",
-            "[2] Guided Meditation",
-            "[3] Body Scan Meditation",
-            "[4] Short Meditation",
-            "[5] Back",
-        ],
-        theme="blue",
-    )
+    while True:
+        clear_screen()
+        print_fancy_box(
+            "🌿 Meditation Zone",
+            ["Choose a guided break that matches your energy."],
+            theme="blue",
+        )
+        choice = menu(
+            [
+                "Mindfulness Meditation",
+                "Guided Meditation",
+                "Body Scan Meditation",
+                "Short Breathing Meditation",
+                "Back",
+            ]
+        )
 
-    choice = input("Choose a meditation type fren: ").strip()
+        if choice == 1:
+            mindfulness_meditation()
+        elif choice == 2:
+            guided_meditation()
+        elif choice == 3:
+            body_scan_meditation()
+        elif choice == 4:
+            short_meditation()
+        elif choice == 0:
+            clear_screen()
+            return
 
-    if choice == "1":
-        mindfulness_meditation()
-    elif choice == "2": 
-        guided_meditation()
-    elif choice == "3":
-        body_scan_meditation()
-    elif choice == "4": 
-        short_meditation()
-    elif choice == "5":
-        print("Going back ... ")
-        return 
-    else: 
-        print("❌ Invalid choice. Please try again.")
-        meditation_menu()
+
+def _run_meditation_session(title: str, steps: list, focus_line: str, duration_seconds: int):
+    clear_screen()
+    print_fancy_box(title, steps, theme="blue")
+    input("\nPress Enter when you're ready to begin... ")
+    clear_screen()
+    print_fancy_box("🫧 Focus Window", [focus_line], theme="green")
+    time.sleep(duration_seconds)
+    clear_screen()
+    print_fancy_box("✨ Meditation Complete", ["Well done. Your mind got a reset."], theme="magenta")
+    pause()
+    clear_screen()
 
 def mindfulness_meditation():
-    print("\n🧘 Mindfulness Meditation (5-10 minutes)")
-    print("1. Find a quiet space and sit comfortably with your back straight.")
-    time.sleep(5)
-    print("2. Close your eyes and focus on your breathing.")
-    time.sleep(5)
-    print("3. Feel the air entering and leaving your body.")
-    time.sleep(5)
-    print("4. Acknowledge thoughts and distractions without judgment, then return focus to your breath.")
-    time.sleep(5)
-    print("5. Stay present for 5-10 minutes.")
-    time.sleep(15)
-
-    input("\nPress Enter when you're ready to begin...")
-    print("\nYou can start now. Focus on your breath...")
-    time.sleep(5)  # Simulating a period of mindfulness.
-    print("✨ Mindfulness meditation complete. Well done!")
-    clear_screen()
+    _run_meditation_session(
+        "🧘 Mindfulness Meditation (5-10 min)",
+        [
+            "1. Sit comfortably with your back straight.",
+            "2. Close your eyes and focus on breathing.",
+            "3. Observe breath in and out.",
+            "4. Notice distractions, then return to breath.",
+            "5. Stay present for a few calm minutes.",
+        ],
+        "Breathe naturally and stay present.",
+        5,
+    )
 
 def guided_meditation():
-    print("\n🧘 Guided Meditation (5-10 minutes)")
-    print("1. Find a comfortable position, either sitting or lying down.")
-    time.sleep(5)
-    print("2. Close your eyes and relax.")
-    time.sleep(5)
-    print("3. Breathe in deeply and slowly through your nose... (Pause 4 seconds)")
-    time.sleep(4)
-    print("4. Hold your breath for a moment... (Pause 4 seconds)")
-    time.sleep(4)
-    print("5. Exhale slowly... (Pause 8 seconds)")
-    time.sleep(8)
-    print("6. Repeat this process, focusing on your breathing.")
-    
-    input("\nPress Enter when you're ready to begin...")
-    print("\nYou can start now. Focus on your breath...")
-    time.sleep(15)  # Simulating the meditation session.
-    print("✨ Guided meditation complete. Well done!")
-    time.sleep(1)
-    clear_screen()
+    _run_meditation_session(
+        "🧘 Guided Meditation (5-10 min)",
+        [
+            "1. Sit or lie down in a comfortable position.",
+            "2. Close your eyes and relax your shoulders.",
+            "3. Inhale slowly through your nose (4 sec).",
+            "4. Hold your breath gently (4 sec).",
+            "5. Exhale slowly (8 sec).",
+            "6. Repeat with calm attention.",
+        ],
+        "Follow the guided rhythm: inhale, hold, exhale.",
+        15,
+    )
 
 def body_scan_meditation():
-    print("\n🧘 Body Scan Meditation (5-10 minutes)")
-    print("1. Lie down in a quiet place or sit comfortably.")
-    time.sleep(5)
-    print("2. Close your eyes and take deep breaths.")
-    time.sleep(5)
-    print("3. Focus on the top of your head. Feel any tension, breathe into it, and release.")
-    time.sleep(5)
-    print("4. Move down to your face, noticing any tension. Breathe deeply and relax.")
-    time.sleep(5)
-    print("5. Continue focusing on each part of your body, from your neck to your shoulders, arms, chest, abdomen, legs, and feet.")
-    time.sleep(6)
-    print("6. With each exhale, visualize tension leaving the body part you're focusing on.")
-    time.sleep(5)
-    
-    input("\nPress Enter when you're ready to begin...")
-    print("\nYou can start now. Focus on each body part...")
-    time.sleep(5)  # Simulating the body scan session.
-    print("✨ Body scan meditation complete. Well done!")
-    time.sleep(1)
-    clear_screen()
+    _run_meditation_session(
+        "🧘 Body Scan Meditation (5-10 min)",
+        [
+            "1. Sit or lie down somewhere quiet.",
+            "2. Take a few deep breaths.",
+            "3. Scan from head to toe for tension.",
+            "4. Relax each area as you exhale.",
+            "5. Continue through shoulders, chest, legs, and feet.",
+        ],
+        "Move attention slowly through each body part.",
+        5,
+    )
 
 
 def short_meditation():
-    print("\n🧘 GUIDED BREATHING --- 1 minute ")
+    clear_screen()
+    print_fancy_box(
+        "🧘 Guided Breathing (1 min)",
+        ["Follow 3 calm breathing cycles."],
+        theme="blue",
+    )
     for _ in range(3):
-        print("Inhale ... 😌")
+        print_fancy_box("Breathing", ["Inhale ... 😌"], theme="cyan")
         time.sleep(3)
-        print("Hold ... ")
+        print_fancy_box("Breathing", ["Hold ..."], theme="cyan")
         time.sleep(2)
-        print("Exhale ... 😮‍💨")
+        print_fancy_box("Breathing", ["Exhale ... 😮‍💨"], theme="cyan")
         time.sleep(5)
-    print("✨ Meditation completed. Sparkle sparkle ✨✨")
-    time.sleep(1)
+    print_fancy_box("✨ Meditation Complete", ["Sparkle sparkle. Nice reset!"], theme="magenta")
+    pause()
     clear_screen()
 
 #game yey 
 def mini_game():
     secret = random.randint(1, 10)
-    print("\n🎮 Guess the number (1–10). You have ONLY 3 tries.")
+    clear_screen()
+    print_fancy_box(
+        "🎮 Mini Game: Guess The Number",
+        ["Pick a number from 1 to 10.", "You have 3 tries."],
+        theme="cyan",
+    )
 
-    for _ in range(3):
+    for attempt in range(1, 4):
         try: 
-            guess = int(input("Your guess: "))
+            guess = int(input(f"Attempt {attempt}/3 - Your guess: "))
         except (TypeError, ValueError): 
-            print("Invalid input.")
+            print_fancy_box("Invalid Input", ["Please enter a whole number."], theme="yellow")
             continue 
 
         if guess == secret: 
-            print("🎉 Correct answerrrr! You win!!!! YOU ROCKKKKK !!!")
+            print_fancy_box("🎉 You Win!", ["Correct answer! You rock!"], theme="green")
+            pause()
+            clear_screen()
             return 
         elif guess < secret: 
-            print("Too low! Try again ~")
+            print_fancy_box("Try Again", ["Too low!"], theme="yellow")
         else: 
-            print("Too high! Try again ~")
+            print_fancy_box("Try Again", ["Too high!"], theme="yellow")
         
-    print(f"😭 youuuu lostttttttt brooo; the correct answer was {secret}")
-    time.sleep(2)
+    print_fancy_box("😿 Round Over", [f"The correct number was {secret}."], theme="magenta")
+    pause()
     clear_screen()
 
 def recreation_menu(user_id: str):
@@ -152,36 +157,32 @@ def recreation_menu(user_id: str):
 
     #unless you finish 3 sessions or more you can't access this feature
     if tired_streak >= 5 or sessions >= 3: 
-        print_fancy_box(
-            "🌿 Recreation Zone Unlocked",
-            ["Take a mindful pause before your next sprint."],
-            theme="green",
-        )
         while True: 
+            clear_screen()
+            print_fancy_box(
+                "🌿 Recreation Zone Unlocked",
+                ["Take a mindful pause before your next sprint."],
+                theme="green",
+            )
             print_fancy_box(
                 "Recreation Menu",
-                [
-                    "[1] Guided Meditation",
-                    "[2] Mini Game",
-                    "[3] Back",
-                ],
+                ["Pick a break activity:"],
                 theme="cyan",
             )
+            choice = menu(["Guided Meditation", "Mini Game", "Back"])
 
-            choice = input("Choose: ").strip()
-            if choice == "1":
-                clear_screen()
+            if choice == 1:
                 meditation_menu()
-            elif choice == "2":
-                clear_screen()
+            elif choice == 2:
                 mini_game()
-            elif choice == "3":
+            elif choice == 0:
+                clear_screen()
                 return
-            else:
-                print("❌ Invalid choice.")
     else: 
-                print_fancy_box(
-                    "🔒 Recreation Locked",
-                    [f"Complete {3 - sessions} more session(s) today to unlock it."],
-                    theme="yellow",
-                )
+        remaining = max(0, 3 - sessions)
+        print_fancy_box(
+            "🔒 Recreation Locked",
+            [f"Complete {remaining} more session(s) today to unlock it."],
+            theme="yellow",
+        )
+        pause()

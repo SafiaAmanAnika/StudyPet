@@ -1,1 +1,63 @@
-{}
+{
+  "z@gmail.com": {
+    "name": "z",
+    "password_salt": "d281b80e1e2a4935cdb83d55a24c433c",
+    "password_hash": "f3d35fbdf50f1ce15390c19999a6755b02f0661088a513e062ae2346bfd0548e",
+    "goal_hours": 23,
+    "academic_goal": "study hard bitch",
+    "pet_theme": "Bunny",
+    "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
+    "health": 10,
+    "energy": 100.0,
+    "coins": 57,
+    "study_streak": 1,
+    "total_study_hours": 0.8333333333333334,
+    "total_study_minutes": 50,
+    "last_study_date": "2026-03-10",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-03-10",
+    "mood_today": "Stressed \ud83d\ude2b",
+    "ui_theme": "pastel_pink",
+    "animation_style": "sparkly",
+    "last_study_minutes": 25,
+    "level": 1,
+    "reflections": [
+      {
+        "date": "2026-03-10",
+        "positive_feedback": "3",
+        "challenges": "1",
+        "hours": 2.0
+      },
+      {
+        "date": "2026-03-10",
+        "positive_feedback": "3",
+        "challenges": "1",
+        "hours": 2.0
+      },
+      {
+        "date": "2026-03-10",
+        "positive_feedback": "my life",
+        "challenges": "my life",
+        "hours": 12.0
+      },
+      {
+        "date": "2026-03-10",
+        "positive_feedback": "12",
+        "challenges": "32",
+        "hours": 23.0
+      }
+    ],
+    "daily_sessions": {
+      "2026-03-10": 4
+    },
+    "reflection_total_hours": 39.0,
+    "reflection_total_sessions": 4,
+    "current_streak": 1,
+    "max_streak": 1,
+    "inactivity_days": 0,
+    "achievements": []
+  }
+}

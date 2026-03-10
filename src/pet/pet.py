@@ -1,4 +1,5 @@
 from .evolution import get_pet_stage
+from src.ui import print_fancy_box
 
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:
@@ -86,22 +87,38 @@ def get_pet_ascii(health: int) -> str:
 def show_status(user_data: dict) -> None:
     user_data = ensure_pet_defaults(user_data)
 
-    print("╔══════════════════════════════════════════╗")
-    print("║            🐱 PET STATUS 🐱              ║")
-    print("╚══════════════════════════════════════════╝")
+    health = int(user_data.get("health", 10))
+    coins = user_data.get("coins", 5)
+    level = user_data.get("level", 1)
+    stage = get_pet_stage(level)
+    pet_theme = user_data.get("pet_theme", "Pet")
 
-    print(f"Health : {user_data['health']}")
-    print(f"Coins  : {user_data['coins']}")
-    print(f"Level  : {user_data['level']} ({get_pet_stage(user_data['level'])})")
-    print("════════════════════════════════════════════")
+    normal_food = user_data["inventory"].get("normal_food", 0)
+    premium_food = user_data["inventory"].get("premium_food", 0)
 
-    print("Inventory:")
-    print(f"🍎 Normal Food : {user_data['inventory']['normal_food']}")
-    print(f"🍗 Premium Food: {user_data['inventory']['premium_food']}")
-    print("════════════════════════════════════════════")
+    health_bar = "█" * max(0, min(20, health)) + "░" * max(0, 20 - min(20, health))
 
-    print(get_pet_ascii(user_data["health"]))
-    print("════════════════════════════════════════════\n")
+    pet_icon = {
+        "Cat": "🐱",
+        "Dog": "🐶",
+        "Bunny": "🐰",
+    }.get(str(pet_theme), "🐾")
+
+    summary_lines = [
+        f"Pet Theme      : {pet_theme}",
+        f"Health         : {health}/20 [{health_bar}]",
+        f"Coins          : {coins}",
+        f"Level          : {level} ({stage})",
+        "",
+        "Inventory:",
+        f"🍎 Normal Food : {normal_food}",
+        f"🍗 Premium Food: {premium_food}",
+    ]
+
+    print_fancy_box(f"{pet_icon} PET STATUS {pet_icon}", summary_lines, theme="cyan")
+
+    mood_lines = get_pet_ascii(health).split("\n")
+    print_fancy_box("Pet Mood", mood_lines, theme="magenta")
 
 
 def change_health(user_data: dict, delta: int) -> dict:

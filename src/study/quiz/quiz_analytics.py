@@ -1,11 +1,14 @@
 from src.study.quiz.quiz_config_helpers import (
-    load_data, calculate_grade, print_progress_bar, manual_len, manual_sum
+    load_data, calculate_grade, print_progress_bar, manual_len, manual_sum,
+    wrap_text_to_width, truncate_to_width, BOX_INNER,
 )
 from src.study.quiz.quiz_ui_input import (
-    clear_screen, box_top, box_title, box_sep, box_bottom, box_line, box_kv,
-    wrap_text_to_width, truncate_to_width, BOX_INNER
+    clear_screen
 )
 from src.study.quiz.quiz_charts import build_vertical_trend, build_overall_chart
+from src.ui import print_fancy_box, pause
+
+CARD_WIDTH = 73
 
 # ============================================================================
 # TREND ANALYSIS FUNCTIONS
@@ -75,16 +78,24 @@ def predict_final_grade(current_percent, syllabus_done):
 def syllabus_coverage_tracker():
     """Display curriculum progress report showing syllabus coverage per subject"""
     clear_screen()
-    box_top()
-    box_title("CURRICULUM PROGRESS REPORT")
-    box_bottom()
+    print_fancy_box(
+        "📚 Curriculum Progress Report",
+        ["Subject-wise quiz and syllabus coverage."],
+        width=CARD_WIDTH,
+        theme="cyan",
+    )
     
     data = load_data()
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:
-        print("\nNo subjects found.")
-        input("Press Enter...")
+        clear_screen()
+        print_fancy_box(
+            "No Subjects Found",
+            ["Add quiz or mid marks first to view curriculum progress."],
+            theme="yellow",
+        )
+        pause()
         return
     
     # Process each subject
@@ -92,6 +103,7 @@ def syllabus_coverage_tracker():
         sub = subjects[subject]
         quizzes = sub.get("quiz", [])
         mids = sub.get("mid", [])
+        lines = []
         
         # Calculate syllabus coverage
         total_completed = 0
@@ -105,36 +117,30 @@ def syllabus_coverage_tracker():
         
         remaining = 100 - total_completed
         
-        # Display subject report
-        box_top()
-        box_title(subject.upper())
-        box_sep()
-        
         # Show quizzes
         if manual_len(quizzes) > 0:
-            box_line("📚 Quizzes:")
+            lines.append("📚 Quizzes:")
             for q in quizzes:
                 quiz_info = f"{q.get('title','Quiz')}: {q.get('obtained',0)} / {q.get('total',0)}  {q.get('syllabus',0)}% syllabus"
-                box_line("  " + truncate_to_width(quiz_info, BOX_INNER - 2))
+                lines.append("- " + truncate_to_width(quiz_info, 66))
         
         # Show mids
         if manual_len(mids) > 0:
             mid_total = sum(m.get("syllabus", 0) for m in mids)
-            box_line("📝 Mid Coverage:")
-            box_line("  " + truncate_to_width(f"Total → {mid_total}%", BOX_INNER - 2))
-        
-        box_sep()
+            lines.append("📝 Mid Coverage:")
+            lines.append(f"- Total -> {mid_total}%")
+
+        lines.append("")
         
         # Show overall progress
-        box_kv("Overall Progress :", f"{total_completed:.1f}%")
-        box_line("  " + truncate_to_width(print_progress_bar(total_completed, show_percent=False), BOX_INNER - 2))
-        box_kv("Syllabus Completed :", f"{total_completed:.1f}%")
-        box_kv("Syllabus Remaining :", f"{remaining:.1f}%")
-        
-        box_bottom()
-        print()
+        lines.append(f"Overall Progress: {total_completed:.1f}%")
+        lines.append(print_progress_bar(total_completed, show_percent=False))
+        lines.append(f"Syllabus Completed: {total_completed:.1f}%")
+        lines.append(f"Syllabus Remaining: {remaining:.1f}%")
+
+        print_fancy_box(subject.upper(), lines, width=CARD_WIDTH, theme="blue")
     
-    input("Press Enter...")
+    pause()
 
 # ============================================================================
 # PERFORMANCE TREND MONITOR
@@ -143,18 +149,28 @@ def syllabus_coverage_tracker():
 def result_overview_and_advisor():
     """Display detailed performance analysis with trends and advice"""
     clear_screen()
-    box_top()
-    box_title("PERFORMANCE TREND MONITOR")
-    box_bottom()
+    print_fancy_box(
+        "📈 Performance Trend Monitor",
+        ["Exam trend, status, and actionable advice per subject."],
+        width=CARD_WIDTH,
+        theme="cyan",
+    )
     
     data = load_data()
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:
-        print("No subjects found.")
-        input("Press Enter...")
+        clear_screen()
+        print_fancy_box(
+            "No Subjects Found",
+            ["Add quiz or mid marks first to view performance trends."],
+            theme="yellow",
+        )
+        pause()
         return
     
+    printed_any = False
+
     # Process each subject
     for subject in subjects:
         sub = subjects[subject]
@@ -164,6 +180,8 @@ def result_overview_and_advisor():
         # Skip if no exams
         if manual_len(quizzes) == 0 and manual_len(mids) == 0:
             continue
+        printed_any = True
+        lines = []
         
         # Get combined exam records
         combined = []
@@ -189,23 +207,18 @@ def result_overview_and_advisor():
                     qcnt += 1
                     r['title'] = f"quiz{qcnt}"
         
-        # Display subject performance
-        box_top()
-        box_title(subject.upper())
-        box_sep()
-        
         # Show quizzes
         if manual_len(quizzes) > 0:
-            box_line("📚 Quizzes:")
+            lines.append("📚 Quizzes:")
             for q in quizzes:
                 quiz_info = f"{q.get('title','Quiz')}: {q.get('obtained',0)} / {q.get('total',0)}  {q.get('syllabus',0)}% syllabus"
-                box_line("  " + truncate_to_width(quiz_info, BOX_INNER - 2))
+                lines.append("- " + truncate_to_width(quiz_info, 66))
         
         # Show mid coverage
         if manual_len(mids) > 0:
             mid_total = sum(m.get("syllabus", 0) for m in mids)
-            box_line("📝 Mid Coverage:")
-            box_line("  " + truncate_to_width(f"Syllabus Covered: {mid_total}%", BOX_INNER - 2))
+            lines.append("📝 Mid Coverage:")
+            lines.append(f"- Syllabus Covered: {mid_total}%")
         
         # Calculate overall statistics
         total_marks = sum(r.get("total", 0) for r in combined)
@@ -230,24 +243,25 @@ def result_overview_and_advisor():
         
         trend_label = determine_trend_label(perc_list)
         
-        box_sep()
+        lines.append("")
         
         # Display summary statistics
-        box_kv("Total:", f"{obtained_marks} / {total_marks}")
-        box_kv("Percentage:", f"{percent:.2f}%")
-        box_kv("Grade:", grade)
-        box_kv("Remaining Syllabus:", f"{remaining}%")
+        lines.append(f"Total: {obtained_marks} / {total_marks}")
+        lines.append(f"Percentage: {percent:.2f}%")
+        lines.append(f"Grade: {grade}")
+        lines.append(f"Remaining Syllabus: {remaining}%")
         
         # Display trend chart if enough exams
         if manual_len(combined) >= 2:
-            box_kv("Trend:", "")
+            lines.append("")
+            lines.append("Trend:")
             chart_lines = build_vertical_trend(combined)
             for ln in chart_lines:
-                box_line("  " + truncate_to_width(ln, BOX_INNER - 2))
-            box_kv("Status:", trend_label)
+                lines.append(truncate_to_width(ln, 66))
+            lines.append(f"Status: {trend_label}")
         else:
-            box_kv("Trend:", "Not enough exams to show the trend")
-            box_kv("Status:", "Not enough exams to show the status")
+            lines.append("Trend: Not enough exams to show the trend")
+            lines.append("Status: Not enough exams to show the status")
         
         # Provide personalized advice
         advice = []
@@ -272,19 +286,27 @@ def result_overview_and_advisor():
         
         # Display advice
         if advice:
-            box_line("Advice:")
+            lines.append("")
+            lines.append("Advice:")
             for a in advice:
-                wrapped = wrap_text_to_width(a, BOX_INNER - 4)
+                wrapped = wrap_text_to_width(a, 66)
                 for i, w in enumerate(wrapped):
                     if i == 0:
-                        box_line("  - " + w)
+                        lines.append("- " + w)
                     else:
-                        box_line("    " + w)
-        
-        box_bottom()
-        print("-" * 60)
+                        lines.append("  " + w)
+
+        print_fancy_box(subject.upper(), lines, width=CARD_WIDTH, theme="magenta")
+
+    if not printed_any:
+        print_fancy_box(
+            "No Exam Data",
+            ["Add quiz or mid marks to generate trend insights."],
+            width=CARD_WIDTH,
+            theme="yellow",
+        )
     
-    input("\nPress Enter...")
+    pause()
 
 # ============================================================================
 # DASHBOARD VIEW
@@ -293,20 +315,29 @@ def result_overview_and_advisor():
 def view_dashboard():
     """Display comprehensive dashboard with all subjects performance"""
     clear_screen()
-    box_top()
-    box_title("DASHBOARD")
-    box_bottom()
+    print_fancy_box(
+        "📊 Performance Dashboard",
+        ["Subject overview with grades and prediction."],
+        width=CARD_WIDTH,
+        theme="cyan",
+    )
     
     data = load_data()
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:
-        print("No subjects found.")
-        input("Press Enter...")
+        clear_screen()
+        print_fancy_box(
+            "No Subjects Found",
+            ["Add quiz or mid marks first to view the dashboard."],
+            theme="yellow",
+        )
+        pause()
         return
     
     overall_percents = []
     subject_names = []
+    printed_any = False
     
     # Process each subject
     for subject in subjects:
@@ -319,6 +350,7 @@ def view_dashboard():
         total_marks = sum(r.get("total", 0) for r in combined)
         if total_marks == 0:
             continue
+        printed_any = True
         
         # Calculate statistics
         obtained_marks = sum(r.get("obtained", 0) for r in combined)
@@ -336,36 +368,37 @@ def view_dashboard():
         overall_percents.append(percent)
         subject_names.append(subject)
         
-        # Display subject card
-        box_top()
-        box_title(subject.upper())
-        box_sep()
-        
-        box_kv("Overall Percentage     :", f"{percent:6.2f}%")
-        box_kv("Current Grade          :", grade)
-        box_kv("Syllabus Completed     :", f"{total_syllabus_done:6.2f}%")
-        box_kv("Remaining Coverage     :", f"{remaining:6.2f}%")
-        box_kv("Predicted Final Grade  :", predicted)
-        
-        box_bottom()
-        print()
+        lines = [
+            f"Overall Percentage: {percent:6.2f}%",
+            f"Current Grade: {grade}",
+            f"Syllabus Completed: {total_syllabus_done:6.2f}%",
+            f"Remaining Coverage: {remaining:6.2f}%",
+            f"Predicted Final Grade: {predicted}",
+        ]
+
+        print_fancy_box(subject.upper(), lines, width=CARD_WIDTH, theme="blue")
     
     # Display overall chart if subjects exist
     if manual_len(overall_percents) > 0:
         overall_avg = manual_sum(overall_percents) / manual_len(overall_percents)
-        
-        print("════════════════════════════════════════")
-        print("📊 OVERALL PERFORMANCE CHART\n")
-        
+
         overall_chart_lines = build_overall_chart(
             subject_names,
             overall_percents,
             max_bars=len(subject_names)
         )
-        
-        for ln in overall_chart_lines:
-            print(truncate_to_width(ln, BOX_INNER))
-        
-        print(f"\nOverall Average Across Subjects: {overall_avg:.2f}%")
-    
-    input("\nPress Enter...")
+
+        chart_lines = [truncate_to_width(ln, BOX_INNER) for ln in overall_chart_lines]
+        chart_lines.append("")
+        chart_lines.append(f"Overall Average Across Subjects: {overall_avg:.2f}%")
+        print_fancy_box("📊 Overall Performance Chart", chart_lines, theme="green")
+
+    if not printed_any:
+        print_fancy_box(
+            "No Scored Exams",
+            ["Subjects exist, but no scored quiz/mid entries were found."],
+            width=CARD_WIDTH,
+            theme="yellow",
+        )
+
+    pause()

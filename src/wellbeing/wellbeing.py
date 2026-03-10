@@ -1,5 +1,6 @@
 import json, os 
 from datetime import date, timedelta
+from src.ui import print_fancy_box
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 MOOD_FILE = os.path.join(DATA_DIR, "mood_log.json")
@@ -165,11 +166,19 @@ def apply_tired_penalty(user_id: str, user_data: dict):
 def detect_burnout(user_id, user_data):
     total_minutes = int(user_data.get("total_study_hours", 0) * 60)
     if total_minutes > 300: 
-        print("⚠️ Burnout detected: You have studied for more than 5 hours. Please rest.")
+        print_fancy_box(
+            "⚠️ Burnout Detected",
+            ["You have studied for more than 5 hours.", "Please rest before continuing."],
+            theme="yellow",
+        )
         return True
     
     if tired_streak_days(user_id) >= 3:
-        print("⚠️ Burnout detected: You have been tired for multiple days. Please rest.")
+        print_fancy_box(
+            "⚠️ Burnout Detected",
+            ["You have been tired for multiple days.", "Please rest before continuing."],
+            theme="yellow",
+        )
         return True
     
     return False
@@ -180,12 +189,20 @@ def handle_burnout(user_id, user_data):
 
         # Prevent repeated burnout penalties in a single day.
         if user_data.get("last_burnout_penalty_date") == today:
-            print("Burnout already handled today. Please take a break before studying again.")
+            print_fancy_box(
+                "Burnout Already Handled",
+                ["A burnout penalty was already applied today.", "Please take a break before studying again."],
+                theme="yellow",
+            )
             return True
 
         user_data["health"] = max(0, user_data.get("health", 10) - 2)
         user_data["last_burnout_penalty_date"] = today
-        print("Your pet insists you take a rest. Burnout penalty applied (-2 health).")
+        print_fancy_box(
+            "Rest Required 💤",
+            ["Your pet insists you take a rest.", "Burnout penalty applied (-2 health)."],
+            theme="magenta",
+        )
         return True
     return False 
 
@@ -204,7 +221,11 @@ def update_energy(user_data, study_minutes):
     energy_spent = minutes * 0.5
     user_data['energy'] = max(0.0, round(energy - energy_spent, 1))
     if user_data['energy'] <= 0: 
-        print("⚠️ Your energy is depleted. Please take a break and restore your energy!")
+        print_fancy_box(
+            "⚠️ Energy Depleted",
+            ["Please take a break and restore your energy."],
+            theme="yellow",
+        )
     return user_data
 
 def restore_energy(user_data):
@@ -214,6 +235,9 @@ def restore_energy(user_data):
         energy = 0.0
 
     user_data['energy'] = min(100.0, round(energy + 20, 1))
-    print("Energy restored!")
-    print(f"Current energy: {user_data['energy']}")
+    print_fancy_box(
+        "🔋 Energy Restored",
+        [f"Current energy: {user_data['energy']}"],
+        theme="green",
+    )
     return user_data

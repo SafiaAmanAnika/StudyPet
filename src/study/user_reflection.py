@@ -1,5 +1,6 @@
 import time, random
 from datetime import datetime, timedelta
+from src.ui import clear_screen, print_fancy_box
 
 # ---------------- UTILITY ---------------- #
 def today_str():
@@ -7,28 +8,41 @@ def today_str():
     return f"{t.tm_year}-{t.tm_mon:02}-{t.tm_mday:02}"
 
 def input_study_date():
-    date_str = input("Enter study date (YYYY-MM-DD) or leave empty for today:\n> ").strip()
+    date_str = input("📅 Enter study date (YYYY-MM-DD) or press Enter for today: ").strip()
     if date_str == "":
         return today_str()
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
         return date_str
     except ValueError:
-        print("Invalid date format. Using today.")
+        clear_screen()
+        print_fancy_box(
+            "⚠️ Invalid Date Format",
+            ["Please use YYYY-MM-DD.", "Using today's date instead."],
+            theme="yellow",
+        )
         return today_str()
     
 
 def input_study_hours():
     while True:
-        hours_str = input("How many hours did you study today? (1-24)\n> ").strip()
+        hours_str = input("⏱️ How many hours did you study today? (1-24): ").strip()
         try:
             hours = float(hours_str)
             if 0 < hours <= 24:
                 return hours
             else:
-                print("Please enter a valid number between 1 and 24.")
+                print_fancy_box(
+                    "Invalid Hours",
+                    ["Please enter a number between 1 and 24."],
+                    theme="yellow",
+                )
         except ValueError:
-            print("Please enter a valid number between 1 and 24.")
+            print_fancy_box(
+                "Invalid Input",
+                ["Please enter a valid number between 1 and 24."],
+                theme="yellow",
+            )
 
 
 # ---------------- REFLECTION JOURNAL ---------------- #
@@ -38,9 +52,15 @@ def log_reflection(user_data):
     if 'daily_sessions' not in user_data:
         user_data['daily_sessions'] = {}
 
-    print("╔════════════════════════════════╗")
-    print("║        Reflection Journal      ║")
-    print("╚════════════════════════════════╝")
+    clear_screen()
+    print_fancy_box(
+        "📓 Reflection Journal",
+        [
+            "Log today's study and reflect on progress.",
+            "Reflection text is optional. Study time still counts.",
+        ],
+        theme="yellow",
+    )
 
     study_date = input_study_date()
     hours = input_study_hours()
@@ -50,11 +70,20 @@ def log_reflection(user_data):
     user_data['reflection_total_hours'] = user_data.get('reflection_total_hours', 0) + hours
     user_data['reflection_total_sessions'] = user_data.get('reflection_total_sessions', 0) + 1
 
-    positive_feedback = input("What went well today?\n> ").strip()
-    challenges = input("What was hard?\n> ").strip()
+    positive_feedback = input("✨ What went well today?          : ").strip()
+    challenges = input("🧩 What was hard today?           : ").strip()
 
     if positive_feedback == "" and challenges == "":
-        print("\nNo reflection entered, but study time was logged.\n")
+        clear_screen()
+        print_fancy_box(
+            "Study Logged ✅",
+            [
+                f"Date: {study_date}",
+                f"Hours: {hours}",
+                "No reflection text entered, but your study was recorded.",
+            ],
+            theme="green",
+        )
     else:
         entry = {
             "date": study_date,
@@ -63,13 +92,26 @@ def log_reflection(user_data):
             "hours": hours
         }
         user_data['reflections'].append(entry)
-        print("\nReflection saved!\n")
+        clear_screen()
+        print_fancy_box(
+            "Reflection Saved ✅",
+            [
+                f"Date: {study_date}",
+                f"Hours: {hours}",
+                "Nice work capturing your learning progress.",
+            ],
+            theme="green",
+        )
 
     #  Surprise achievement: 5 sessions in a single day
     if user_data['daily_sessions'][study_date] == 5:
         surprise_coins = random.choice([20, 25, 30])
         user_data['coins'] = user_data.get('coins', 0) + surprise_coins
-        print(f"✨ Surprise Achievement Unlocked! You completed 5 sessions today! +{surprise_coins} coins\n")
+        print_fancy_box(
+            "✨ Surprise Achievement Unlocked",
+            [f"You completed 5 sessions today!", f"+{surprise_coins} coins added."],
+            theme="magenta",
+        )
 
     return user_data
 
@@ -142,19 +184,16 @@ def check_and_award_achievements(user_data):
 
 def display_achievements(user_data):
     """Shows the user their current badges and progress toward next badge."""
-    print("╔════════════════════════════════╗")
-    print("║        Your Achievements       ║")
-    print("╚════════════════════════════════╝")
-
     streak = user_data.get('current_streak', 0)
     achievements = user_data.get('achievements', [])
+    lines = []
 
     if achievements:
-        print("🏆 Badges Earned:")
+        lines.append("🏆 Badges Earned:")
         for a in achievements:
-            print(f"   🎖️  {a}")
+            lines.append(f"🎖️ {a}")
     else:
-        print("No badges unlocked yet. Keep studying!")
+        lines.append("No badges unlocked yet. Keep studying!")
 
     next_badge = None
     for days, name in STREAK_BADGES:
@@ -162,20 +201,20 @@ def display_achievements(user_data):
             next_badge = (days, name)
             break
 
-    print()
+    lines.append("")
     if next_badge:
         days_needed = next_badge[0] - streak
-        print(f"📈 Current Streak : {streak} day(s)")
-        print(f"🎯 Next Badge     : {next_badge[1]} (in {days_needed} more consecutive day(s))")
+        lines.append(f"📈 Current Streak: {streak} day(s)")
+        lines.append(f"🎯 Next Badge: {next_badge[1]} ({days_needed} more consecutive day(s))")
     else:
-        print(f"📈 Current Streak : {streak} day(s)")
-        print("🌟 You've unlocked ALL badges! You're a Learning Legend!")
+        lines.append(f"📈 Current Streak: {streak} day(s)")
+        lines.append("🌟 You've unlocked ALL badges! You're a Learning Legend!")
 
     inactivity = user_data.get('inactivity_days', 0)
     if inactivity > 0:
-        print(f"⚠️  Inactive Days  : {inactivity} day(s) (streak breaks on inactive days)")
+        lines.append(f"⚠️ Inactive Days: {inactivity} day(s) (streak breaks on inactive days)")
 
-    print()
+    print_fancy_box("🏆 Your Achievements", lines, theme="blue")
 
 def check_achievements(user_data):
     """
@@ -185,12 +224,8 @@ def check_achievements(user_data):
     user_data, new_achievements = check_and_award_achievements(user_data)
 
     if new_achievements:
-        print("╔════════════════════════════════╗")
-        print("║    🎉 New Badge Unlocked!      ║")
-        print("╚════════════════════════════════╝")
-        for a in new_achievements:
-            print(f"   🏆 {a}")
-        print()
+        lines = [f"🏆 {badge}" for badge in new_achievements]
+        print_fancy_box("🎉 New Badge Unlocked!", lines, theme="magenta")
 
     display_achievements(user_data)
     return user_data
@@ -207,7 +242,7 @@ def random_encouragement(user_data):
         ]
         event, coins = random.choice(events)
         user_data["coins"] = user_data.get("coins", 0) + coins
-        print(f"✨ {event}\n")
+        print_fancy_box("✨ Bonus Reward", [event], theme="cyan")
     return user_data
 
 # ---------------- INTEGRATED HANDLER ---------------- #

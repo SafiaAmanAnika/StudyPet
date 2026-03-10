@@ -1,5 +1,5 @@
 from src import pet
-from src.ui import clear_screen, print_fancy_box
+from src.ui import clear_screen, print_fancy_box, menu
 
 NORMAL_FOOD_COST = 50
 PREMIUM_FOOD_COST = 75
@@ -12,30 +12,29 @@ def open_shop(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
     while True:
+        clear_screen()
         print_fancy_box(
             "🛒 PET SHOP",
             [
                 f"💰 Current Coins: {user_data['coins']}",
                 "",
-                "[1] Buy Normal Food  (50 coins)",
-                "[2] Buy Premium Food (75 coins)",
-                "[0] Back",
+                "Stock up food to keep your pet healthy.",
             ],
             theme="cyan",
         )
 
-        choice = input("Choose your option: ").strip()
+        choice = menu([
+            "Buy Normal Food (50 coins)",
+            "Buy Premium Food (75 coins)",
+            "Back",
+        ])
 
-        if choice == "1":
+        if choice == 1:
             user_data = buy_normal_food(user_data)
-        elif choice == "2":
+        elif choice == 2:
             user_data = buy_premium_food(user_data)
-        elif choice == "0":
+        elif choice == 0:
             return user_data
-        else:
-            clear_screen()
-            print("❌ Invalid option. Please try again.")
-            print()
 
 
 def buy_normal_food(user_data: dict) -> dict:
@@ -51,8 +50,15 @@ def buy_normal_food(user_data: dict) -> dict:
     user_data = pet.change_coins(user_data, -NORMAL_FOOD_COST)
     user_data["inventory"]["normal_food"] += 1
 
-    print("🍎 Normal Food added to inventory!")
-    print(f"💰 Current Coins: {user_data['coins']}")
+    clear_screen()
+    print_fancy_box(
+        "✅ Purchase Complete",
+        [
+            "🍎 Normal Food added to inventory.",
+            f"💰 Current Coins: {user_data['coins']}",
+        ],
+        theme="green",
+    )
     return user_data
 
 
@@ -69,8 +75,15 @@ def buy_premium_food(user_data: dict) -> dict:
     user_data = pet.change_coins(user_data, -PREMIUM_FOOD_COST)
     user_data["inventory"]["premium_food"] += 1
 
-    print("🍗 Premium Food added to inventory!")
-    print(f"💰 Current Coins: {user_data['coins']}")
+    clear_screen()
+    print_fancy_box(
+        "✅ Purchase Complete",
+        [
+            "🍗 Premium Food added to inventory.",
+            f"💰 Current Coins: {user_data['coins']}",
+        ],
+        theme="green",
+    )
     return user_data
 
 
@@ -78,6 +91,7 @@ def feed_pet(user_data: dict) -> dict:
     user_data = pet.ensure_pet_defaults(user_data)
 
     while True:
+        clear_screen()
         normal = user_data["inventory"]["normal_food"]
         premium = user_data["inventory"]["premium_food"]
         print_fancy_box(
@@ -85,16 +99,18 @@ def feed_pet(user_data: dict) -> dict:
             [
                 f"🍎 Normal Food: {normal} | 🍗 Premium Food: {premium}",
                 "",
-                "[1] Use Normal Food  (+3 health)",
-                "[2] Use Premium Food (+5 health)",
-                "[0] Cancel",
+                "Choose food to boost your pet's health.",
             ],
             theme="green",
         )
 
-        choice = input("Choose your option: ").strip()
+        choice = menu([
+            "Use Normal Food (+3 health)",
+            "Use Premium Food (+5 health)",
+            "Cancel",
+        ])
 
-        if choice == "1":
+        if choice == 1:
             if user_data["inventory"]["normal_food"] <= 0:
                 clear_screen()
                 print_fancy_box(
@@ -107,11 +123,15 @@ def feed_pet(user_data: dict) -> dict:
             user_data["inventory"]["normal_food"] -= 1
             user_data = pet.change_health(user_data, NORMAL_FOOD_HEALTH)
 
-            print("\n🍽️ Feeding pet...")
-            print("❤️ Health increased by 3")
+            clear_screen()
+            print_fancy_box(
+                "🍽️ Feeding Complete",
+                ["Used Normal Food.", "❤️ Health increased by 3."],
+                theme="green",
+            )
             break
 
-        elif choice == "2":
+        elif choice == 2:
             if user_data["inventory"]["premium_food"] <= 0:
                 clear_screen()
                 print_fancy_box(
@@ -124,17 +144,16 @@ def feed_pet(user_data: dict) -> dict:
             user_data["inventory"]["premium_food"] -= 1
             user_data = pet.change_health(user_data, PREMIUM_FOOD_HEALTH)
 
-            print("\n🍽️ Feeding pet...")
-            print("❤️ Health increased by 5")
+            clear_screen()
+            print_fancy_box(
+                "🍽️ Feeding Complete",
+                ["Used Premium Food.", "❤️ Health increased by 5."],
+                theme="green",
+            )
             break
 
-        elif choice == "0":
+        elif choice == 0:
             return user_data
-
-        else:
-            clear_screen()
-            print("❌ Invalid option. Please try again.")
-            print()
 
     pet.show_status(user_data)
     return user_data

@@ -1,6 +1,6 @@
 import json, os
 from datetime import date, datetime, timedelta
-from src.ui import analytics_menu, clear_screen
+from src.ui import analytics_menu, clear_screen, print_fancy_box, pause
 
 
 # Safe File Handling
@@ -131,17 +131,17 @@ def build_heatmap_grid(date_list: list, minutes_by_date: dict):
 
 
 def print_heatmap(date_list: list, weeks: list):
-    print("\n===== STUDY HEATMAP =====")
-    print("Legend: ·=0  ░=1-24  ▒=25-49  ▓=50-99  █=100+ minutes")
-    print(f"Range : {date_list[0]}  to  {date_list[-1]}\n")
-
-    header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    print(" ".join(f"{h:>3}" for h in header))
+    lines = [
+        "Legend: ·=0  ░=1-24  ▒=25-49  ▓=50-99  █=100+ minutes",
+        f"Range: {date_list[0]} -> {date_list[-1]}",
+        "",
+        "Mon Tue Wed Thu Fri Sat Sun",
+    ]
 
     for week in weeks:
-        print(" ".join(f"{cell:>3}" for cell in week))
+        lines.append(" ".join(f"{cell:>3}" for cell in week))
 
-    print("==========================\n")
+    print_fancy_box("📈 Study Heatmap", lines, theme="green")
 
 # Stats Computation
 
@@ -197,18 +197,19 @@ def print_stats(date_list, minutes_by_date, sessions_by_date):
     longest = longest_streak_in_range(date_list, minutes_by_date)
     bdate, bmins = best_day_in_range(date_list, minutes_by_date)
 
-    print("===== STATS =====")
-    print(f"Last 7 days total minutes : {total7_mins}")
-    print(f"Last 7 days sessions      : {total7_sessions}")
-    print(f"Current streak (days)     : {cur_streak}")
-    print(f"Longest streak in range   : {longest}")
+    lines = [
+        f"Last 7 days total minutes: {total7_mins}",
+        f"Last 7 days sessions: {total7_sessions}",
+        f"Current streak (days): {cur_streak}",
+        f"Longest streak in range: {longest}",
+    ]
 
     if bdate:
-        print(f"Best day in range         : {bdate} ({bmins} mins)")
+        lines.append(f"Best day in range: {bdate} ({bmins} mins)")
     else:
-        print("Best day in range         : No study data")
+        lines.append("Best day in range: No study data")
 
-    print("=================\n")
+    print_fancy_box("📊 Analytics Stats", lines, theme="cyan")
 
 
 # Required Interface
@@ -240,4 +241,4 @@ def run(user_id: str, user_data: dict) -> dict:
         print_heatmap(dates, grid)
         print_stats(dates, minutes_by_date, sessions_by_date)
 
-        input("Press Enter to return to Analytics menu...")
+        pause()

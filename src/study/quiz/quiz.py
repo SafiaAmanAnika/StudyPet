@@ -1,44 +1,45 @@
-from src.study.quiz.quiz_config_helpers import manual_strip
-from src.study.quiz.quiz_ui_input import clear_screen, box_top, box_title, box_bottom, add_marks_menu
+from src.study.quiz.quiz_ui_input import clear_screen, add_marks_menu
 from src.study.quiz.quiz_analytics import (
     syllabus_coverage_tracker,
     result_overview_and_advisor,
     view_dashboard
 )
+from src.ui import print_fancy_box, menu, pause
 
 def main():
     """Main menu and program loop"""
     while True:
         clear_screen()
-        box_top()
-        box_title("ACADEMIC PERFORMANCE TRACKER")
-        box_bottom()
-        
-        print("[1] Add Marks")
-        print("[2] Curriculum Progress Report")
-        print("[3] Performance Trend Monitor")
-        print("[4] View Dashboard")
-        print("[0] Exit")
-        
-        choice = manual_strip(input("Choose: "))
+        print_fancy_box(
+            "📊 Academic Performance Tracker",
+            ["Track quiz/mid results, trends, and dashboard insights."],
+            theme="cyan",
+        )
+        choice = menu(
+            [
+                "Add Marks",
+                "Curriculum Progress Report",
+                "Performance Trend Monitor",
+                "View Dashboard",
+                "Exit",
+            ]
+        )
         clear_screen()
-        
-        if choice == "1":
+
+        if choice == 1:
             add_marks_menu()
-        elif choice == "2":
+        elif choice == 2:
             syllabus_coverage_tracker()
-        elif choice == "3":
+        elif choice == 3:
             result_overview_and_advisor()
-        elif choice == "4":
+        elif choice == 4:
             view_dashboard()
-        elif choice == "0":
+        elif choice == 0:
             clear_screen()
-            print("Goodbye!")
+            print_fancy_box("Goodbye 👋", ["Returning to StudyPet dashboard."], theme="green")
+            pause()
             break
-        else:
-            print("Invalid choice")
-            input("Press Enter...")
-        
+
         clear_screen()
 
 

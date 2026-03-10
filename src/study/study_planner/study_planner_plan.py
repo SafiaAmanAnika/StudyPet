@@ -1,10 +1,10 @@
 from .study_planner_config_helpers import load_data, save_data
 from .study_planner_ui_input import (
-    clear_screen, box_title_only, box_top, box_title, box_sep, box_bottom,
-    box_line, box_kv, ask_float,
+    clear_screen, ask_float,
     ask_subjects_type, ask_single_subject_with_difficulty,
     ask_multiple_subjects_with_difficulty
 )
+from src.ui import print_fancy_box, pause
 
 # ============================================================================
 # STUDY PLAN GENERATION
@@ -25,7 +25,11 @@ def generate_study_plan(user_id=None, user_data=None):
     planner_data["mood_today"] = mood
 
     clear_screen()
-    box_title_only("📋 SUBJECT SETUP")
+    print_fancy_box(
+        "📋 Subject Setup",
+        ["Choose one or more subjects and set difficulty."],
+        theme="cyan",
+    )
 
     subject_type = ask_subjects_type()
 
@@ -45,12 +49,20 @@ def generate_study_plan(user_id=None, user_data=None):
 
     # ---- ASK FOR STUDY DURATION ----
     clear_screen()
-    box_title_only("⏰ SET STUDY DURATION")
+    print_fancy_box(
+        "⏰ Set Study Duration",
+        ["Enter how many hours you want to study today."],
+        theme="blue",
+    )
 
     while True:
         custom_goal = ask_float("How many hours do you want to study today? ", 0.5, 24.0)
         if custom_goal > 15.0:
-            print("❌ That's too much! Please aim for a healthy study goal (Max 15h).")
+            print_fancy_box(
+                "Healthy Goal Reminder",
+                ["Please aim for a healthy study goal (max 15 hours)."],
+                theme="yellow",
+            )
             continue
         break
 
@@ -125,8 +137,12 @@ def generate_study_plan(user_id=None, user_data=None):
     save_data(planner_data)
 
     clear_screen()
-    box_title_only(f"✅ PLAN GENERATED FOR {custom_goal} HOURS")
-    input("\nPress Enter to continue...")
+    print_fancy_box(
+        "✅ Plan Generated",
+        [f"Your plan is ready for {custom_goal} hours today."],
+        theme="green",
+    )
+    pause()
 
 # ============================================================================
 # VIEW STUDY PLAN
@@ -144,22 +160,23 @@ def view_study_plan():
 
     if not data.get("study_plan"):
         clear_screen()
-        box_title_only("⚠️ ERROR")
-        print()
-        print("No study plan generated yet!")
-        input("\nPress Enter to continue...")
+        print_fancy_box(
+            "⚠️ No Study Plan",
+            ["No study plan generated yet."],
+            theme="yellow",
+        )
+        pause()
         return
 
     study_plan = data["study_plan"]
     mood = data.get("mood_today", "Unknown")
     goal_hours = data.get("goal_hours", 0)
 
-    box_top()
-    box_title("📅 TODAY'S STUDY PLAN")
-    box_sep()
-    box_kv("Mood", mood)
-    box_kv("Today's Goal", f"{goal_hours} hours")
-    box_sep()
+    lines = [
+        f"Mood: {mood}",
+        f"Today's Goal: {goal_hours} hours",
+        "",
+    ]
 
     total_study_minutes = 0
     total_break_minutes = 0
@@ -170,20 +187,25 @@ def view_study_plan():
             difficulty = session.get("difficulty", "")
             difficulty_emoji = "🟢" if difficulty == "Easy" else "🟡" if difficulty == "Medium" else "🔴"
             info = f"{difficulty_emoji} {session['subject']}: {session['duration']} min ({difficulty})"
-            box_line(f"  {info}")
+            lines.append(info)
             total_study_minutes += session["duration"]
             session_count += 1
         elif session["type"] == "break":
-            box_line(f"  ☕ Break: {session['duration']} min")
+            lines.append(f"☕ Break: {session['duration']} min")
             total_break_minutes += session["duration"]
         elif session["type"] == "revision":
-            box_line(f"  🔄 Revision: {session['duration']} min")
+            lines.append(f"🔄 Revision: {session['duration']} min")
             total_study_minutes += session["duration"]
 
-    box_sep()
     total_hours = total_study_minutes / 60
-    box_kv("Total Study Time", f"{total_study_minutes} min ({total_hours:.1f} hours)")
-    box_kv("Total Break Time", f"{total_break_minutes} min")
-    box_kv("Study Sessions", f"{session_count} sessions")
-    box_bottom()
-    input("\nPress Enter to continue...")
+    lines.extend(
+        [
+            "",
+            f"Total Study Time: {total_study_minutes} min ({total_hours:.1f} hours)",
+            f"Total Break Time: {total_break_minutes} min",
+            f"Study Sessions: {session_count} sessions",
+        ]
+    )
+
+    print_fancy_box("📅 Today's Study Plan", lines, theme="magenta")
+    pause()

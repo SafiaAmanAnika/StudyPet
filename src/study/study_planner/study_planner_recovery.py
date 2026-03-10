@@ -1,7 +1,8 @@
 from .study_planner_config_helpers import load_data, save_data
 from .study_planner_ui_input import (
-    clear_screen, box_top, box_title, box_sep, box_bottom, box_line, BOX_INNER, truncate_to_width
+    clear_screen
 )
+from src.ui import print_fancy_box, pause
 
 # ============================================================================
 # MISSED GOAL RECOVERY
@@ -17,36 +18,30 @@ def check_missed_goal_recovery():
     data = load_data()
     
     if data.get("missed_goal", False):
-        # ---- GOAL WAS MISSED ----
-        box_top()
-        box_title("🔄 MISSED GOAL RECOVERY")
-        box_sep()
-        box_line(truncate_to_width("You missed your goal today!!!", BOX_INNER))
-        box_sep()
-        box_line(truncate_to_width("💪 RECOVERY PLAN:", BOX_INNER))
-        box_line("")
-        box_line(truncate_to_width("Tomorrow's goal +30 minutes", BOX_INNER))
-        box_line("")
-        box_sep()
-        box_line(truncate_to_width("📝 Tips:", BOX_INNER))
-        box_line(truncate_to_width("  • Take breaks every 25 min", BOX_INNER))
-        box_line(truncate_to_width("  • Study in quiet place", BOX_INNER))
-        box_line(truncate_to_width("  • Start with easier subjects", BOX_INNER))
-        box_line(truncate_to_width("  • You can do this! 💪", BOX_INNER))
-        box_sep()
-        
+        print_fancy_box(
+            "🔄 Missed Goal Recovery",
+            [
+                "You missed your goal today.",
+                "",
+                "💪 Recovery Plan:",
+                "Tomorrow's goal +30 minutes",
+                "",
+                "📝 Tips:",
+                "- Take breaks every 25 min",
+                "- Study in a quiet place",
+                "- Start with easier subjects",
+                "- You can do this! 💪",
+            ],
+            theme="yellow",
+        )
         data["goal_recovery_increase"] = 0.5
     else:
-        # ---- GOAL WAS MET ----
-        box_top()
-        box_title("✅ YOU'RE ON TRACK!")
-        box_sep()
-        box_line(truncate_to_width("Great job! Keep up the work!", BOX_INNER))
-        box_line(truncate_to_width("No recovery needed for today. 🎉", BOX_INNER))
-        box_sep()
-        
+        print_fancy_box(
+            "✅ You're On Track",
+            ["Great job! Keep up the work!", "No recovery needed for today. 🎉"],
+            theme="green",
+        )
         data["goal_recovery_increase"] = 0
-    
-    box_bottom()
+
     save_data(data)
-    input("\nPress Enter to continue...")
+    pause()
