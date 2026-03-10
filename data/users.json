@@ -1,8 +1,8 @@
 {
   "zen@gmail.com": {
     "name": "Zenia",
-    "password_salt": "f0d9243d8dd325bdf19e75489103d7a9",
-    "password_hash": "e833d7fa26b410877c0b1d9f1418cde5e42884667e3a9c398185769ba3dab3d9",
+    "password_salt": "322821cc53906fe59db3044654e153bf",
+    "password_hash": "880278d68cd6a1da3faa4c6045ae613d08368a7b4d5055f41ad4dd83bf8afd14",
     "goal_hours": 5,
     "academic_goal": "yoyo",
     "pet_theme": "Cat",

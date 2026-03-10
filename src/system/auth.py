@@ -1,5 +1,5 @@
 from datetime import date
-from src.ui import clear_screen, print_fancy_box
+from src.ui import clear_screen, print_fancy_box, pause
 from .storage import load_users, save_users
 import re, os, hashlib, sys
 
@@ -245,6 +245,7 @@ def register():
             ["Email already registered.", "Please login instead."],
             theme="yellow",
         )
+        pause()
         return None, None
 
     name = ask_non_empty("👤 Enter nickname               : ")
