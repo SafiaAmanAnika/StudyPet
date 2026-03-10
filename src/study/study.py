@@ -37,12 +37,11 @@ def play_pet_sound(pet_type: str):
         return
 
     try:
-        # Load the sound
         sound = pygame.mixer.Sound(sound_path)
-        sound.play()
+        channel = sound.play()
 
-        # Wait until sound finishes
-        while pygame.mixer.get_busy():
+        # Wait only for this sound's channel so ambient loops do not block forever.
+        while channel is not None and channel.get_busy():
             pygame.time.Clock().tick(10)
 
     except Exception as e:

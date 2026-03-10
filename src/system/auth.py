@@ -296,6 +296,11 @@ def register():
         "mood_today": "",
         "ui_theme": "pastel_pink",
         "animation_style": "sparkly",
+        "music_enabled": True,
+        "music_volume": 0.35,
+        "ambience_enabled": False,
+        "ambience_type": "rain",
+        "ambience_volume": 0.30,
     }
 
 
