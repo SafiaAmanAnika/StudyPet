@@ -1,6 +1,7 @@
 from src.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
-import time
+import time, os
+import pygame
 
 DEV_MODE = True
 
@@ -14,6 +15,39 @@ RAW_TO_BASE_MOOD = {
     "Stressed 😫": "Stressed",
     "Motivated 🥳": "Motivated",
 }
+
+# ------------------ SOUND ------------------ #
+
+pygame.mixer.init()
+
+def play_pet_sound(pet_type: str):
+    
+    sound_map = {
+        "Cat": "meow.mp3",
+        "Dog": "woof.mp3",
+        "Bunny": "bunny.mp3",
+    }
+    filename = sound_map.get(pet_type)
+    if not filename:
+        return
+
+    sound_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "sounds", filename)
+    if not os.path.exists(sound_path):
+        print(f"⚠️ Sound file not found: {sound_path}")
+        return
+
+    try:
+        # Load the sound
+        sound = pygame.mixer.Sound(sound_path)
+        sound.play()
+
+        # Wait until sound finishes
+        while pygame.mixer.get_busy():
+            pygame.time.Clock().tick(10)
+
+    except Exception as e:
+        print(f"⚠️ Sound error: {e}")
+
 
 # ------------------ UTILITY FUNCTIONS ------------------ #
 
@@ -171,11 +205,14 @@ def run_countdowns(study_seconds, break_seconds, mood, pet_type):
         print("Session cancelled! No rewards earned.\n")
         return False
 
+    play_pet_sound(pet_type)  # 🔊 Plays fully after study ends
+
     if break_seconds > 0:
         ok = animated_countdown(break_seconds, "Break", mood=mood, pet_type=pet_type)
         if not ok:
             print("Break cancelled!\n")
             return False
+        play_pet_sound(pet_type)  # 🔊 Plays fully after break ends
 
     return True
 

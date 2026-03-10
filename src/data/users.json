@@ -1,1 +1,26 @@
-{}
+{
+  "aea@gmail.com": {
+    "name": "a",
+    "password_salt": "6e4e3cd528e196bbbdbf8cbfede16f9c",
+    "password_hash": "d5c48fb0d3b71c836519bf38cfb2cf69521d4e67b5d42d8b61d888197d45a9d0",
+    "goal_hours": 3,
+    "academic_goal": "f",
+    "pet_theme": "Bunny",
+    "pet_personality": "Calm, steady, and building consistency\ud83e\udd17\ud83d\ude0c",
+    "health": 10,
+    "energy": 100,
+    "coins": 5,
+    "study_streak": 0,
+    "total_study_hours": 0,
+    "total_study_minutes": 0,
+    "last_study_date": "",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-03-10",
+    "mood_today": "",
+    "ui_theme": "pastel_pink",
+    "animation_style": "sparkly"
+  }
+}
