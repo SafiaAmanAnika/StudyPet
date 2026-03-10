@@ -42,6 +42,8 @@ install_global_navigation_input()
 
 LOG_FILE = "data/study_log.json"
 QUIZ_FILE = "data/quiz_marks.json"
+MOOD_FILE = "data/mood_log.json"
+WEEKLY_REPORT_FILE = "data/weekly_reports.json"
 
 
 # ---------------- MOOD MESSAGE ---------------- #
@@ -110,6 +112,401 @@ def save_user_data(user_id, user_data):
     users = load_users()
     users[user_id] = user_data
     save_users(users)
+
+
+def _safe_load_json(path, default):
+    if not os.path.exists(path):
+        return default
+    try:
+        with open(path, "r") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return default
+
+
+def _safe_save_json(path, data):
+    try:
+        folder = os.path.dirname(path)
+        if folder:
+            os.makedirs(folder, exist_ok=True)
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2)
+        return True
+    except OSError:
+        return False
+
+
+def _migrate_user_key_file(path, old_user_id, new_user_id):
+    db = _safe_load_json(path, {})
+    if not isinstance(db, dict) or old_user_id not in db or old_user_id == new_user_id:
+        return
+
+    old_records = db.pop(old_user_id)
+    if new_user_id in db and isinstance(db[new_user_id], list) and isinstance(old_records, list):
+        db[new_user_id].extend(old_records)
+    elif new_user_id not in db:
+        db[new_user_id] = old_records
+
+    _safe_save_json(path, db)
+
+
+def _migrate_study_log_user_ids(old_user_id, new_user_id):
+    logs = _safe_load_json(LOG_FILE, [])
+    if not isinstance(logs, list) or old_user_id == new_user_id:
+        return
+
+    changed = False
+    for entry in logs:
+        if isinstance(entry, dict) and entry.get("user_id") == old_user_id:
+            entry["user_id"] = new_user_id
+            changed = True
+
+    if changed:
+        _safe_save_json(LOG_FILE, logs)
+
+
+def migrate_user_identity_data(old_user_id, new_user_id):
+    if old_user_id == new_user_id:
+        return
+    _migrate_study_log_user_ids(old_user_id, new_user_id)
+    _migrate_user_key_file(MOOD_FILE, old_user_id, new_user_id)
+    _migrate_user_key_file(WEEKLY_REPORT_FILE, old_user_id, new_user_id)
+
+
+def _prompt_non_empty_value(prompt, error_title):
+    while True:
+        value = input(prompt).strip()
+        if value:
+            return value
+        clear_screen()
+        print_fancy_box(error_title, ["This field cannot be empty."], theme="yellow")
+
+
+def _prompt_goal_hours():
+    while True:
+        raw = input("📘 Enter new daily study hours (1-24): ").strip()
+        if raw.isdigit():
+            hours = int(raw)
+            if 1 <= hours <= 24:
+                return hours
+
+        clear_screen()
+        print_fancy_box(
+            "Invalid Daily Goal",
+            ["Please enter a whole number from 1 to 24."],
+            theme="yellow",
+        )
+
+
+def handle_change_name(user_id, user_data):
+    clear_screen()
+    print_fancy_box(
+        "Change Name 👤",
+        [f"Current Name: {user_data.get('name', 'User')}", "Enter your new display name."],
+        theme="blue",
+    )
+    new_name = _prompt_non_empty_value("📝 New name                     : ", "Invalid Name")
+    user_data["name"] = new_name
+    save_user_data(user_id, user_data)
+
+    clear_screen()
+    print_fancy_box("Name Updated ✅", [f"New Name: {new_name}"], theme="green")
+    pause()
+    return user_data
+
+
+def handle_change_email(user_id, user_data):
+    from src.system.auth import EMAIL_REGEX, masked_input, verify_password
+
+    clear_screen()
+    print_fancy_box(
+        "Change Email 📧",
+        [f"Current Email: {user_id}", "Enter a new email for your account."],
+        theme="blue",
+    )
+
+    new_email = input("📧 New email address            : ").strip().lower()
+    if not new_email:
+        clear_screen()
+        print_fancy_box("No Changes", ["Email update cancelled."], theme="yellow")
+        pause()
+        return user_id, user_data
+
+    if new_email == user_id:
+        clear_screen()
+        print_fancy_box("No Changes", ["That is already your current email."], theme="yellow")
+        pause()
+        return user_id, user_data
+
+    if not EMAIL_REGEX.fullmatch(new_email):
+        clear_screen()
+        print_fancy_box("Invalid Email", ["Please enter a valid email address."], theme="yellow")
+        pause()
+        return user_id, user_data
+
+    users = load_users()
+    if new_email in users:
+        clear_screen()
+        print_fancy_box(
+            "Email In Use",
+            ["This email is already registered.", "Please choose another one."],
+            theme="yellow",
+        )
+        pause()
+        return user_id, user_data
+
+    password = masked_input("🔑 Enter current password       : ")
+    if not verify_password(password, user_data["password_salt"], user_data["password_hash"]):
+        clear_screen()
+        print_fancy_box("Wrong Password", ["Email update cancelled."], theme="magenta")
+        pause()
+        return user_id, user_data
+
+    latest_data = users.get(user_id, user_data)
+    users[new_email] = latest_data
+    if user_id in users:
+        del users[user_id]
+    save_users(users)
+
+    migrate_user_identity_data(user_id, new_email)
+
+    clear_screen()
+    print_fancy_box(
+        "Email Updated ✅",
+        [f"Old Email: {user_id}", f"New Email: {new_email}"],
+        theme="green",
+    )
+    pause()
+    return new_email, latest_data
+
+
+def handle_change_password(user_id, user_data):
+    from src.system.auth import masked_input, verify_password, is_valid_password, hash_password
+
+    clear_screen()
+    print_fancy_box(
+        "Change Password 🔒",
+        [
+            "Use a strong password:",
+            "- Minimum 8 characters",
+            "- At least 1 capital letter",
+            "- At least 1 number",
+        ],
+        theme="blue",
+    )
+
+    current_password = masked_input("🔑 Enter current password       : ")
+    if not verify_password(current_password, user_data["password_salt"], user_data["password_hash"]):
+        clear_screen()
+        print_fancy_box("Wrong Password", ["Password update cancelled."], theme="magenta")
+        pause()
+        return user_data
+
+    new_password = masked_input("🆕 Enter new password           : ")
+    if not is_valid_password(new_password):
+        clear_screen()
+        print_fancy_box(
+            "Weak Password",
+            ["Password must be 8+ chars with 1 capital letter and 1 number."],
+            theme="yellow",
+        )
+        pause()
+        return user_data
+
+    confirm_password = masked_input("🆕 Confirm new password         : ")
+    if new_password != confirm_password:
+        clear_screen()
+        print_fancy_box("Mismatch", ["Passwords did not match."], theme="yellow")
+        pause()
+        return user_data
+
+    salt, password_hash = hash_password(new_password)
+    user_data["password_salt"] = salt
+    user_data["password_hash"] = password_hash
+    save_user_data(user_id, user_data)
+
+    clear_screen()
+    print_fancy_box("Password Updated ✅", ["Your password has been changed."], theme="green")
+    pause()
+    return user_data
+
+
+def handle_change_pet(user_id, user_data):
+    clear_screen()
+    print_fancy_box(
+        "Change Pet 🐾",
+        [f"Current Pet: {user_data.get('pet_theme', 'Cat')}", "Pick your new pet companion."],
+        theme="blue",
+    )
+
+    pet_choice = menu(["Cat 😸", "Dog 🐶", "Bunny 🐰", "Back"])
+    if pet_choice == 0:
+        return user_data
+
+    pet_mapping = {
+        1: "Cat",
+        2: "Dog",
+        3: "Bunny",
+    }
+    selected_pet = pet_mapping.get(pet_choice, user_data.get("pet_theme", "Cat"))
+    user_data["pet_theme"] = selected_pet
+    save_user_data(user_id, user_data)
+
+    clear_screen()
+    print_fancy_box("Pet Updated ✅", [f"New Pet Theme: {selected_pet}"], theme="green")
+    show_status(user_data)
+    pause()
+    return user_data
+
+
+def handle_change_daily_goal(user_id, user_data):
+    from src.system.auth import assign_personality
+
+    clear_screen()
+    print_fancy_box(
+        "Change Daily Goal 📘",
+        [
+            f"Current Daily Goal: {user_data.get('goal_hours', '?')} hours",
+            "Set a new study target for each day.",
+        ],
+        theme="blue",
+    )
+    new_goal_hours = _prompt_goal_hours()
+
+    user_data["goal_hours"] = new_goal_hours
+    user_data["pet_personality"] = assign_personality(new_goal_hours)
+    save_user_data(user_id, user_data)
+
+    clear_screen()
+    print_fancy_box(
+        "Daily Goal Updated ✅",
+        [
+            f"New Daily Goal: {new_goal_hours} hours",
+            f"Pet Personality: {user_data.get('pet_personality', 'Neutral')}",
+        ],
+        theme="green",
+    )
+    pause()
+    return user_data
+
+
+def handle_change_academic_goal(user_id, user_data):
+    clear_screen()
+    print_fancy_box(
+        "Change Academic Goal 🎯",
+        [
+            f"Current Goal: {user_data.get('academic_goal', 'Not set')}",
+            "Write your updated academic target.",
+        ],
+        theme="blue",
+    )
+
+    new_goal = _prompt_non_empty_value("🎯 New academic goal            : ", "Invalid Goal")
+    user_data["academic_goal"] = new_goal
+    save_user_data(user_id, user_data)
+
+    clear_screen()
+    print_fancy_box("Academic Goal Updated ✅", [f"New Goal: {new_goal}"], theme="green")
+    pause()
+    return user_data
+
+
+def handle_theme_studio(user_id, user_data):
+    while True:
+        clear_screen()
+        print_fancy_box(
+            "Theme Studio 🎨",
+            [
+                f"Color Theme     : {get_theme_display_name(user_data.get('ui_theme', 'pastel_pink'))}",
+                f"Animation Style : {get_animation_style_display(user_data.get('animation_style', 'sparkly'))}",
+                "",
+                "Customize both colors and motion style.",
+            ],
+            theme="magenta",
+        )
+        studio_choice = menu([
+            "Change Color Theme",
+            "Change Animation Style",
+            "Back",
+        ])
+        clear_screen()
+
+        if studio_choice == 1:
+            selected_theme = choose_theme(menu)
+            if selected_theme:
+                user_data["ui_theme"] = selected_theme
+                save_user_data(user_id, user_data)
+                clear_screen()
+                print_fancy_box(
+                    "Theme Updated ✨",
+                    [f"Current theme: {get_theme_display_name(selected_theme)}"],
+                    theme="magenta",
+                )
+                pause()
+        elif studio_choice == 2:
+            selected_style = choose_animation_style(menu)
+            if selected_style:
+                user_data["animation_style"] = selected_style
+                save_user_data(user_id, user_data)
+                clear_screen()
+                print_fancy_box(
+                    "Animation Updated ✨",
+                    [f"Current style: {get_animation_style_display(selected_style)}"],
+                    theme="cyan",
+                )
+                pause()
+        elif studio_choice == 0:
+            return user_data
+
+
+def handle_settings(user_id, user_data):
+    while True:
+        clear_screen()
+        print_fancy_box(
+            "Settings ⚙️",
+            [
+                f"Email         : {user_id}",
+                f"Name          : {user_data.get('name', 'User')}",
+                f"Pet           : {user_data.get('pet_theme', 'Cat')}",
+                f"Daily Goal    : {user_data.get('goal_hours', '?')} hours",
+                f"Academic Goal : {user_data.get('academic_goal', 'Not set')}",
+            ],
+            theme="green",
+        )
+
+        settings_choice = menu([
+            "Change Name",
+            "Change Email",
+            "Change Password",
+            "Change Pet",
+            "Change Daily Goal",
+            "Change Academic Goal",
+            "Theme Studio",
+            "Delete Account",
+            "Back",
+        ])
+
+        clear_screen()
+        if settings_choice == 1:
+            user_data = handle_change_name(user_id, user_data)
+        elif settings_choice == 2:
+            user_id, user_data = handle_change_email(user_id, user_data)
+        elif settings_choice == 3:
+            user_data = handle_change_password(user_id, user_data)
+        elif settings_choice == 4:
+            user_data = handle_change_pet(user_id, user_data)
+        elif settings_choice == 5:
+            user_data = handle_change_daily_goal(user_id, user_data)
+        elif settings_choice == 6:
+            user_data = handle_change_academic_goal(user_id, user_data)
+        elif settings_choice == 7:
+            user_data = handle_theme_studio(user_id, user_data)
+        elif settings_choice == 8:
+            deleted = handle_delete_account(user_id, user_data)
+            if deleted:
+                return user_id, user_data, True
+        elif settings_choice == 0:
+            return user_id, user_data, False
 
 def register_user():
     from src.system.auth import register
@@ -245,8 +642,13 @@ def handle_delete_account(user_id, user_data):
         ],
         theme="magenta",
     )
-    confirm = input("Type 'DELETE' to confirm, or anything else to cancel: ").strip()
-    if confirm != "DELETE":
+
+    confirm_choice = menu([
+        "Yes, permanently delete my account",
+        "Cancel",
+    ])
+
+    if confirm_choice == 0:
         clear_screen()
         print_fancy_box("Cancelled", ["Account deletion cancelled."], theme="green")
         pause()
@@ -303,8 +705,7 @@ def dashboard(user_id, user_data):
                 "[9] Weekly Report 📅",
                 "[10] Study Planner 🗓️  ",
                 "[11] Reflection Journal 📓",
-                "[12] Theme Studio 🎨",
-                "[13] Delete Account 🗑️",
+                "[12] Settings ⚙️",
                 "[0] Logout 👋",
             ]
             print_fancy_box("Your virtual pet awaits!", dashboard_options, theme="cyan")
@@ -375,62 +776,17 @@ def dashboard(user_id, user_data):
                         break
 
             elif choice == "12":
-                while True:
-                    clear_screen()
-                    print_fancy_box(
-                        "Theme Studio 🎨",
-                        [
-                            f"Color Theme     : {get_theme_display_name(user_data.get('ui_theme', 'pastel_pink'))}",
-                            f"Animation Style : {get_animation_style_display(user_data.get('animation_style', 'sparkly'))}",
-                            "",
-                            "Customize both colors and motion style.",
-                        ],
-                        theme="magenta",
-                    )
-                    studio_choice = menu([
-                        "Change Color Theme",
-                        "Change Animation Style",
-                        "Back",
-                    ])
-                    clear_screen()
-
-                    if studio_choice == 1:
-                        selected_theme = choose_theme(menu)
-                        if selected_theme:
-                            user_data["ui_theme"] = selected_theme
-                            save_user_data(user_id, user_data)
-                            clear_screen()
-                            print_fancy_box(
-                                "Theme Updated ✨",
-                                [f"Current theme: {get_theme_display_name(selected_theme)}"],
-                                theme="magenta",
-                            )
-                            pause()
-                    elif studio_choice == 2:
-                        selected_style = choose_animation_style(menu)
-                        if selected_style:
-                            user_data["animation_style"] = selected_style
-                            save_user_data(user_id, user_data)
-                            clear_screen()
-                            print_fancy_box(
-                                "Animation Updated ✨",
-                                [f"Current style: {get_animation_style_display(selected_style)}"],
-                                theme="cyan",
-                            )
-                            pause()
-                    elif studio_choice == 0:
-                        break
-
-            elif choice == "13":
-                deleted = handle_delete_account(user_id, user_data)
+                user_id, user_data, deleted = handle_settings(user_id, user_data)
                 if deleted:
                     return
 
             elif choice == "0": 
                 clear_screen()
-                print("╔═════════════════════════════════════════════════════════════════════════╗")
-                print("║                   Logged out. Alvida mere dost 👋                       ║")
-                print("╚═════════════════════════════════════════════════════════════════════════╝")           
+                print_fancy_box(
+                    "Logged Out 👋",
+                    ["Alvida mere dost! See you soon in StudyPet."],
+                    theme="green",
+                )
                 pause()
                 clear_screen()
                 return

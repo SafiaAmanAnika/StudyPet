@@ -1,27 +1,27 @@
 {
-  "z@gmail.com": {
-    "name": "z",
-    "password_salt": "d281b80e1e2a4935cdb83d55a24c433c",
-    "password_hash": "f3d35fbdf50f1ce15390c19999a6755b02f0661088a513e062ae2346bfd0548e",
-    "goal_hours": 23,
-    "academic_goal": "study hard bitch",
-    "pet_theme": "Bunny",
+  "zen@gmail.com": {
+    "name": "Zenia",
+    "password_salt": "f0d9243d8dd325bdf19e75489103d7a9",
+    "password_hash": "e833d7fa26b410877c0b1d9f1418cde5e42884667e3a9c398185769ba3dab3d9",
+    "goal_hours": 5,
+    "academic_goal": "yoyo",
+    "pet_theme": "Cat",
     "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
     "health": 10,
     "energy": 100.0,
-    "coins": 82,
-    "study_streak": 1,
-    "total_study_hours": 1.25,
-    "total_study_minutes": 75,
-    "last_study_date": "2026-03-10",
+    "coins": 107,
+    "study_streak": 2,
+    "total_study_hours": 1.6666666666666667,
+    "total_study_minutes": 100,
+    "last_study_date": "2026-03-11",
     "inventory": {
       "normal_food": 0,
       "premium_food": 0
     },
-    "last_login": "2026-03-10",
+    "last_login": "2026-03-11",
     "mood_today": "Neutral \ud83d\ude10",
     "ui_theme": "pastel_pink",
-    "animation_style": "sparkly",
+    "animation_style": "soft",
     "last_study_minutes": 25,
     "level": 1,
     "reflections": [
@@ -48,15 +48,22 @@
         "positive_feedback": "12",
         "challenges": "32",
         "hours": 23.0
+      },
+      {
+        "date": "2026-03-11",
+        "positive_feedback": "we",
+        "challenges": "wqe",
+        "hours": 12.0
       }
     ],
     "daily_sessions": {
-      "2026-03-10": 4
+      "2026-03-10": 4,
+      "2026-03-11": 1
     },
-    "reflection_total_hours": 39.0,
-    "reflection_total_sessions": 4,
-    "current_streak": 1,
-    "max_streak": 1,
+    "reflection_total_hours": 51.0,
+    "reflection_total_sessions": 5,
+    "current_streak": 2,
+    "max_streak": 2,
     "inactivity_days": 0,
     "achievements": []
   }
