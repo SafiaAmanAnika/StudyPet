@@ -313,6 +313,16 @@ def handle_change_password(user_id, user_data):
         pause()
         return user_data
 
+    if verify_password(new_password, user_data["password_salt"], user_data["password_hash"]):
+        clear_screen()
+        print_fancy_box(
+            "No Reuse Allowed",
+            ["New password must be different from your current password."],
+            theme="yellow",
+        )
+        pause()
+        return user_data
+
     confirm_password = masked_input("🆕 Confirm new password         : ")
     if new_password != confirm_password:
         clear_screen()

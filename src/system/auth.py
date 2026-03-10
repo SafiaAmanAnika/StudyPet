@@ -99,6 +99,26 @@ def verify_password(password: str, salt_hex: str, hash_hex: str) -> bool:
     return new_hash == hash_hex
 
 
+def is_password_registered(users: dict, password: str) -> bool:
+    """Return True if the password matches any existing account password."""
+    for account_data in users.values():
+        if not isinstance(account_data, dict):
+            continue
+
+        salt_hex = account_data.get("password_salt")
+        hash_hex = account_data.get("password_hash")
+        if not salt_hex or not hash_hex:
+            continue
+
+        try:
+            if verify_password(password, salt_hex, hash_hex):
+                return True
+        except (TypeError, ValueError):
+            continue
+
+    return False
+
+
 def ask_password() -> str:
     """Ask until user enters a valid password."""
     while True:
@@ -228,7 +248,21 @@ def register():
         return None, None
 
     name = ask_non_empty("👤 Enter nickname               : ")
-    password = ask_password()
+    while True:
+        password = ask_password()
+        if not is_password_registered(users, password):
+            break
+
+        clear_screen()
+        print_fancy_box(
+            "⚠️ Password Already Used",
+            [
+                "This password is already registered on another account.",
+                "Please choose a different password.",
+            ],
+            theme="yellow",
+        )
+
     salt, password_hash = hash_password(password)
     
     goal_hours = ask_goal_hours()
