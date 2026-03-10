@@ -4,8 +4,9 @@ from src.ui import clear_screen, print_fancy_box, menu
 NORMAL_FOOD_COST = 50
 PREMIUM_FOOD_COST = 75
 
-NORMAL_FOOD_HEALTH = 3
-PREMIUM_FOOD_HEALTH = 5
+NORMAL_FOOD_HEALTH = 5
+PREMIUM_FOOD_HEALTH = 10
+MAX_PET_HEALTH = 20
 
 
 def open_shop(user_data: dict) -> dict:
@@ -97,6 +98,7 @@ def feed_pet(user_data: dict) -> dict:
         print_fancy_box(
             "🍽️ FEED PET",
             [
+                f"❤️ Current Health: {user_data.get('health', 10)}/{MAX_PET_HEALTH}",
                 f"🍎 Normal Food: {normal} | 🍗 Premium Food: {premium}",
                 "",
                 "Choose food to boost your pet's health.",
@@ -105,12 +107,21 @@ def feed_pet(user_data: dict) -> dict:
         )
 
         choice = menu([
-            "Use Normal Food (+3 health)",
-            "Use Premium Food (+5 health)",
+            "Use Normal Food (+5 health)",
+            "Use Premium Food (+10 health)",
             "Cancel",
         ])
 
         if choice == 1:
+            if user_data.get("health", 10) >= MAX_PET_HEALTH:
+                clear_screen()
+                print_fancy_box(
+                    "❤️ Health Already Full",
+                    ["Your pet is already at max health.", "No food was consumed."],
+                    theme="yellow",
+                )
+                continue
+
             if user_data["inventory"]["normal_food"] <= 0:
                 clear_screen()
                 print_fancy_box(
@@ -120,18 +131,28 @@ def feed_pet(user_data: dict) -> dict:
                 )
                 continue
 
+            health_before = int(user_data.get("health", 10))
             user_data["inventory"]["normal_food"] -= 1
             user_data = pet.change_health(user_data, NORMAL_FOOD_HEALTH)
+            gained = int(user_data.get("health", 10)) - health_before
 
             clear_screen()
-            print_fancy_box(
-                "🍽️ Feeding Complete",
-                ["Used Normal Food.", "❤️ Health increased by 3."],
-                theme="green",
-            )
+            lines = ["Used Normal Food.", f"❤️ Health increased by {gained}."]
+            if gained < NORMAL_FOOD_HEALTH:
+                lines.append("Reached max health cap (20).")
+            print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
             break
 
         elif choice == 2:
+            if user_data.get("health", 10) >= MAX_PET_HEALTH:
+                clear_screen()
+                print_fancy_box(
+                    "❤️ Health Already Full",
+                    ["Your pet is already at max health.", "No food was consumed."],
+                    theme="yellow",
+                )
+                continue
+
             if user_data["inventory"]["premium_food"] <= 0:
                 clear_screen()
                 print_fancy_box(
@@ -141,15 +162,16 @@ def feed_pet(user_data: dict) -> dict:
                 )
                 continue
 
+            health_before = int(user_data.get("health", 10))
             user_data["inventory"]["premium_food"] -= 1
             user_data = pet.change_health(user_data, PREMIUM_FOOD_HEALTH)
+            gained = int(user_data.get("health", 10)) - health_before
 
             clear_screen()
-            print_fancy_box(
-                "🍽️ Feeding Complete",
-                ["Used Premium Food.", "❤️ Health increased by 5."],
-                theme="green",
-            )
+            lines = ["Used Premium Food.", f"❤️ Health increased by {gained}."]
+            if gained < PREMIUM_FOOD_HEALTH:
+                lines.append("Reached max health cap (20).")
+            print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
             break
 
         elif choice == 0:

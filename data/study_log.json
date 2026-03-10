@@ -31,5 +31,16 @@
     "coins_earned": 50,
     "health_lost": 3,
     "mood": "Neutral \ud83d\ude10"
+  },
+  {
+    "user_id": "zen@gmail.com",
+    "date": "2026-03-11",
+    "topic": "spl",
+    "difficulty": "Hard",
+    "study_minutes": 25,
+    "break_minutes": 5,
+    "coins_earned": 50,
+    "health_lost": 3,
+    "mood": "Motivated \ud83e\udd73"
   }
 ]
