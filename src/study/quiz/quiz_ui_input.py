@@ -136,9 +136,11 @@ def ask_date(prompt):
 def add_quiz_marks():
     """Add quiz marks for a subject"""
     clear_screen()
-    box_top()
-    box_title("ADD QUIZ MARKS")
-    box_bottom()
+    print_fancy_box(
+        "📝 Add Quiz Marks",
+        ["Enter quiz details below."],
+        theme="blue",
+    )
     
     data = load_data()
     
@@ -168,9 +170,11 @@ def add_quiz_marks():
 def add_mid_marks():
     """Add mid exam marks for a subject"""
     clear_screen()
-    box_top()
-    box_title("ADD MID MARKS")
-    box_bottom()
+    print_fancy_box(
+        "📝 Add Mid Marks",
+        ["Enter mid exam details below."],
+        theme="blue",
+    )
     
     data = load_data()
     
