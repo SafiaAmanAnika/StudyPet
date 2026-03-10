@@ -1,6 +1,6 @@
 import json, os
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "users.json")
+DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "users.json")
 
 def load_users() -> dict:
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)

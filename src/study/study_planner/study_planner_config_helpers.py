@@ -1,12 +1,18 @@
 import json, os, unicodedata
 from datetime import datetime
 
+# ---------------- PROJECT ROOT ----------------
+def _project_root():
+    """Return absolute path to project root (one level above src)"""
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
 
 BOX_INNER = 48
-DATA_DIR = "data"
+DATA_DIR = os.path.join(_project_root(), "data")
 DATA_FILE = os.path.join(DATA_DIR, "study_planner.json")
 
 # ============================================================================
