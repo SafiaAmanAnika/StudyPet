@@ -6,7 +6,8 @@ import json, os, unicodedata
 
 BOX_INNER = 48   
 DATA_DIR = "data"
-DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
+DATA_FILE = os.path.join(DATA_DIR, "quiz_marks.json")
+LEGACY_DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
 
 CHART_COL_W = 5
 CHART_SPACING = 2
@@ -173,24 +174,44 @@ def ensure_data_dir():
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
+
+def _is_quiz_data(data):
+    """Validate expected quiz data shape."""
+    return isinstance(data, dict) and isinstance(data.get("subjects"), dict)
+
+
+def _load_json(path):
+    """Load JSON from path and return None on failure."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
 def load_data():
     """Load study log data from JSON file"""
     ensure_data_dir()
-    if not os.path.exists(DATA_FILE):
-        return {"subjects": {}}
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            # Ensure data is a dict; if not, return default
-            if not isinstance(data, dict):
-                return {"subjects": {}}
+
+    # Preferred file: quiz_marks.json
+    if os.path.exists(DATA_FILE):
+        data = _load_json(DATA_FILE)
+        if _is_quiz_data(data):
             return data
-    except Exception:
-        return {"subjects": {}}
+
+    # One-time fallback: older builds saved quiz data into study_log.json.
+    if os.path.exists(LEGACY_DATA_FILE):
+        legacy = _load_json(LEGACY_DATA_FILE)
+        if _is_quiz_data(legacy):
+            save_data(legacy)
+            return legacy
+
+    return {"subjects": {}}
 
 def save_data(data):
     """Save study log data to JSON file"""
     ensure_data_dir()
+    if not _is_quiz_data(data):
+        data = {"subjects": {}}
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 

@@ -41,6 +41,7 @@ from datetime import date, timedelta
 install_global_navigation_input()
 
 LOG_FILE = "data/study_log.json"
+QUIZ_FILE = "data/quiz_marks.json"
 
 
 # ---------------- MOOD MESSAGE ---------------- #
@@ -70,6 +71,33 @@ def append_study_log(session_log):
         with open(LOG_FILE, "r") as f:
             logs = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError):
+        logs = []
+
+    # Recover from legacy/corrupted structure so Pomodoro writes never crash.
+    if not isinstance(logs, list):
+        if isinstance(logs, dict) and "subjects" in logs:
+            os.makedirs(os.path.dirname(QUIZ_FILE), exist_ok=True)
+            try:
+                should_migrate = True
+                if os.path.exists(QUIZ_FILE):
+                    with open(QUIZ_FILE, "r") as qf:
+                        existing = json.load(qf)
+                    if isinstance(existing, dict) and existing.get("subjects"):
+                        should_migrate = False
+                if should_migrate:
+                    with open(QUIZ_FILE, "w") as qf:
+                        json.dump(logs, qf, indent=2)
+            except (json.JSONDecodeError, OSError):
+                pass
+
+        backup_path = LOG_FILE + ".backup"
+        try:
+            if not os.path.exists(backup_path):
+                with open(backup_path, "w") as bf:
+                    json.dump(logs, bf, indent=2)
+        except OSError:
+            pass
+
         logs = []
 
     logs.append(session_log)
