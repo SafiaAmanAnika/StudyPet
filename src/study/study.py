@@ -1,5 +1,6 @@
 from src.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
+from src.soundscape import ensure_user_sound_defaults, apply_user_soundscape, stop_soundscape
 import time, os
 import pygame
 
@@ -264,7 +265,14 @@ def start_session(user_id, user_data):
     study_seconds = study_minutes if DEV_MODE else study_minutes * 60
     break_seconds = break_minutes if DEV_MODE else break_minutes * 60
 
-    ok = run_countdowns(study_seconds, break_seconds, mood, pet_type)
+    # Play ambience only while the Pomodoro countdowns are active.
+    ensure_user_sound_defaults(user_data)
+    apply_user_soundscape(user_data)
+    try:
+        ok = run_countdowns(study_seconds, break_seconds, mood, pet_type)
+    finally:
+        stop_soundscape()
+
     if not ok:
         return user_data, None
 

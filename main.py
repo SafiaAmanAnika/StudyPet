@@ -240,137 +240,141 @@ def _soundscape_status_lines(user_data):
     ]
 
 
-def _save_and_apply_soundscape(user_id, user_data):
+def _save_soundscape_settings(user_id, user_data):
     ensure_user_sound_defaults(user_data)
     save_user_data(user_id, user_data)
-    return apply_user_soundscape(user_data)
 
 
 def handle_soundscape_studio(user_id, user_data):
     ensure_user_sound_defaults(user_data)
 
-    while True:
-        clear_screen()
-        lines = _soundscape_status_lines(user_data)
-        lines.append(f"Audio Engine    : {'READY' if soundscape_available() else 'UNAVAILABLE'}")
-        lines.append("")
-        lines.append("Tip: combine lofi + ambience for a cozy study vibe.")
-        print_fancy_box("Soundscape Studio 🎧", lines, theme="cyan")
-
-        sound_choice = menu([
-            "Toggle Lofi Music",
-            "Set Lofi Volume",
-            "Toggle Ambience",
-            "Choose Ambience Type",
-            "Set Ambience Volume",
-            "Preview Current Soundscape",
-            "Stop Soundscape Now",
-            "Back",
-        ])
-        clear_screen()
-
-        if sound_choice == 1:
-            user_data["music_enabled"] = not user_data.get("music_enabled", True)
-            _save_and_apply_soundscape(user_id, user_data)
-            print_fancy_box(
-                "Lofi Updated ✨",
-                [f"Lofi Music is now {'ON' if user_data['music_enabled'] else 'OFF'}."],
-                theme="green",
-            )
-            pause()
-
-        elif sound_choice == 2:
-            user_data["music_volume"] = _prompt_volume("lofi")
-            _save_and_apply_soundscape(user_id, user_data)
+    try:
+        while True:
             clear_screen()
-            print_fancy_box(
-                "Lofi Volume Updated ✨",
-                [f"Music volume: {_volume_to_percent(user_data['music_volume'])}%"],
-                theme="green",
-            )
-            pause()
+            lines = _soundscape_status_lines(user_data)
+            lines.append(f"Audio Engine    : {'READY' if soundscape_available() else 'UNAVAILABLE'}")
+            lines.append("")
+            lines.append("Tip: combine lofi + ambience for a cozy study vibe.")
+            print_fancy_box("Soundscape Studio 🎧", lines, theme="cyan")
 
-        elif sound_choice == 3:
-            user_data["ambience_enabled"] = not user_data.get("ambience_enabled", False)
-            _save_and_apply_soundscape(user_id, user_data)
-            print_fancy_box(
-                "Ambience Updated ✨",
-                [f"Ambience is now {'ON' if user_data['ambience_enabled'] else 'OFF'}."],
-                theme="green",
-            )
-            pause()
-
-        elif sound_choice == 4:
-            ambience_choice = menu([
-                "Rain 🌧️",
-                "Ocean Waves 🌊",
-                "Fire Crackling 🔥",
-                "None",
+            sound_choice = menu([
+                "Toggle Lofi Music",
+                "Set Lofi Volume",
+                "Toggle Ambience",
+                "Choose Ambience Type",
+                "Set Ambience Volume",
+                "Preview Current Soundscape",
+                "Stop Soundscape Now",
                 "Back",
             ])
-
-            if ambience_choice == 1:
-                user_data["ambience_type"] = "rain"
-                user_data["ambience_enabled"] = True
-            elif ambience_choice == 2:
-                user_data["ambience_type"] = "ocean"
-                user_data["ambience_enabled"] = True
-            elif ambience_choice == 3:
-                user_data["ambience_type"] = "fire"
-                user_data["ambience_enabled"] = True
-            elif ambience_choice == 4:
-                user_data["ambience_type"] = "none"
-                user_data["ambience_enabled"] = False
-            elif ambience_choice == 0:
-                continue
-
-            _save_and_apply_soundscape(user_id, user_data)
             clear_screen()
-            print_fancy_box(
-                "Ambience Type Updated ✨",
-                [f"Current ambience: {get_ambience_display_name(user_data['ambience_type'])}"],
-                theme="green",
-            )
-            pause()
 
-        elif sound_choice == 5:
-            user_data["ambience_volume"] = _prompt_volume("ambience")
-            _save_and_apply_soundscape(user_id, user_data)
-            clear_screen()
-            print_fancy_box(
-                "Ambience Volume Updated ✨",
-                [f"Ambience volume: {_volume_to_percent(user_data['ambience_volume'])}%"],
-                theme="green",
-            )
-            pause()
-
-        elif sound_choice == 6:
-            ok = _save_and_apply_soundscape(user_id, user_data)
-            if ok:
+            if sound_choice == 1:
+                user_data["music_enabled"] = not user_data.get("music_enabled", True)
+                _save_soundscape_settings(user_id, user_data)
                 print_fancy_box(
-                    "Preview Playing ▶",
-                    ["Current soundscape settings are now active."],
+                    "Lofi Updated ✨",
+                    [f"Lofi Music is now {'ON' if user_data['music_enabled'] else 'OFF'}."],
                     theme="green",
                 )
-            else:
+                pause()
+
+            elif sound_choice == 2:
+                user_data["music_volume"] = _prompt_volume("lofi")
+                _save_soundscape_settings(user_id, user_data)
+                clear_screen()
                 print_fancy_box(
-                    "Sound Unavailable",
-                    ["Pygame audio is not available in this runtime."],
+                    "Lofi Volume Updated ✨",
+                    [f"Music volume: {_volume_to_percent(user_data['music_volume'])}%"],
+                    theme="green",
+                )
+                pause()
+
+            elif sound_choice == 3:
+                user_data["ambience_enabled"] = not user_data.get("ambience_enabled", False)
+                _save_soundscape_settings(user_id, user_data)
+                print_fancy_box(
+                    "Ambience Updated ✨",
+                    [f"Ambience is now {'ON' if user_data['ambience_enabled'] else 'OFF'}."],
+                    theme="green",
+                )
+                pause()
+
+            elif sound_choice == 4:
+                ambience_choice = menu([
+                    "Rain 🌧️",
+                    "Ocean Waves 🌊",
+                    "Fire Crackling 🔥",
+                    "None",
+                    "Back",
+                ])
+
+                if ambience_choice == 1:
+                    user_data["ambience_type"] = "rain"
+                    user_data["ambience_enabled"] = True
+                elif ambience_choice == 2:
+                    user_data["ambience_type"] = "ocean"
+                    user_data["ambience_enabled"] = True
+                elif ambience_choice == 3:
+                    user_data["ambience_type"] = "fire"
+                    user_data["ambience_enabled"] = True
+                elif ambience_choice == 4:
+                    user_data["ambience_type"] = "none"
+                    user_data["ambience_enabled"] = False
+                elif ambience_choice == 0:
+                    continue
+
+                _save_soundscape_settings(user_id, user_data)
+                clear_screen()
+                print_fancy_box(
+                    "Ambience Type Updated ✨",
+                    [f"Current ambience: {get_ambience_display_name(user_data['ambience_type'])}"],
+                    theme="green",
+                )
+                pause()
+
+            elif sound_choice == 5:
+                user_data["ambience_volume"] = _prompt_volume("ambience")
+                _save_soundscape_settings(user_id, user_data)
+                clear_screen()
+                print_fancy_box(
+                    "Ambience Volume Updated ✨",
+                    [f"Ambience volume: {_volume_to_percent(user_data['ambience_volume'])}%"],
+                    theme="green",
+                )
+                pause()
+
+            elif sound_choice == 6:
+                _save_soundscape_settings(user_id, user_data)
+                ok = apply_user_soundscape(user_data)
+                if ok:
+                    print_fancy_box(
+                        "Preview Playing ▶",
+                        ["Current soundscape settings are now active."],
+                        theme="green",
+                    )
+                else:
+                    print_fancy_box(
+                        "Sound Unavailable",
+                        ["Pygame audio is not available in this runtime."],
+                        theme="yellow",
+                    )
+                pause()
+
+            elif sound_choice == 7:
+                stop_soundscape()
+                print_fancy_box(
+                    "Soundscape Stopped",
+                    ["All ambient music has been stopped for now."],
                     theme="yellow",
                 )
-            pause()
+                pause()
 
-        elif sound_choice == 7:
-            stop_soundscape()
-            print_fancy_box(
-                "Soundscape Stopped",
-                ["All ambient music has been stopped for now."],
-                theme="yellow",
-            )
-            pause()
-
-        elif sound_choice == 0:
-            return user_data
+            elif sound_choice == 0:
+                return user_data
+    finally:
+        # Keep preview playback scoped to this studio screen only.
+        stop_soundscape()
 
 
 def handle_change_name(user_id, user_data):
@@ -875,7 +879,6 @@ def dashboard(user_id, user_data):
     ensure_user_sound_defaults(user_data)
     set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
     set_animation_style(user_data.get("animation_style", "sparkly"))
-    apply_user_soundscape(user_data)
 
     while True:
         try:
@@ -1029,7 +1032,6 @@ def main():
                     save_user_data(user_id, user_data)
                     set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
                     set_animation_style(user_data.get("animation_style", "sparkly"))
-                    apply_user_soundscape(user_data)
                     dashboard(user_id, user_data)
 
             elif choice == "2": 
@@ -1039,7 +1041,6 @@ def main():
                     save_user_data(user_id, user_data)
                     set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
                     set_animation_style(user_data.get("animation_style", "sparkly"))
-                    apply_user_soundscape(user_data)
                     mood = choose_mood(menu)
                     if mood != "Skip": 
                         user_data["mood_today"] = mood
