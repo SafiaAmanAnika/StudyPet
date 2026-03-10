@@ -34,6 +34,7 @@ from src.pet.evolution import check_pet_evolution
 from src.study.study_planner import main_menu as study_planner_menu
 from src.study.user_reflection import handle_post_study, handle_view_achievements
 from src.system.navigation import install_global_navigation_input, NavigateBack, ExitApplication
+from src.ui_sfx import play_ui_click, play_ui_back
 
 import json, os
 from datetime import date, timedelta
@@ -724,6 +725,11 @@ def dashboard(user_id, user_data):
             choice = input("Choose your option              : ").strip()
             clear_screen()
 
+            if choice in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"}:
+                play_ui_click()
+            elif choice == "0":
+                play_ui_back()
+
             if choice == "1": 
                 user_data ,session_log = handle_study_session(user_id, user_data)
                 save_user_data(user_id, user_data)
@@ -826,6 +832,11 @@ def main():
             print("Tip: type ':back' to refresh menu, ':exit' to close the app.")
 
             choice = input("Choose your option              : ").strip()
+
+            if choice in {"1", "2"}:
+                play_ui_click()
+            elif choice == "0":
+                play_ui_back()
 
             if choice == "1": 
                 user_id, user_data = register_user()

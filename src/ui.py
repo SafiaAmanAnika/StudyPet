@@ -1,5 +1,6 @@
 import shutil
 import unicodedata
+from src.ui_sfx import play_ui_click, play_ui_back, play_ui_error
 
 
 ANSI = {
@@ -280,11 +281,14 @@ def menu(options):
         if choice.isdigit():
             choice = int(choice)
             if choice == 0:
+                play_ui_back()
                 return 0
             elif 1 <= choice < len(options):
+                play_ui_click()
                 return choice
 
         clear_screen()
+        play_ui_error()
         print(_paint_256("❌ Invalid choice. Please try again.", fg=PASTEL_ACCENTS["error_fg"], bold=True))
         print()
 
