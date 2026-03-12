@@ -1,26 +1,32 @@
 {
-    "user_name": "z",
+    "user_name": "Z",
     "subjects": [
-        "spl"
+        "Coding problems",
+        "DBMS",
+        "LA"
     ],
     "subject_difficulty": {
-        "spl": "Easy"
+        "Coding problems": "Hard",
+        "DBMS": "Hard",
+        "LA": "Hard"
     },
     "subject_study_minutes": {
-        "spl": 0
+        "Coding problems": 0,
+        "DBMS": 0,
+        "LA": 0
     },
-    "goal_hours": 1.0,
+    "goal_hours": 6.0,
     "mood_today": "Neutral 😐",
-    "study_minutes_today": 23,
+    "study_minutes_today": 1,
     "missed_goal": true,
     "goal_recovery_increase": 0.5,
-    "last_study_date": "2026-03-11",
+    "last_study_date": "2026-03-12",
     "study_plan": [
         {
             "session": 1,
-            "subject": "spl",
-            "duration": 25,
-            "difficulty": "Easy",
+            "subject": "Coding problems",
+            "duration": 50,
+            "difficulty": "Hard",
             "type": "study"
         },
         {
@@ -31,9 +37,9 @@
         },
         {
             "session": 3,
-            "subject": "spl",
-            "duration": 25,
-            "difficulty": "Easy",
+            "subject": "DBMS",
+            "duration": 50,
+            "difficulty": "Hard",
             "type": "study"
         },
         {
@@ -44,9 +50,9 @@
         },
         {
             "session": 5,
-            "subject": "spl",
-            "duration": 25,
-            "difficulty": "Easy",
+            "subject": "LA",
+            "duration": 50,
+            "difficulty": "Hard",
             "type": "study"
         },
         {
@@ -57,13 +63,65 @@
         },
         {
             "session": 7,
-            "subject": "spl",
-            "duration": 5,
-            "difficulty": "Easy",
+            "subject": "Coding problems",
+            "duration": 50,
+            "difficulty": "Hard",
             "type": "study"
         },
         {
             "session": 8,
+            "subject": "Break",
+            "duration": 7,
+            "type": "break"
+        },
+        {
+            "session": 9,
+            "subject": "DBMS",
+            "duration": 50,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 10,
+            "subject": "Break",
+            "duration": 7,
+            "type": "break"
+        },
+        {
+            "session": 11,
+            "subject": "LA",
+            "duration": 50,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 12,
+            "subject": "Break",
+            "duration": 7,
+            "type": "break"
+        },
+        {
+            "session": 13,
+            "subject": "Coding problems",
+            "duration": 50,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 14,
+            "subject": "Break",
+            "duration": 7,
+            "type": "break"
+        },
+        {
+            "session": 15,
+            "subject": "DBMS",
+            "duration": 30,
+            "difficulty": "Hard",
+            "type": "study"
+        },
+        {
+            "session": 16,
             "subject": "Revision",
             "duration": 10,
             "type": "revision"
