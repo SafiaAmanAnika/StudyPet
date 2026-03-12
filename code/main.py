@@ -8,6 +8,7 @@ from src.ui import (
     reflection_menu,
     print_fancy_box,
     print_brand_header,
+    print_intro_splash,
     choose_theme,
     choose_animation_style,
     set_ui_theme,
@@ -1001,6 +1002,9 @@ def dashboard(user_id, user_data):
             raise
         
 def main(): 
+    set_ui_theme("pastel_pink")
+    set_animation_style("sparkly")
+    print_intro_splash()
     while True: 
         try:
             set_ui_theme("pastel_pink")
