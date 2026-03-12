@@ -27,11 +27,11 @@ AMBIENCE_LABELS = {
 }
 
 _ASSET_DIR = "data/soundscape"
-_LOFI_FILE = "lofi_loop.wav"
+_LOFI_FILE = "lofi_girl.mp3"
 _AMBIENCE_FILES = {
-    "rain": "rain_loop.wav",
-    "ocean": "ocean_loop.wav",
-    "fire": "fire_loop.wav",
+    "rain": "rain.mp3",
+    "ocean": "ocean.mp3",
+    "fire": "fire.mp3",
 }
 
 _READY = False

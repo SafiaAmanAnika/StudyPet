@@ -7,12 +7,12 @@
     "academic_goal": "yoyo",
     "pet_theme": "Cat",
     "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
-    "health": 15,
+    "health": 12,
     "energy": 100.0,
-    "coins": 69,
+    "coins": 119,
     "study_streak": 2,
-    "total_study_hours": 3.333333333333333,
-    "total_study_minutes": 200,
+    "total_study_hours": 3.7499999999999996,
+    "total_study_minutes": 225,
     "last_study_date": "2026-03-11",
     "inventory": {
       "normal_food": 0,
@@ -71,5 +71,34 @@
     "music_volume": 1.0,
     "ambience_volume": 1.0,
     "ambience_type": "none"
+  },
+  "z@gmail.com": {
+    "name": "Z",
+    "password_salt": "361cc88f4023d9f6d683a780feb07ec0",
+    "password_hash": "7e66a8750cb4fd3c2b7f8d60f269efba8f0152bae085d57293ce98413a9740a1",
+    "goal_hours": 12,
+    "academic_goal": "yoyo",
+    "pet_theme": "Bunny",
+    "pet_personality": "Focused, intense, and hungry for knowledge\ud83e\udd13\ud83d\udcda",
+    "health": 10,
+    "energy": 100,
+    "coins": 5,
+    "study_streak": 0,
+    "total_study_hours": 0,
+    "total_study_minutes": 0,
+    "last_study_date": "",
+    "inventory": {
+      "normal_food": 0,
+      "premium_food": 0
+    },
+    "last_login": "2026-03-12",
+    "mood_today": "",
+    "ui_theme": "pastel_pink",
+    "animation_style": "sparkly",
+    "music_enabled": true,
+    "music_volume": 0.35,
+    "ambience_enabled": false,
+    "ambience_type": "rain",
+    "ambience_volume": 0.3
   }
 }
