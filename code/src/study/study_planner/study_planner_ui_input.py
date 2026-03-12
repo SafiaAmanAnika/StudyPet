@@ -3,7 +3,7 @@ from .study_planner_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width,
     wrap_text_to_width, manual_strip, manual_is_number, is_only_letters
 )
-from src.ui import (
+from src.interface.ui import (
     clear_screen as shared_clear_screen,
     print_fancy_box,
     menu as ui_menu,

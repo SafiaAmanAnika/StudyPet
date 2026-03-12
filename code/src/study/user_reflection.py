@@ -1,6 +1,6 @@
 import time, random
 from datetime import datetime, timedelta
-from src.ui import clear_screen, print_fancy_box
+from src.interface.ui import clear_screen, print_fancy_box
 
 # ---------------- UTILITY ---------------- #
 def today_str():

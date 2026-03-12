@@ -1,5 +1,5 @@
 from src import pet
-from src.ui import clear_screen, print_fancy_box, menu
+from src.interface.ui import clear_screen, print_fancy_box, menu
 
 NORMAL_FOOD_COST = 50
 PREMIUM_FOOD_COST = 75

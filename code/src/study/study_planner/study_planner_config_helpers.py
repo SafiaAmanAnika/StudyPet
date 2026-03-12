@@ -4,7 +4,7 @@ from datetime import datetime
 # ---------------- PROJECT ROOT ----------------
 def _project_root():
     """Return absolute path to project root (one level above src)"""
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 # ============================================================================
@@ -160,15 +160,49 @@ def get_default_data():
 def load_data():
     """Load study planner data from JSON file"""
     ensure_data_dir()
+    default_data = get_default_data()
+
     if not os.path.exists(DATA_FILE):
-        default_data = get_default_data()
         save_data(default_data)
         return default_data
+
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+
+        if not isinstance(data, dict):
+            raise ValueError("Planner data must be a JSON object")
+
+        changed = False
+
+        for key, default_value in default_data.items():
+            if key not in data:
+                if isinstance(default_value, list):
+                    data[key] = list(default_value)
+                elif isinstance(default_value, dict):
+                    data[key] = dict(default_value)
+                else:
+                    data[key] = default_value
+                changed = True
+
+        if not isinstance(data.get("subjects"), list):
+            data["subjects"] = []
+            changed = True
+        if not isinstance(data.get("subject_difficulty"), dict):
+            data["subject_difficulty"] = {}
+            changed = True
+        if not isinstance(data.get("subject_study_minutes"), dict):
+            data["subject_study_minutes"] = {}
+            changed = True
+        if not isinstance(data.get("study_plan"), list):
+            data["study_plan"] = []
+            changed = True
+
+        if changed:
+            save_data(data)
+
+        return data
     except Exception:
-        default_data = get_default_data()
         save_data(default_data)
         return default_data
 

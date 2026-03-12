@@ -17,7 +17,7 @@ _CACHE = {}
 
 
 def _project_root():
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _sfx_dir():

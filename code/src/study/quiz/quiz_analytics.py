@@ -6,7 +6,7 @@ from src.study.quiz.quiz_ui_input import (
     clear_screen
 )
 from src.study.quiz.quiz_charts import build_vertical_trend, build_overall_chart
-from src.ui import print_fancy_box, pause
+from src.interface.ui import print_fancy_box, pause
 
 CARD_WIDTH = 73
 

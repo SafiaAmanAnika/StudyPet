@@ -5,7 +5,7 @@ from .study_planner_config_helpers import (
 from .study_planner_ui_input import (
     clear_screen, ask_float
 )
-from src.ui import print_fancy_box, pause
+from src.interface.ui import print_fancy_box, pause
 
 # ============================================================================
 # LOG STUDY SESSION

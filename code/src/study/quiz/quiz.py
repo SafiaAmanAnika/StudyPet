@@ -4,7 +4,7 @@ from src.study.quiz.quiz_analytics import (
     result_overview_and_advisor,
     view_dashboard
 )
-from src.ui import print_fancy_box, menu, pause
+from src.interface.ui import print_fancy_box, menu, pause
 
 def main():
     """Main menu and program loop"""

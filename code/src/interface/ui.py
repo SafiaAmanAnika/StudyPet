@@ -3,7 +3,7 @@ import shutil
 import sys
 import time
 import unicodedata
-from src.ui_sfx import play_ui_click, play_ui_back, play_ui_error
+from src.audio.ui_sfx import play_ui_click, play_ui_back, play_ui_error
 
 
 ANSI = {
@@ -327,8 +327,8 @@ def print_intro_splash():
             if pygame.mixer.get_num_channels() < 8:
                 pygame.mixer.set_num_channels(8)
 
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            meow_path = os.path.join(project_root, "src", "sounds", "meow.mp3")
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            meow_path = os.path.join(project_root, "data", "sounds", "meow.mp3")
             if not os.path.exists(meow_path):
                 return
 

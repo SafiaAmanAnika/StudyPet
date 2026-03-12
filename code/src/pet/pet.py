@@ -1,5 +1,5 @@
 from .evolution import get_pet_stage
-from src.ui import print_fancy_box
+from src.interface.ui import print_fancy_box
 
 def ensure_pet_defaults(user_data: dict) -> dict:
     if "health" not in user_data:

@@ -1,6 +1,6 @@
-from src.ui import clear_screen, print_fancy_box
+from src.interface.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
-from src.soundscape import ensure_user_sound_defaults, apply_user_soundscape, stop_soundscape
+from src.audio.soundscape import ensure_user_sound_defaults, apply_user_soundscape, stop_soundscape
 from .study_planner.study_planner_config_helpers import load_data as load_planner_data
 import time, os
 import pygame
@@ -33,7 +33,8 @@ def play_pet_sound(pet_type: str):
     if not filename:
         return
 
-    sound_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "sounds", filename)
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sound_path = os.path.join(project_root, "data", "sounds", filename)
     if not os.path.exists(sound_path):
         print(f"⚠️ Sound file not found: {sound_path}")
         return

@@ -1,4 +1,4 @@
-from src.ui import (
+from src.interface.ui import (
     menu,
     pause,
     show_user_summary,
@@ -17,7 +17,7 @@ from src.ui import (
 from src.pet.animation import set_animation_style, get_animation_style_display
 from src.system.storage import load_users, save_users
 from src.pet import show_status, apply_pet_abilities
-from src.shop import feed_pet, open_shop
+from src.core.shop import feed_pet, open_shop
 from src.study import start_session
 from src.wellbeing import (
     log_mood,
@@ -29,14 +29,14 @@ from src.wellbeing import (
 )
 from src.wellbeing.recreation import recreation_menu, count_today_sessions
 from src.study.quiz import run as quiz_run
-from src.analytics import run as analytics_run
+from src.core.analytics import run as analytics_run
 from src.study.weekly_report import run as weekly_run 
 from src.pet.evolution import check_pet_evolution
 from src.study.study_planner import main_menu as study_planner_menu
 from src.study.user_reflection import handle_post_study, handle_view_achievements
 from src.system.navigation import install_global_navigation_input, NavigateBack, ExitApplication
-from src.ui_sfx import play_ui_click, play_ui_back
-from src.soundscape import (
+from src.audio.ui_sfx import play_ui_click, play_ui_back
+from src.audio.soundscape import (
     ensure_user_sound_defaults,
     apply_user_soundscape,
     stop_soundscape,

@@ -40,7 +40,7 @@ _CURRENT_AMBIENCE = None
 
 
 def _project_root():
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _soundscape_dir():

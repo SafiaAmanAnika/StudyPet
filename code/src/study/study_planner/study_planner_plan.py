@@ -4,7 +4,7 @@ from .study_planner_ui_input import (
     ask_subjects_type, ask_single_subject_with_difficulty,
     ask_multiple_subjects_with_difficulty
 )
-from src.ui import print_fancy_box, pause
+from src.interface.ui import print_fancy_box, pause
 
 # ============================================================================
 # STUDY PLAN GENERATION

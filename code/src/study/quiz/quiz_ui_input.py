@@ -3,7 +3,7 @@ from src.study.quiz.quiz_config_helpers import (
     wrap_text_to_width, manual_strip, manual_is_number, date_valid_simple,
     load_data, save_data
 )
-from src.ui import (
+from src.interface.ui import (
     clear_screen as shared_clear_screen,
     print_fancy_box,
     menu as ui_menu,

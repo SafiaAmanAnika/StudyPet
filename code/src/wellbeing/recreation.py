@@ -1,5 +1,5 @@
 import time, random 
-from src.ui import clear_screen, print_fancy_box, menu, pause
+from src.interface.ui import clear_screen, print_fancy_box, menu, pause
 from .wellbeing import load_study_logs, today_str, tired_streak_days
 
 #counting sessions 

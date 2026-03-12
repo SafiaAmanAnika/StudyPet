@@ -1,5 +1,5 @@
 from datetime import date
-from src.ui import clear_screen, print_fancy_box, pause
+from src.interface.ui import clear_screen, print_fancy_box, pause
 from .storage import load_users, save_users
 import re, os, hashlib, sys
 

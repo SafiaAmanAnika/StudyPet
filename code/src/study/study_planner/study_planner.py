@@ -7,7 +7,7 @@ from .study_planner_progress import (
 )
 from .study_planner_recovery import check_missed_goal_recovery
 from .study_planner_profile import view_user_dashboard
-from src.ui import print_fancy_box, menu, pause
+from src.interface.ui import print_fancy_box, menu, pause
 
 # ============================================================================
 # MAIN MENU

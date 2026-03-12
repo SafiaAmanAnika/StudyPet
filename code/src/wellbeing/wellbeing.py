@@ -1,8 +1,8 @@
 import json, os 
 from datetime import date, timedelta
-from src.ui import print_fancy_box
+from src.interface.ui import print_fancy_box
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data")
 MOOD_FILE = os.path.join(DATA_DIR, "mood_log.json")
 STUDY_LOG_FILE = os.path.join(DATA_DIR, "study_log.json")
 

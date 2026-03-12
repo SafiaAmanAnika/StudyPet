@@ -2,7 +2,7 @@ from .study_planner_config_helpers import load_data, save_data
 from .study_planner_ui_input import (
     clear_screen
 )
-from src.ui import print_fancy_box, pause
+from src.interface.ui import print_fancy_box, pause
 
 # ============================================================================
 # MISSED GOAL RECOVERY

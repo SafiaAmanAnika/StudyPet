@@ -1,36 +1,75 @@
 # StudyPet 🐾
 
-StudyPet is a gamified command-line study companion built with Python.
-It blends focused study sessions, virtual pet care, wellbeing tracking, and progress analytics into one daily routine.
+StudyPet is a cozy, gamified command-line study companion built with Python.
+It blends planner-driven Pomodoro flow, pet progression, wellbeing tracking, and performance analytics into one daily routine.
 
-## Why StudyPet
+## At A Glance
 
-StudyPet is designed around a simple loop:
+| Area | What you get |
+|---|---|
+| Focus | Pomodoro sessions (25/5, 50/10, custom) |
+| Planning | Study Planner subjects flow into session start |
+| Motivation | Coins, pet health, feeding, shop, pet evolution |
+| Wellbeing | Mood logs, tired streak handling, burnout checks |
+| Insights | Analytics heatmaps, quiz tracking, weekly reports |
+| Experience | Animated intro, themes, animation styles, soundscape |
 
-1. Study in Pomodoro-style sessions.
-2. Earn coins and maintain your pet's health/energy.
-3. Track mood, burnout risk, and consistency.
-4. Reflect on progress and improve next-day planning.
+## Daily Gameplay Loop
 
-The result is a CLI app that feels playful while still being useful for real study habits.
+1. Generate or review your study plan.
+2. Pick a subject and launch a focused study session.
+3. Earn rewards and manage your pet.
+4. Check mood, energy, and burnout signals.
+5. Review progress and reflections.
+
+## Planner → Pomodoro Integration
+
+Study sessions can now start directly from planner output:
+
+- Choose subject from generated plan entries.
+- Optionally adopt planner difficulty.
+- Optionally use planner timing for study/break.
+- Session logs store topic, difficulty, study minutes, and break minutes.
+
+This makes Study Planner and Pomodoro feel like one continuous flow instead of two separate tools.
 
 ## Feature Highlights
 
-- Study sessions with difficulty-based rewards and health impact.
-- Virtual pet system with feeding, shop items, and pet evolution.
-- Pet abilities (Cat, Dog, Bunny) that modify post-session outcomes.
-- Wellbeing check-ins, tired-streak penalties, burnout handling, and energy recovery.
-- Recreation unlocks (meditation and mini-game) after sustained effort.
-- Quiz performance tracking and analytics views.
-- Weekly report generation and stored snapshots.
-- Study planner modules for profile, plan, progress, and recovery.
-- Reflection journal with achievement tracking.
-- Theme Studio with runtime UI themes.
-- Global navigation shortcuts available across prompts.
+### Study + Focus
 
-## Dashboard Menu
+- Pomodoro presets and custom mode.
+- Difficulty-based reward and health impact.
+- Soundscape-enabled focus sessions (lofi + ambience).
 
-After login, the dashboard includes:
+### Pet Progression
+
+- Pet themes: Cat, Dog, Bunny.
+- Coins and inventory loop through shop + feeding.
+- Pet abilities and evolution checks based on activity patterns.
+
+### Wellbeing + Recovery
+
+- Mood check-ins with logs.
+- Tired streak detection and burnout handling.
+- Recreation triggers after workload thresholds.
+
+### Tracking + Reporting
+
+- Quiz performance tracker.
+- Analytics dashboard and heatmap-style insights.
+- Weekly report snapshots.
+- Reflection and achievement flow.
+
+### UI/UX
+
+- Animated intro splash.
+- Theme Studio (color themes + animation style).
+- Soundscape Studio (music, ambience type, volume).
+- Universal commands at prompts:
+  - `:back` / `:b`
+  - `:exit` / `:q`
+
+## Dashboard Menu (Post Login)
 
 1. Start Study Session
 2. Feed Pet
@@ -38,60 +77,67 @@ After login, the dashboard includes:
 4. View Pet Status
 5. View User Status
 6. Mood Check-in
-7. Study Performance Tracker (Quiz)
+7. Study Performance Tracker
 8. Analytics
 9. Weekly Report
 10. Study Planner
 11. Reflection Journal
-12. Theme Studio
+12. Settings
 0. Logout
 
-## Theme Studio 🎨
+## Settings Studio
 
-Open from dashboard option `12`.
-
-Available profiles:
-- `Pastel Pink 🎀`
-- `Ocean Breeze 🌊`
-- `Sunset Glow 🌇`
-
-Theme choice is stored per user as `ui_theme` in `data/users.json`.
-
-## Universal Commands
-
-You can use these from most prompts:
-
-- `:back` or `:b` to go back to the previous/main flow.
-- `:exit` or `:q` to close the app safely.
+- Change name, email, password.
+- Change pet and goals.
+- Theme Studio:
+  - Pastel Pink 🎀
+  - Ocean Breeze 🌊
+  - Sunset Glow 🌇
+  - animation style controls
+- Soundscape Studio:
+  - music toggle
+  - ambience toggle/type
+  - volume controls
+- Account deletion with password confirmation.
 
 ## Quick Start
 
-Requirements:
-- Python 3.10+
+### Requirements
 
-Run:
+- Python 3.10+
+- pygame
+
+Install dependency:
+
+```bash
+pip install pygame
+```
+
+Run from this folder (`code/`):
 
 ```bash
 python3 main.py
 ```
 
-No external dependency install is required for core functionality.
+## Canonical Data Layout
 
-## Data Storage
+All runtime data is centralized in `data/`:
 
-StudyPet uses JSON files in `data/`:
+- `data/users.json`
+- `data/study_log.json`
+- `data/study_log.json.backup`
+- `data/mood_log.json`
+- `data/quiz_marks.json`
+- `data/study_planner.json`
+- `data/weekly_reports.json`
+- `data/sounds/*.mp3`
+- `data/soundscape/*.mp3`
+- `data/ui_sfx/*.wav`
 
-- `data/users.json`: account data, pet stats, streaks, theme, and profile fields.
-- `data/study_log.json`: per-session logs (topic, duration, rewards, mood).
-- `data/mood_log.json`: mood check-in history.
-- `data/quiz_marks.json`: quiz scores/attempt history.
-- `data/study_planner.json`: planner profile, goals, and progress.
-- `data/weekly_reports.json`: generated weekly snapshots.
-
-## Project Layout
+## Architecture (Current)
 
 ```text
-StudyPet/
+code/
   main.py
   README.md
   data/
@@ -101,51 +147,74 @@ StudyPet/
     quiz_marks.json
     study_planner.json
     weekly_reports.json
+    sounds/
+    soundscape/
+    ui_sfx/
   src/
-    _init_.py
-    analytics.py
-    animation.py
-    auth.py
-    evolution.py
-    navigation.py
-    pet.py
-    quiz.py
-    quiz_analytics.py
-    quiz_charts.py
-    quiz_config_helpers.py
-    quiz_ui_input.py
-    recreation.py
-    reflection.py
-    shop.py
-    storage.py
-    study.py
-    study_planner.py
-    study_planner_config_helpers.py
-    study_planner_plan.py
-    study_planner_profile.py
-    study_planner_progress.py
-    study_planner_recovery.py
-    study_planner_ui_input.py
-    ui.py
-    user_reflection.py
-    weekly_report.py
-    wellbeing.py
+    __init__.py
+    interface/
+      __init__.py
+      ui.py
+    audio/
+      __init__.py
+      soundscape.py
+      ui_sfx.py
+    core/
+      __init__.py
+      analytics.py
+      shop.py
+    pet/
+      __init__.py
+      animation.py
+      evolution.py
+      pet.py
+    study/
+      __init__.py
+      study.py
+      reflection.py
+      user_reflection.py
+      weekly_report.py
+      quiz/
+        __init__.py
+        quiz.py
+        quiz_analytics.py
+        quiz_charts.py
+        quiz_config_helpers.py
+        quiz_ui_input.py
+      study_planner/
+        __init__.py
+        study_planner.py
+        study_planner_config_helpers.py
+        study_planner_plan.py
+        study_planner_profile.py
+        study_planner_progress.py
+        study_planner_recovery.py
+        study_planner_ui_input.py
+    system/
+      __init__.py
+      auth.py
+      navigation.py
+      storage.py
+    wellbeing/
+      __init__.py
+      wellbeing.py
+      recreation.py
 ```
 
 ## Developer Notes
 
-Quick syntax check:
+Compile-check quickly:
 
 ```bash
 python3 -m compileall main.py src
 ```
 
-Fast testing mode for timers:
-- Toggle `DEV_MODE` in `src/study.py`.
-- `True` treats minutes as seconds for rapid testing.
+Timer testing shortcut:
+
+- Edit `DEV_MODE` in `src/study/study.py`.
+- `True` treats minutes as seconds for fast iteration.
 - `False` uses real session durations.
 
-## Closing Note
+## Closing
 
-StudyPet is built to make consistency feel rewarding.
-Small daily sessions, visible progress, and a growing pet companion are the core experience. ✨
+StudyPet is built to make consistency feel rewarding: focused sessions, visible growth, and a companion that evolves with your effort. ✨

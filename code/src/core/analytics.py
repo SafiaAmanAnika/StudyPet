@@ -1,13 +1,13 @@
 import json, os
 from datetime import date, datetime, timedelta
-from src.ui import analytics_menu, clear_screen, print_fancy_box, pause
+from src.interface.ui import analytics_menu, clear_screen, print_fancy_box, pause
 
 
 # Safe File Handling
 
 
 def _project_root():
-    return os.path.dirname(os.path.dirname(__file__))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def _data_path(filename: str) -> str:
     return os.path.join(_project_root(), "data", filename)

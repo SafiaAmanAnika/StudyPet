@@ -1,6 +1,6 @@
 import json, os
 from datetime import date, timedelta
-from src.ui import clear_screen, print_fancy_box, menu, pause
+from src.interface.ui import clear_screen, print_fancy_box, menu, pause
 
 # ---------------- PATH + SAFE JSON HELPERS ---------------- #
 
