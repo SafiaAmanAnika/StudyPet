@@ -49,10 +49,13 @@ from datetime import date, timedelta
 
 install_global_navigation_input()
 
-LOG_FILE = "data/study_log.json"
-QUIZ_FILE = "data/quiz_marks.json"
-MOOD_FILE = "data/mood_log.json"
-WEEKLY_REPORT_FILE = "data/weekly_reports.json"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_DATA = os.path.join(_HERE, "data")
+
+LOG_FILE = os.path.join(_DATA, "study_log.json")
+QUIZ_FILE = os.path.join(_DATA, "quiz_marks.json")
+MOOD_FILE = os.path.join(_DATA, "mood_log.json")
+WEEKLY_REPORT_FILE = os.path.join(_DATA, "weekly_reports.json")
 
 
 # ---------------- MOOD MESSAGE ---------------- #
@@ -75,6 +78,7 @@ def append_study_log(session_log):
         return 
     
     if not os.path.exists(LOG_FILE):
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
         with open(LOG_FILE, "w") as f: 
             json.dump([], f)
     
