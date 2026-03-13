@@ -5,7 +5,12 @@ import json, os, unicodedata
 # ============================================================================
 
 BOX_INNER = 48   
-DATA_DIR = "data"
+def _project_root():
+    """Return absolute path to project root (one level above src)."""
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+
+DATA_DIR = os.path.join(_project_root(), "data")
 DATA_FILE = os.path.join(DATA_DIR, "quiz_marks.json")
 LEGACY_DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
 LEGACY_USER_KEY = "__legacy__"
