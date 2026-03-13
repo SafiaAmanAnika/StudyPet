@@ -10,7 +10,12 @@ def count_today_sessions(user_id: str) -> int:
     count = 0
     for log in logs: 
         if isinstance(log, dict) and log.get("user_id") == user_id and log.get("date") == today:
-            count += 1
+            sessions_completed = log.get("sessions_completed", 1)
+            try:
+                sessions_completed = int(sessions_completed)
+            except (TypeError, ValueError):
+                sessions_completed = 1
+            count += max(1, sessions_completed)
     return count 
 
 #meditation

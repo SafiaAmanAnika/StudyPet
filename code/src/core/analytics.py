@@ -55,6 +55,7 @@ def build_daily_maps(user_logs: list):
     for log in user_logs:
         d = log.get("date")
         mins = log.get("study_minutes", 0)
+        sessions_completed = log.get("sessions_completed", 1)
 
         if not isinstance(d, str):
             continue
@@ -69,8 +70,13 @@ def build_daily_maps(user_logs: list):
         except Exception:
             mins = 0
 
+        try:
+            sessions_completed = int(sessions_completed)
+        except Exception:
+            sessions_completed = 1
+
         minutes_by_date[d] = minutes_by_date.get(d, 0) + max(0, mins)
-        sessions_by_date[d] = sessions_by_date.get(d, 0) + 1
+        sessions_by_date[d] = sessions_by_date.get(d, 0) + max(1, sessions_completed)
 
     return minutes_by_date, sessions_by_date
 

@@ -5,7 +5,7 @@ from src.interface.ui import clear_screen, print_fancy_box, menu, pause
 # ---------------- PATH + SAFE JSON HELPERS ---------------- #
 
 def _project_root():
-    return os.path.dirname(os.path.dirname(__file__))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _data_path(filename: str) -> str:

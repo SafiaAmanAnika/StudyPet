@@ -774,7 +774,12 @@ def handle_study_session(user_id, user_data):
 
     # ---------------- TRACK SESSION COUNT ----------------
     # Current session is not written to study_log yet, so include it here.
-    session_count = count_today_sessions(user_id) + 1
+    session_units = session_log.get("sessions_completed", 1)
+    try:
+        session_units = int(session_units)
+    except (TypeError, ValueError):
+        session_units = 1
+    session_count = count_today_sessions(user_id) + max(1, session_units)
 
     # ---------------- CHECK TIRED STREAK ----------------
     tired_streak = tired_streak_days(user_id)
