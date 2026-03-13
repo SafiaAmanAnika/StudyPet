@@ -1,7 +1,4 @@
-import random
-import shutil
-import sys
-import time
+import random, shutil, sys, time
 import unicodedata
 from src.audio.ui_sfx import play_ui_click, play_ui_back, play_ui_error
 

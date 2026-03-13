@@ -169,6 +169,4 @@ def apply_pet_abilities(user_data):
             user_data['coins'] += 50
             print("Your catto gives you extra coins 🪙")
 
-    return user_data
-
-                                          
+    return user_data                                  
