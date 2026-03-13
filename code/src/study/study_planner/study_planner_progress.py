@@ -11,10 +11,10 @@ from src.interface.ui import print_fancy_box, pause
 # LOG STUDY SESSION
 # ============================================================================
 
-def log_study_session():
+def log_study_session(user_id=None):
 
     clear_screen()
-    data = load_data()
+    data = load_data(user_id=user_id)
     
     if not data.get("study_plan"):
         clear_screen()
@@ -113,14 +113,14 @@ def log_study_session():
             theme="green",
         )
     
-    save_data(data)
+    save_data(data, user_id=user_id)
     pause()
 
 # ============================================================================
 # VIEW PROGRESS DASHBOARD
 # ============================================================================
 
-def view_progress_dashboard():
+def view_progress_dashboard(user_id=None):
     """
     Display progress dashboard showing:
     - Overall daily progress
@@ -128,7 +128,7 @@ def view_progress_dashboard():
     - Status indicators
     """
     clear_screen()
-    data = load_data()
+    data = load_data(user_id=user_id)
     
     if not data["subjects"]:
         clear_screen()

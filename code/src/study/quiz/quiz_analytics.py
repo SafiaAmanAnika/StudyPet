@@ -75,7 +75,7 @@ def predict_final_grade(current_percent, syllabus_done):
 # SYLLABUS COVERAGE TRACKER
 # ============================================================================
 
-def syllabus_coverage_tracker():
+def syllabus_coverage_tracker(user_id=None):
     """Display curriculum progress report showing syllabus coverage per subject"""
     clear_screen()
     print_fancy_box(
@@ -85,7 +85,7 @@ def syllabus_coverage_tracker():
         theme="cyan",
     )
     
-    data = load_data()
+    data = load_data(user_id=user_id)
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:
@@ -146,7 +146,7 @@ def syllabus_coverage_tracker():
 # PERFORMANCE TREND MONITOR
 # ============================================================================
 
-def result_overview_and_advisor():
+def result_overview_and_advisor(user_id=None):
     """Display detailed performance analysis with trends and advice"""
     clear_screen()
     print_fancy_box(
@@ -156,7 +156,7 @@ def result_overview_and_advisor():
         theme="cyan",
     )
     
-    data = load_data()
+    data = load_data(user_id=user_id)
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:
@@ -312,7 +312,7 @@ def result_overview_and_advisor():
 # DASHBOARD VIEW
 # ============================================================================
 
-def view_dashboard():
+def view_dashboard(user_id=None):
     """Display comprehensive dashboard with all subjects performance"""
     clear_screen()
     print_fancy_box(
@@ -322,7 +322,7 @@ def view_dashboard():
         theme="cyan",
     )
     
-    data = load_data()
+    data = load_data(user_id=user_id)
     subjects = data["subjects"]
     
     if manual_len(list(subjects.keys())) == 0:

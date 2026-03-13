@@ -8,14 +8,14 @@ from src.interface.ui import print_fancy_box, pause
 # MISSED GOAL RECOVERY
 # ============================================================================
 
-def check_missed_goal_recovery():
+def check_missed_goal_recovery(user_id=None):
     """
     Check if goal was missed and provide recovery plan
     If goal missed: add 30 minutes recovery to tomorrow's goal
     If goal met: encourage to keep going
     """
     clear_screen()
-    data = load_data()
+    data = load_data(user_id=user_id)
     
     if data.get("missed_goal", False):
         print_fancy_box(
@@ -43,5 +43,5 @@ def check_missed_goal_recovery():
         )
         data["goal_recovery_increase"] = 0
 
-    save_data(data)
+    save_data(data, user_id=user_id)
     pause()

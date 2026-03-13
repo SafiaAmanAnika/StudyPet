@@ -8,6 +8,8 @@ BOX_INNER = 48
 DATA_DIR = "data"
 DATA_FILE = os.path.join(DATA_DIR, "quiz_marks.json")
 LEGACY_DATA_FILE = os.path.join(DATA_DIR, "study_log.json")
+LEGACY_USER_KEY = "__legacy__"
+DEFAULT_USER_KEY = "__default__"
 
 CHART_COL_W = 5
 CHART_SPACING = 2
@@ -180,6 +182,72 @@ def _is_quiz_data(data):
     return isinstance(data, dict) and isinstance(data.get("subjects"), dict)
 
 
+def _resolve_user_key(user_id):
+    if user_id is None:
+        return DEFAULT_USER_KEY
+    key = str(user_id).strip()
+    return key if key else DEFAULT_USER_KEY
+
+
+def _normalize_quiz_payload(data):
+    changed = False
+
+    if not isinstance(data, dict):
+        data = {"subjects": {}}
+        changed = True
+
+    subjects = data.get("subjects")
+    if not isinstance(subjects, dict):
+        subjects = {}
+        data["subjects"] = subjects
+        changed = True
+
+    for subject, records in list(subjects.items()):
+        if not isinstance(records, dict):
+            subjects[subject] = {"quiz": [], "mid": []}
+            changed = True
+            continue
+
+        if not isinstance(records.get("quiz"), list):
+            records["quiz"] = []
+            changed = True
+        if not isinstance(records.get("mid"), list):
+            records["mid"] = []
+            changed = True
+
+    return data, changed
+
+
+def _normalize_db(raw):
+    changed = False
+
+    if isinstance(raw, dict) and isinstance(raw.get("users"), dict):
+        users = raw.get("users", {})
+    elif _is_quiz_data(raw):
+        users = {LEGACY_USER_KEY: raw}
+        changed = True
+    elif isinstance(raw, dict):
+        users = {}
+        for key, value in raw.items():
+            if _is_quiz_data(value):
+                users[str(key)] = value
+        if users:
+            changed = True
+    else:
+        users = {}
+        changed = True
+
+    db = {"users": users}
+
+    for key in list(users.keys()):
+        payload, payload_changed = _normalize_quiz_payload(users.get(key))
+        if payload_changed:
+            users[key] = payload
+            changed = True
+
+    return db, changed
+
+
 def _load_json(path):
     """Load JSON from path and return None on failure."""
     try:
@@ -188,32 +256,74 @@ def _load_json(path):
     except Exception:
         return None
 
-def load_data():
-    """Load study log data from JSON file"""
+def _write_db(db):
+    ensure_data_dir()
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(db, f, indent=4)
+
+
+def _read_db():
     ensure_data_dir()
 
-    # Preferred file: quiz_marks.json
     if os.path.exists(DATA_FILE):
-        data = _load_json(DATA_FILE)
-        if _is_quiz_data(data):
-            return data
+        raw = _load_json(DATA_FILE)
+        db, changed = _normalize_db(raw)
+        return db, changed
 
-    # One-time fallback: older builds saved quiz data into study_log.json.
     if os.path.exists(LEGACY_DATA_FILE):
         legacy = _load_json(LEGACY_DATA_FILE)
         if _is_quiz_data(legacy):
-            save_data(legacy)
-            return legacy
+            db = {"users": {LEGACY_USER_KEY: legacy}}
+            return db, True
 
-    return {"subjects": {}}
+    return {"users": {}}, True
 
-def save_data(data):
-    """Save study log data to JSON file"""
-    ensure_data_dir()
-    if not _is_quiz_data(data):
-        data = {"subjects": {}}
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+
+def load_data(user_id=None):
+    """Load quiz/performance tracker data for a specific user."""
+    db, changed = _read_db()
+
+    users = db.get("users", {})
+    if not isinstance(users, dict):
+        users = {}
+        db["users"] = users
+        changed = True
+
+    user_key = _resolve_user_key(user_id)
+
+    if user_key not in users:
+        if LEGACY_USER_KEY in users:
+            users[user_key] = users.pop(LEGACY_USER_KEY)
+        else:
+            users[user_key] = {"subjects": {}}
+        changed = True
+
+    payload, payload_changed = _normalize_quiz_payload(users.get(user_key))
+    if payload_changed:
+        users[user_key] = payload
+        changed = True
+
+    if changed:
+        _write_db(db)
+
+    return users[user_key]
+
+
+def save_data(data, user_id=None):
+    """Save quiz/performance tracker data for a specific user."""
+    db, changed = _read_db()
+
+    users = db.get("users", {})
+    if not isinstance(users, dict):
+        users = {}
+        db["users"] = users
+        changed = True
+
+    user_key = _resolve_user_key(user_id)
+    payload, _ = _normalize_quiz_payload(data)
+    users[user_key] = payload
+
+    _write_db(db)
 
 # ============================================================================
 # GRADE CALCULATION

@@ -133,7 +133,7 @@ def ask_date(prompt):
 # MARKS ENTRY FUNCTIONS
 # ============================================================================
 
-def add_quiz_marks():
+def add_quiz_marks(user_id=None):
     """Add quiz marks for a subject"""
     clear_screen()
     print_fancy_box(
@@ -142,7 +142,7 @@ def add_quiz_marks():
         theme="blue",
     )
     
-    data = load_data()
+    data = load_data(user_id=user_id)
     
     subject = ask_title("Subject name: ")
     title = ask_title("Quiz title (e.g., quiz1): ")
@@ -162,12 +162,12 @@ def add_quiz_marks():
         "date": date_str
     })
     
-    save_data(data)
+    save_data(data, user_id=user_id)
     clear_screen()
     print_fancy_box("✅ Quiz Added", [f"{subject} - {title} saved successfully."], theme="green")
     pause()
 
-def add_mid_marks():
+def add_mid_marks(user_id=None):
     """Add mid exam marks for a subject"""
     clear_screen()
     print_fancy_box(
@@ -176,7 +176,7 @@ def add_mid_marks():
         theme="blue",
     )
     
-    data = load_data()
+    data = load_data(user_id=user_id)
     
     subject = ask_title("Subject name: ")
     title = ask_title("Mid title (e.g., mid1): ")
@@ -196,12 +196,12 @@ def add_mid_marks():
         "date": date_str
     })
     
-    save_data(data)
+    save_data(data, user_id=user_id)
     clear_screen()
     print_fancy_box("✅ Mid Added", [f"{subject} - {title} saved successfully."], theme="green")
     pause()
 
-def add_marks_menu():
+def add_marks_menu(user_id=None):
     """Menu for adding quiz or mid marks"""
     while True:
         clear_screen()
@@ -213,8 +213,8 @@ def add_marks_menu():
         c = ui_menu(["Add Quiz Marks", "Add Mid Marks", "Back"])
 
         if c == 1:
-            add_quiz_marks()
+            add_quiz_marks(user_id=user_id)
         elif c == 2:
-            add_mid_marks()
+            add_mid_marks(user_id=user_id)
         elif c == 0:
             return

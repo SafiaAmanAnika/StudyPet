@@ -2,7 +2,7 @@ from src.interface.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
 from src.audio.soundscape import ensure_user_sound_defaults, apply_user_soundscape, stop_soundscape
 from .study_planner.study_planner_config_helpers import load_data as load_planner_data
-import time, os
+import time, os, sys, select
 import pygame
 
 DEV_MODE = True
@@ -123,10 +123,10 @@ def _safe_positive_int(value, default):
     return int(default)
 
 
-def _planner_subject_choices():
+def _planner_subject_choices(user_id=None):
     """Return planner-generated subjects with suggested timing/difficulty."""
     try:
-        planner_data = load_planner_data()
+        planner_data = load_planner_data(user_id=user_id)
     except Exception:
         return []
 
@@ -183,8 +183,8 @@ def _planner_subject_choices():
     return choices
 
 
-def select_topic_from_plan_or_manual():
-    planner_choices = _planner_subject_choices()
+def select_topic_from_plan_or_manual(user_id=None):
+    planner_choices = _planner_subject_choices(user_id=user_id)
 
     if not planner_choices:
         return select_topic(), None
@@ -332,44 +332,162 @@ def select_pomodoro(planner_study_minutes=None, planner_break_minutes=None):
 # ------------------ COUNTDOWNS ------------------ #
 
 
-def animated_countdown(seconds: int, label: str, mood: str = "Neutral", pet_type: str = "Cat", level: int = 1) -> bool:
-    if seconds <= 0:
-        return True
+COUNTDOWN_COMPLETED = "completed"
+COUNTDOWN_CANCELLED = "cancelled"
+COUNTDOWN_OVERPAUSE = "overpause"
 
-    try:
-        for remaining in range(seconds, 0, -1):
-            mins = remaining // 60
-            secs = remaining % 60
-            time_str = f"{mins:02d}:{secs:02d}"
 
-            scene = render_countdown_scene(label, time_str, pet_type, mood, level, remaining, seconds)
+def _clock_text(total_seconds) -> str:
+    seconds = max(0, int(total_seconds))
+    mins = seconds // 60
+    secs = seconds % 60
+    return f"{mins:02d}:{secs:02d}"
+
+
+def _pause_countdown(label: str, pause_budget_seconds, paused_so_far: float):
+    pause_started_at = time.time()
+    last_shown_second = -1
+
+    while True:
+        paused_total = paused_so_far + (time.time() - pause_started_at)
+
+        if pause_budget_seconds is not None and paused_total > pause_budget_seconds:
+            return COUNTDOWN_OVERPAUSE, paused_total
+
+        paused_seconds = int(paused_total)
+        if paused_seconds != last_shown_second:
+            box_title = "PAWS & PAUSE ⏸🐾"
+            box_theme = "cyan"
+            lines = [
+                f"{label} timer is snoozing.",
+                f"Paused for      : {_clock_text(paused_total)}",
+                "Your study buddy is waiting for you. 💛",
+            ]
+
+            if pause_budget_seconds is not None:
+                remaining_budget = max(0, pause_budget_seconds - paused_total)
+                if remaining_budget <= 10:
+                    box_title = "CUTE ALERT ⚠️🐾"
+                    box_theme = "magenta"
+                elif remaining_budget <= 30:
+                    box_title = "WARNING CUDDLE ZONE ⚠️"
+                    box_theme = "yellow"
+                else:
+                    box_title = "PAWS & PAUSE ⏸🐾"
+                    box_theme = "cyan"
+
+                lines.append(f"Pause budget    : {_clock_text(pause_budget_seconds)}")
+                lines.append(f"Time left       : {_clock_text(remaining_budget)}")
+                lines.append("When time left hits 00:00, this session is cancelled.")
+                lines.append("No coins for cancelled session, and health still drops.")
+
+            lines.append("Type resume + Enter to jump back in! ✨")
+            lines.append("Type cancel + Enter to stop this session.")
 
             clear()
-            print(scene)
+            print_fancy_box(box_title, lines, theme=box_theme)
+            last_shown_second = paused_seconds
 
+        try:
+            ready, _, _ = select.select([sys.stdin], [], [], 1.0)
+        except (OSError, ValueError):
+            command = trim(input("> ")).lower()
+            paused_total = paused_so_far + (time.time() - pause_started_at)
+
+            if pause_budget_seconds is not None and paused_total > pause_budget_seconds:
+                return COUNTDOWN_OVERPAUSE, paused_total
+
+            if command in {"cancel", "c", "0"}:
+                return COUNTDOWN_CANCELLED, paused_total
+
+            if command in {"", "resume", "r", "continue", "start", "1"}:
+                return COUNTDOWN_COMPLETED, paused_total
+
+            continue
+
+        if not ready:
+            continue
+
+        command = trim(sys.stdin.readline()).lower()
+        paused_total = paused_so_far + (time.time() - pause_started_at)
+
+        if pause_budget_seconds is not None and paused_total > pause_budget_seconds:
+            return COUNTDOWN_OVERPAUSE, paused_total
+
+        if command in {"cancel", "c", "0"}:
+            return COUNTDOWN_CANCELLED, paused_total
+
+        if command in {"", "resume", "r", "continue", "start", "1"}:
+            return COUNTDOWN_COMPLETED, paused_total
+
+
+def animated_countdown(
+    seconds: int,
+    label: str,
+    mood: str = "Neutral",
+    pet_type: str = "Cat",
+    level: int = 1,
+    pause_budget_seconds=None,
+) -> str:
+    if seconds <= 0:
+        return COUNTDOWN_COMPLETED
+
+    remaining = int(seconds)
+    paused_total = 0.0
+
+    while remaining > 0:
+        mins = remaining // 60
+        secs = remaining % 60
+        time_str = f"{mins:02d}:{secs:02d}"
+
+        scene = render_countdown_scene(label, time_str, pet_type, mood, level, remaining, seconds)
+
+        clear()
+        print(scene)
+        print("\nCtrl+C to pause timer")
+
+        try:
             time.sleep(1)
+            remaining -= 1
+        except KeyboardInterrupt:
+            pause_state, paused_total = _pause_countdown(label, pause_budget_seconds, paused_total)
 
-        clear()
-        print(f"{label} finished. Well done!👍\n")
-        return True
+            if pause_state == COUNTDOWN_COMPLETED:
+                continue
 
-    except KeyboardInterrupt:
-        clear()
-        print(f"{label} cancelled.\n")
-        return False
+            clear()
+            if pause_state == COUNTDOWN_OVERPAUSE:
+                print(f"{label} cancelled. Pause exceeded the allowed limit.\n")
+                return COUNTDOWN_OVERPAUSE
+
+            print(f"{label} cancelled.\n")
+            return COUNTDOWN_CANCELLED
+
+    clear()
+    print(f"{label} finished. Well done!👍\n")
+    return COUNTDOWN_COMPLETED
 
 
 def run_countdowns(study_seconds, break_seconds, mood, pet_type):
-    ok = animated_countdown(study_seconds, "Study", mood=mood, pet_type=pet_type)
-    if not ok:
-        print("Session cancelled! No rewards earned.\n")
+    study_status = animated_countdown(
+        study_seconds,
+        "Study",
+        mood=mood,
+        pet_type=pet_type,
+        pause_budget_seconds=break_seconds,
+    )
+    if study_status != COUNTDOWN_COMPLETED:
+        if study_status == COUNTDOWN_OVERPAUSE:
+            print("Session cancelled. Pause exceeded break-time allowance.\n")
+        else:
+            print("Session cancelled! No rewards earned.\n")
         return False
 
     play_pet_sound(pet_type)  # 🔊 Plays fully after study ends
 
     if break_seconds > 0:
-        ok = animated_countdown(break_seconds, "Break", mood=mood, pet_type=pet_type)
-        if not ok:
+        break_status = animated_countdown(break_seconds, "Break", mood=mood, pet_type=pet_type)
+        if break_status != COUNTDOWN_COMPLETED:
             print("Break cancelled!\n")
             return False
         play_pet_sound(pet_type)  # 🔊 Plays fully after break ends
@@ -379,18 +497,44 @@ def run_countdowns(study_seconds, break_seconds, mood, pet_type):
 
 # ------------------ REWARDS ------------------ #
 
-def calculate_rewards(user_data, study_minutes, diff_multiplier, health_loss):
-    coins_earned = int(study_minutes * diff_multiplier)
+def calculate_rewards(user_data, study_minutes, diff_multiplier, health_loss, session_multiplier=1):
+    multiplier = max(1, int(session_multiplier))
+    coins_earned = int(study_minutes * diff_multiplier * multiplier)
+    health_loss_total = int(health_loss * multiplier)
+
     user_data["coins"] += coins_earned
-    user_data["health"] -= health_loss
+    user_data["health"] -= health_loss_total
     if user_data["health"] < 0:
         user_data["health"] = 0
-    return coins_earned
+
+    return coins_earned, health_loss_total
 
 
-def display_session_summary(topic, diff_name, study_minutes, coins_earned, health_loss, user_data):
-    print_fancy_box(
-        "Session Complete ✅",
+def apply_health_penalty(user_data, health_loss, session_multiplier=1):
+    multiplier = max(1, int(session_multiplier))
+    penalty = int(health_loss * multiplier)
+
+    user_data["health"] -= penalty
+    if user_data["health"] < 0:
+        user_data["health"] = 0
+
+    return penalty
+
+
+def display_session_summary(
+    topic,
+    diff_name,
+    study_minutes,
+    coins_earned,
+    health_loss,
+    user_data,
+    completed_sessions=1,
+):
+    summary_lines = []
+    if completed_sessions > 1:
+        summary_lines.append(f"Sessions done   : {completed_sessions}")
+
+    summary_lines.extend(
         [
             f"Topic          : {topic}",
             f"Difficulty     : {diff_name}",
@@ -399,12 +543,33 @@ def display_session_summary(topic, diff_name, study_minutes, coins_earned, healt
             f"Health lost    : {health_loss}",
             f"Current coins  : {user_data['coins']}",
             f"Current health : {user_data['health']}",
-        ],
+        ]
+    )
+
+    print_fancy_box(
+        "Session Complete ✅",
+        summary_lines,
         theme="magenta",
     )
 
 
 # ------------------ MAIN SESSION ------------------ #
+
+def _choose_post_session_action(break_minutes):
+    break_label = f"Break ({break_minutes} min)" if break_minutes > 0 else "Break (not configured)"
+    print_fancy_box(
+        "NEXT STEP",
+        [
+            f"[1] {break_label}",
+            "[2] Another session (consecutive bonus x2)",
+            "[0] Finish",
+        ],
+        theme="cyan",
+    )
+    choice = get_choice("Choose your option: ", {"1", "2", "0"})
+    clear_screen()
+    return choice
+
 
 def start_session(user_id, user_data):
     raw_mood = user_data.get("mood_today", "Neutral 😐")
@@ -414,7 +579,7 @@ def start_session(user_id, user_data):
     user_data.setdefault("coins", 5)
     user_data.setdefault("health", 10)
 
-    topic, planner_pick = select_topic_from_plan_or_manual()
+    topic, planner_pick = select_topic_from_plan_or_manual(user_id=user_id)
 
     if topic is None:
         print("Session cancelled!")
@@ -439,30 +604,135 @@ def start_session(user_id, user_data):
     study_seconds = study_minutes if DEV_MODE else study_minutes * 60
     break_seconds = break_minutes if DEV_MODE else break_minutes * 60
 
-    # Play ambience only while the Pomodoro countdowns are active.
+    total_study_minutes = 0
+    total_coins_earned = 0
+    total_health_lost = 0
+    completed_sessions = 0
+    break_taken = False
+    consecutive_mode = False
+
+    # Play ambience only while countdowns are active.
     ensure_user_sound_defaults(user_data)
     apply_user_soundscape(user_data)
     try:
-        ok = run_countdowns(study_seconds, break_seconds, mood, pet_type)
+        while True:
+            study_status = animated_countdown(
+                study_seconds,
+                "Study",
+                mood=mood,
+                pet_type=pet_type,
+                pause_budget_seconds=break_seconds,
+            )
+
+            if study_status == COUNTDOWN_CANCELLED:
+                if completed_sessions == 0:
+                    print("Session cancelled! No rewards earned.\n")
+                    return user_data, None
+
+                print("Latest session cancelled. Keeping previous completed progress.\n")
+                break
+
+            if study_status == COUNTDOWN_OVERPAUSE:
+                penalty_multiplier = 2 if consecutive_mode else 1
+                penalty_health = apply_health_penalty(
+                    user_data,
+                    health_loss,
+                    session_multiplier=penalty_multiplier,
+                )
+                total_health_lost += penalty_health
+
+                print_fancy_box(
+                    "Session Cancelled",
+                    [
+                        "Pause exceeded the session break-time limit.",
+                        "No coins awarded for this cancelled session.",
+                        f"Health lost    : {penalty_health}",
+                        f"Current health : {user_data['health']}",
+                    ],
+                    theme="yellow",
+                )
+
+                if completed_sessions == 0:
+                    return user_data, None
+                break
+
+            play_pet_sound(pet_type)
+
+            session_multiplier = 2 if consecutive_mode else 1
+            coins_earned, health_lost_this_session = calculate_rewards(
+                user_data,
+                study_minutes,
+                diff_multiplier,
+                health_loss,
+                session_multiplier=session_multiplier,
+            )
+
+            completed_sessions += 1
+            total_study_minutes += study_minutes
+            total_coins_earned += coins_earned
+            total_health_lost += health_lost_this_session
+
+            if session_multiplier > 1:
+                print_fancy_box(
+                    "Consecutive Session Bonus",
+                    [
+                        "Consecutive session completed.",
+                        f"Coins this session : {coins_earned} (x2)",
+                        f"Health loss        : {health_lost_this_session} (x2)",
+                    ],
+                    theme="green",
+                )
+
+            next_action = _choose_post_session_action(break_minutes)
+            if next_action == "2":
+                consecutive_mode = True
+                continue
+
+            if next_action == "1":
+                if break_seconds > 0:
+                    break_status = animated_countdown(
+                        break_seconds,
+                        "Break",
+                        mood=mood,
+                        pet_type=pet_type,
+                    )
+                    if break_status == COUNTDOWN_COMPLETED:
+                        play_pet_sound(pet_type)
+                        break_taken = True
+                    else:
+                        print("Break cancelled.\n")
+                else:
+                    print("No break is configured for this Pomodoro setup.\n")
+
+            break
     finally:
         stop_soundscape()
 
-    if not ok:
+    if completed_sessions == 0:
+        print("Session cancelled! No rewards earned.\n")
         return user_data, None
 
-    coins_earned = calculate_rewards(user_data, study_minutes, diff_multiplier, health_loss)
-    display_session_summary(topic, diff_name, study_minutes, coins_earned, health_loss, user_data)
+    display_session_summary(
+        topic,
+        diff_name,
+        total_study_minutes,
+        total_coins_earned,
+        total_health_lost,
+        user_data,
+        completed_sessions=completed_sessions,
+    )
 
     session_log = {
         "user_id": user_id,
         "date": today_date_str(),
         "topic": topic,
         "difficulty": diff_name,
-        "study_minutes": study_minutes,
-        "break_minutes": break_minutes,
-        "coins_earned": coins_earned,
-        "health_lost": health_loss,
-        "mood": raw_mood
+        "sessions_completed": completed_sessions,
+        "study_minutes": total_study_minutes,
+        "break_minutes": break_minutes if break_taken else 0,
+        "coins_earned": total_coins_earned,
+        "health_lost": total_health_lost,
+        "mood": raw_mood,
     }
 
     return user_data, session_log

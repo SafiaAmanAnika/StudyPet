@@ -12,7 +12,7 @@ from src.interface.ui import print_fancy_box, pause
 
 def generate_study_plan(user_id=None, user_data=None):
 
-    planner_data = load_data()
+    planner_data = load_data(user_id=user_id)
 
     if user_data:
         name = user_data.get("user_name") or user_data.get("name") or planner_data.get("user_name", "")
@@ -134,7 +134,7 @@ def generate_study_plan(user_id=None, user_data=None):
     })
 
     planner_data["study_plan"] = study_plan
-    save_data(planner_data)
+    save_data(planner_data, user_id=user_id)
 
     clear_screen()
     print_fancy_box(
@@ -148,7 +148,7 @@ def generate_study_plan(user_id=None, user_data=None):
 # VIEW STUDY PLAN
 # ============================================================================
 
-def view_study_plan():
+def view_study_plan(user_id=None):
     """
     Display today's study plan showing:
     - All study sessions with difficulty
@@ -156,7 +156,7 @@ def view_study_plan():
     - Total study time, break time, sessions
     """
     clear_screen()
-    data = load_data()
+    data = load_data(user_id=user_id)
 
     if not data.get("study_plan"):
         clear_screen()

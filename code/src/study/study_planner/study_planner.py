@@ -35,15 +35,15 @@ def main_menu(user_id=None, user_data=None):
         if choice == 1:
             generate_study_plan(user_id=user_id, user_data=user_data)
         elif choice == 2:
-            view_study_plan()
+            view_study_plan(user_id=user_id)
         elif choice == 3:
-            log_study_session()
+            log_study_session(user_id=user_id)
         elif choice == 4:
-            view_progress_dashboard()
+            view_progress_dashboard(user_id=user_id)
         elif choice == 5:
-            check_missed_goal_recovery()
+            check_missed_goal_recovery(user_id=user_id)
         elif choice == 6:
-            view_user_dashboard(user_data=user_data)
+            view_user_dashboard(user_id=user_id, user_data=user_data)
         elif choice == 0:
             clear_screen()
             print_fancy_box(

@@ -8,10 +8,10 @@ from src.interface.ui import print_fancy_box, pause
 # USER DASHBOARD
 # ============================================================================
 
-def view_user_dashboard(user_data=None):
+def view_user_dashboard(user_id=None, user_data=None):
 
     clear_screen()
-    planner_data = load_data()
+    planner_data = load_data(user_id=user_id)
     
     if user_data:
         name = user_data.get("user_name") or user_data.get("name") or planner_data.get("user_name", "")

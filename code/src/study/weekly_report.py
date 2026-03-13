@@ -85,12 +85,17 @@ def compute_daily_minutes_and_sessions(user_logs: list, dates: list):
         if d not in minutes_by_date:
             continue
         mins = log.get("study_minutes", 0)
+        sessions_completed = log.get("sessions_completed", 1)
         try:
             mins = int(mins)
         except (TypeError, ValueError):
             mins = 0
+        try:
+            sessions_completed = int(sessions_completed)
+        except (TypeError, ValueError):
+            sessions_completed = 1
         minutes_by_date[d] += max(0, mins)
-        sessions_by_date[d] += 1
+        sessions_by_date[d] += max(1, sessions_completed)
 
     total_minutes = sum(minutes_by_date.values())
     total_sessions = sum(sessions_by_date.values())
