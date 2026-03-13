@@ -1,3 +1,5 @@
+import json, os
+
 from src.study.quiz.quiz_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width, 
     wrap_text_to_width, manual_strip, manual_is_number, date_valid_simple,
@@ -23,6 +25,125 @@ def _error_box(message: str):
     print_fancy_box("❌ Invalid Input", [message], theme="yellow")
 
 BORDER_FILL = "═" * (BOX_INNER + 2)
+
+
+def _project_root():
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+
+def _data_path(filename: str):
+    return os.path.join(_project_root(), "data", filename)
+
+
+def _safe_load_json(path, default):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data
+    except (OSError, json.JSONDecodeError):
+        return default
+
+
+def _study_topics_for_user(user_id):
+    if not user_id:
+        return []
+
+    logs = _safe_load_json(_data_path("study_log.json"), [])
+    if not isinstance(logs, list):
+        return []
+
+    topics = []
+    for row in logs:
+        if not isinstance(row, dict):
+            continue
+        if row.get("user_id") != user_id:
+            continue
+        topic = str(row.get("topic", "")).strip()
+        if topic:
+            topics.append(topic)
+    return topics
+
+
+def _planner_topics_for_user(user_id):
+    planner = _safe_load_json(_data_path("study_planner.json"), {})
+    if not isinstance(planner, dict):
+        return []
+
+    payload = {}
+    users = planner.get("users")
+    if isinstance(users, dict) and user_id in users and isinstance(users.get(user_id), dict):
+        payload = users.get(user_id)
+    elif isinstance(planner.get("subjects"), list):
+        payload = planner
+
+    subjects = payload.get("subjects", []) if isinstance(payload, dict) else []
+    if not isinstance(subjects, list):
+        return []
+
+    out = []
+    for item in subjects:
+        text = str(item).strip()
+        if text:
+            out.append(text)
+    return out
+
+
+def _subject_suggestions(user_id, quiz_data):
+    suggestions = []
+
+    subjects_map = quiz_data.get("subjects", {}) if isinstance(quiz_data, dict) else {}
+    if isinstance(subjects_map, dict):
+        for subject in subjects_map.keys():
+            text = str(subject).strip()
+            if text:
+                suggestions.append(text)
+
+    suggestions.extend(_study_topics_for_user(user_id))
+    suggestions.extend(_planner_topics_for_user(user_id))
+
+    deduped = []
+    seen = set()
+    for subject in suggestions:
+        key = subject.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(subject)
+
+    deduped.sort(key=lambda item: item.casefold())
+    return deduped
+
+
+def ask_subject(user_id, quiz_data):
+    suggestions = _subject_suggestions(user_id, quiz_data)
+
+    if not suggestions:
+        return ask_title("Subject name: ")
+
+    while True:
+        lines = [
+            "Pick from studied/planned topics or enter custom.",
+            "",
+        ]
+
+        for idx, subject in enumerate(suggestions, start=1):
+            lines.append(f"[{idx}] {subject}")
+
+        lines.append("[M] Enter custom subject")
+        print_fancy_box("📚 Subject Picker", lines, theme="cyan")
+
+        raw = manual_strip(input("Choose subject option: "))
+        lowered = raw.lower()
+
+        if lowered in {"m", "manual"}:
+            return ask_title("Subject name: ")
+
+        if raw.isdigit():
+            idx = int(raw)
+            if 1 <= idx <= len(suggestions):
+                return suggestions[idx - 1]
+
+        _error_box("Choose a listed number or type M for manual subject.")
 
 # ============================================================================
 # BOX DRAWING FUNCTIONS
@@ -144,7 +265,7 @@ def add_quiz_marks(user_id=None):
     
     data = load_data(user_id=user_id)
     
-    subject = ask_title("Subject name: ")
+    subject = ask_subject(user_id, data)
     title = ask_title("Quiz title (e.g., quiz1): ")
     total = ask_float("Total marks: ", 1)
     obtained = ask_float("Obtained marks: ", 0, total)
@@ -178,7 +299,7 @@ def add_mid_marks(user_id=None):
     
     data = load_data(user_id=user_id)
     
-    subject = ask_title("Subject name: ")
+    subject = ask_subject(user_id, data)
     title = ask_title("Mid title (e.g., mid1): ")
     total = ask_float("Total marks: ", 1)
     obtained = ask_float("Obtained marks: ", 0, total)

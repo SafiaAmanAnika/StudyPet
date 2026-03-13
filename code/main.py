@@ -33,7 +33,7 @@ from src.core.analytics import run as analytics_run
 from src.study.weekly_report import run as weekly_run 
 from src.pet.evolution import check_pet_evolution
 from src.study.study_planner import main_menu as study_planner_menu
-from src.study.user_reflection import handle_post_study, handle_view_achievements
+from src.study.user_reflection import handle_post_study, handle_view_achievements, handle_view_journal_history
 from src.system.navigation import install_global_navigation_input, NavigateBack, ExitApplication
 from src.audio.ui_sfx import play_ui_click, play_ui_back
 from src.audio.soundscape import (
@@ -977,11 +977,15 @@ def dashboard(user_id, user_data):
                     clear_screen()
 
                     if reflection_choice == 1:
-                        user_data = handle_post_study(user_data)
+                        user_data = handle_post_study(user_data, user_id=user_id)
                         save_user_data(user_id, user_data)
                         pause()
                     elif reflection_choice == 2:
-                        user_data = handle_view_achievements(user_data)
+                        user_data = handle_view_achievements(user_data, user_id=user_id)
+                        save_user_data(user_id, user_data)
+                        pause()
+                    elif reflection_choice == 3:
+                        user_data = handle_view_journal_history(user_data)
                         save_user_data(user_id, user_data)
                         pause()
                     elif reflection_choice == 0:

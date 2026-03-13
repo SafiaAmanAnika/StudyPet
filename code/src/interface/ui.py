@@ -742,6 +742,7 @@ def reflection_menu():
     options = [
         "Log Study Session & Reflection",
         "View Achievements",
+        "Journal History",
         "Back"
     ]
 
