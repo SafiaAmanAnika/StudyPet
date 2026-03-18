@@ -509,6 +509,121 @@ def print_intro_splash():
         _show_cursor()
 
 
+def print_outro_splash():
+    """Animated goodbye screen shown when the app exits."""
+    GOODBYE_LINES = [
+        "  ██████╗  ██████╗  ██████╗ ██████╗ ██████╗ ██╗   ██╗███████╗ ",
+        " ██╔════╝ ██╔═══██╗██╔═══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝ ",
+        " ██║  ███╗██║   ██║██║   ██║██║  ██║██████╔╝ ╚████╔╝ █████╗   ",
+        " ██║   ██║██║   ██║██║   ██║██║  ██║██╔══██╗  ╚██╔╝  ██╔══╝   ",
+        " ╚██████╔╝╚██████╔╝╚██████╔╝██████╔╝██████╔╝   ██║   ███████╗ ",
+        "  ╚═════╝  ╚═════╝  ╚═════╝ ╚═════╝ ╚═════╝    ╚═╝   ╚══════╝ ",
+    ]
+    GRAD = [189, 183, 217, 218, 219, 225]
+    CAT_FACES = ["=^.^=", ">^w^<", "=^-^=", "uwu  ", "^-^  "]
+    CAT_FG = [183, 189, 217, 218, 219, 225]
+    FLEN = 5
+
+    title_w = max(_visual_width(line) for line in GOODBYE_LINES)
+    content_w = max(20, int(BOX_WIDTH))
+    bw = content_w + 2
+    tw = max(title_w + 8, bw)
+    th = 24
+
+    pad_v = 1
+    bh = len(GOODBYE_LINES) + (pad_v * 2) + 2
+    bc = max(1, (tw - bw) // 2 + 1)
+    br = max(2, (th - bh - 5) // 2)
+    title_row = br + 1 + pad_v
+    title_col = bc + 1 + max(0, (content_w - title_w) // 2)
+    tag_row = br + bh + 2
+
+    def _at(row, col=1):
+        print(f"\033[{row};{col}H", end="")
+
+    def _write(text):
+        print(text, end="")
+
+    def _flush():
+        print("", end="", flush=True)
+
+    def _center_col(text):
+        return max(1, (tw - _visual_width(text)) // 2 + 1)
+
+    def _draw_box(fg):
+        for i in range(bw):
+            top_ch = "═" if 0 < i < bw - 1 else ("╔" if i == 0 else "╗")
+            bot_ch = "═" if 0 < i < bw - 1 else ("╚" if i == 0 else "╝")
+            _at(br, bc + i)
+            _write(_paint_256(top_ch, fg=fg, bold=True))
+            _at(br + bh - 1, bc + i)
+            _write(_paint_256(bot_ch, fg=fg, bold=True))
+        for i in range(1, bh - 1):
+            _at(br + i, bc)
+            _write(_paint_256("║", fg=fg, bold=True))
+            _at(br + i, bc + bw - 1)
+            _write(_paint_256("║", fg=fg, bold=True))
+        _flush()
+
+    def _hide_cursor():
+        _write("\033[?25l")
+        _flush()
+
+    def _show_cursor():
+        _write("\033[?25h")
+        _flush()
+
+    try:
+        _hide_cursor()
+        _write("\033[2J\033[3J\033[H")
+        _flush()
+
+        # Quick twinkle field.
+        spawn = max(3, (tw * th) // 140)
+        for tick in range(14):
+            for s in range(spawn):
+                row = ((tick * 5) + (s * 9)) % th + 1
+                col = ((tick * 11) + (s * 13)) % max(1, tw - FLEN) + 1
+                face = CAT_FACES[(tick + s) % len(CAT_FACES)]
+                fg = CAT_FG[((tick * 2) + s) % len(CAT_FG)]
+                bright = ((tick + s) % 6 == 0)
+                _at(row, col)
+                _write(_paint_256(face, fg=255 if bright else fg, bold=bright, dim=not bright))
+            _flush()
+            time.sleep(0.028)
+
+        # Draw border and reveal title.
+        _write("\033[2J\033[3J\033[H")
+        _flush()
+        _draw_box(219)
+
+        max_len = max(len(line) for line in GOODBYE_LINES)
+        for x in range(max_len):
+            for i, line in enumerate(GOODBYE_LINES):
+                if x < len(line):
+                    _at(title_row + i, title_col + x)
+                    _write(_paint_256(line[x], fg=GRAD[i % len(GRAD)], bold=True))
+            _flush()
+            time.sleep(0.0028)
+
+        goodbye_tagline = "Thanks for studying with your pet. See you soon."
+        _at(tag_row, _center_col(goodbye_tagline))
+        for i, ch in enumerate(goodbye_tagline):
+            _write(_paint_256(ch, fg=225 if i % 2 == 0 else 219, bold=True))
+            _flush()
+            time.sleep(0.009)
+
+        for pulse_fg in [255, 225, 219, 183]:
+            _draw_box(pulse_fg)
+            time.sleep(0.05)
+
+        time.sleep(1.2)
+        _write("\033[2J\033[3J\033[H")
+        _flush()
+    finally:
+        _show_cursor()
+
+
 def clear_screen():
     print("\033[2J\033[3J\033[H", end="", flush=True)
     _print_pastel_backdrop()

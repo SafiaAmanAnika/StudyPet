@@ -12,6 +12,7 @@ from src.interface.ui import (
     print_fancy_box,
     print_brand_header,
     print_intro_splash,
+    print_outro_splash,
     choose_animation_style,
 )
 from src.pet.animation import set_animation_style, get_animation_style_display
@@ -803,12 +804,14 @@ def main():
                     dashboard(user_id, user_data)
 
             elif choice == "0": 
+                print_outro_splash()
                 clear_screen()
                 break
         except NavigateBack:
             clear_screen()
             continue
         except ExitApplication:
+            print_outro_splash()
             clear_screen()
             break
 
