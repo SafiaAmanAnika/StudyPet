@@ -4,6 +4,9 @@ from src.interface.ui import (
     show_user_summary,
     show_user_stats,
     choose_mood,
+    choose_theme,
+    set_ui_theme,
+    get_theme_display_name,
     clear_screen,
     reflection_menu,
     print_fancy_box,
@@ -487,6 +490,7 @@ def handle_settings(user_id, user_data):
                 f"Email         : {user_id}",
                 f"Name          : {user_data.get('name', 'User')}",
                 f"Pet           : {user_data.get('pet_theme', 'Cat')}",
+                f"Theme         : {get_theme_display_name(user_data.get('ui_theme', 'pastel_pink'))}",
                 f"Daily Goal    : {user_data.get('goal_hours', '?')} hours",
                 f"Academic Goal : {user_data.get('academic_goal', 'Not set')}",
             ],
@@ -498,6 +502,7 @@ def handle_settings(user_id, user_data):
             "Change Email",
             "Change Password",
             "Change Pet",
+            "Theme Studio",
             "Change Daily Goal",
             "Change Academic Goal",
             "Animation Studio",
@@ -515,12 +520,24 @@ def handle_settings(user_id, user_data):
         elif settings_choice == 4:
             user_data = handle_change_pet(user_id, user_data)
         elif settings_choice == 5:
-            user_data = handle_change_daily_goal(user_id, user_data)
+            selected_theme = choose_theme(menu)
+            if selected_theme:
+                user_data["ui_theme"] = selected_theme
+                save_user_data(user_id, user_data)
+                clear_screen()
+                print_fancy_box(
+                    "Theme Updated 🎨",
+                    [f"Current theme: {get_theme_display_name(selected_theme)}"],
+                    theme="magenta",
+                )
+                pause()
         elif settings_choice == 6:
-            user_data = handle_change_academic_goal(user_id, user_data)
+            user_data = handle_change_daily_goal(user_id, user_data)
         elif settings_choice == 7:
-            user_data = handle_animation_studio(user_id, user_data)
+            user_data = handle_change_academic_goal(user_id, user_data)
         elif settings_choice == 8:
+            user_data = handle_animation_studio(user_id, user_data)
+        elif settings_choice == 9:
             deleted = handle_delete_account(user_id, user_data)
             if deleted:
                 return user_id, user_data, True
@@ -857,6 +874,7 @@ def main():
             if choice == "1": 
                 user_id, user_data = register_user()
                 if user_id: 
+                    set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
                     save_user_data(user_id, user_data)
                     set_animation_style(user_data.get("animation_style", "sparkly"))
                     dashboard(user_id, user_data)
@@ -864,6 +882,7 @@ def main():
             elif choice == "2": 
                 user_id, user_data = login_user()
                 if user_id: 
+                    set_ui_theme(user_data.get("ui_theme", "pastel_pink"))
                     save_user_data(user_id, user_data)
                     set_animation_style(user_data.get("animation_style", "sparkly"))
                     mood = choose_mood(menu)

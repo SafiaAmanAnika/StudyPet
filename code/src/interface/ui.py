@@ -2,7 +2,81 @@ import time
 from src.custom.custom_text import count_emojis, visible_width
 
 
-CURRENT_STYLE = "disabled"
+ANSI = {
+    "reset": "\033[0m",
+    "bold": "\033[1m",
+    "dim": "\033[2m",
+}
+
+STYLE_PROFILES = {
+    "pastel_pink": {
+        "label": "Pastel Pink",
+        "themes": {
+            "cyan": {"border": 189, "title_bg": 225, "title_fg": 60, "body_fg": 224},
+            "magenta": {"border": 218, "title_bg": 224, "title_fg": 89, "body_fg": 225},
+            "green": {"border": 181, "title_bg": 223, "title_fg": 95, "body_fg": 224},
+            "yellow": {"border": 223, "title_bg": 230, "title_fg": 95, "body_fg": 224},
+            "blue": {"border": 183, "title_bg": 189, "title_fg": 60, "body_fg": 225},
+            "default": {"border": 218, "title_bg": 225, "title_fg": 89, "body_fg": 224},
+        },
+        "accents": {"sparkle_fg": 217, "prompt_fg": 219, "error_fg": 174},
+        "backdrop": [255, 231, 225, 224, 223, 218, 217, 219, 183, 189],
+        "brand_line": "Soft Kawaii Pink Mode: Activated",
+    },
+    "ocean_breeze": {
+        "label": "Ocean Breeze",
+        "themes": {
+            "cyan": {"border": 117, "title_bg": 159, "title_fg": 24, "body_fg": 195},
+            "magenta": {"border": 147, "title_bg": 189, "title_fg": 24, "body_fg": 195},
+            "green": {"border": 116, "title_bg": 153, "title_fg": 24, "body_fg": 194},
+            "yellow": {"border": 186, "title_bg": 230, "title_fg": 24, "body_fg": 195},
+            "blue": {"border": 111, "title_bg": 152, "title_fg": 24, "body_fg": 195},
+            "default": {"border": 117, "title_bg": 159, "title_fg": 24, "body_fg": 195},
+        },
+        "accents": {"sparkle_fg": 153, "prompt_fg": 117, "error_fg": 109},
+        "backdrop": [255, 231, 195, 189, 153, 152, 117, 111, 147, 189],
+        "brand_line": "Ocean Breeze Mode: Activated",
+    },
+    "sunset_glow": {
+        "label": "Sunset Glow",
+        "themes": {
+            "cyan": {"border": 180, "title_bg": 223, "title_fg": 52, "body_fg": 224},
+            "magenta": {"border": 217, "title_bg": 224, "title_fg": 52, "body_fg": 225},
+            "green": {"border": 187, "title_bg": 230, "title_fg": 52, "body_fg": 224},
+            "yellow": {"border": 223, "title_bg": 229, "title_fg": 88, "body_fg": 223},
+            "blue": {"border": 181, "title_bg": 217, "title_fg": 52, "body_fg": 224},
+            "default": {"border": 217, "title_bg": 224, "title_fg": 52, "body_fg": 224},
+        },
+        "accents": {"sparkle_fg": 216, "prompt_fg": 217, "error_fg": 167},
+        "backdrop": [255, 230, 224, 223, 216, 215, 209, 217, 181, 180],
+        "brand_line": "Sunset Glow Mode: Activated",
+    },
+}
+
+THEME_256 = {}
+PASTEL_ACCENTS = {}
+BACKDROP_PALETTE = []
+BRAND_MODE_LINE = ""
+CURRENT_STYLE = "pastel_pink"
+
+
+def _copy_theme_map(theme_map: dict) -> dict:
+    return {key: value.copy() for key, value in theme_map.items()}
+
+
+def _apply_style_profile(style_name: str) -> str:
+    global THEME_256, PASTEL_ACCENTS, BACKDROP_PALETTE, BRAND_MODE_LINE, CURRENT_STYLE
+
+    if style_name not in STYLE_PROFILES:
+        style_name = "pastel_pink"
+
+    profile = STYLE_PROFILES[style_name]
+    THEME_256 = _copy_theme_map(profile["themes"])
+    PASTEL_ACCENTS = profile["accents"].copy()
+    BACKDROP_PALETTE = list(profile["backdrop"])
+    BRAND_MODE_LINE = profile["brand_line"]
+    CURRENT_STYLE = style_name
+    return style_name
 
 
 def _safe_text(value):
@@ -44,17 +118,31 @@ def _pad(text, width):
 
 
 def _paint(text: str, *styles: str) -> str:
-    return text
+    prefix = ""
+    for style in styles:
+        prefix += ANSI.get(style, "")
+    if not prefix:
+        return text
+    return f"{prefix}{text}{ANSI['reset']}"
 
 
 def _paint_256(text: str, fg=None, bg=None, bold: bool = False, dim: bool = False) -> str:
-    return text
+    seq = ""
+    if bold:
+        seq += ANSI["bold"]
+    if dim:
+        seq += ANSI["dim"]
+    if fg is not None:
+        seq += f"\033[38;5;{fg}m"
+    if bg is not None:
+        seq += f"\033[48;5;{bg}m"
+    if not seq:
+        return text
+    return f"{seq}{text}{ANSI['reset']}"
 
 
 def set_ui_theme(style_name: str) -> str:
-    # Theme system removed; keep no-op for compatibility.
-    CURRENT_STYLE = "disabled"
-    return CURRENT_STYLE
+    return _apply_style_profile(str(style_name or "pastel_pink"))
 
 
 def get_ui_theme() -> str:
@@ -62,53 +150,121 @@ def get_ui_theme() -> str:
 
 
 def get_theme_display_name(style_name: str) -> str:
-    return "Disabled"
+    profile = STYLE_PROFILES.get(style_name, STYLE_PROFILES["pastel_pink"])
+    return profile["label"]
 
 
 def list_theme_options():
-    return []
+    return [(key, profile["label"]) for key, profile in STYLE_PROFILES.items()]
+
+
+_apply_style_profile("pastel_pink")
+
+
+def _gradient_bg_line(width: int, palette):
+    if width <= 0:
+        return ""
+
+    parts = []
+    last_code = None
+    span = max(1, width - 1)
+    for i in range(width):
+        idx = int(i * (len(palette) - 1) / span)
+        code = palette[idx]
+        if code != last_code:
+            parts.append(f"\033[48;5;{code}m")
+            last_code = code
+        parts.append(" ")
+
+    parts.append(ANSI["reset"])
+    return "".join(parts)
+
+
+def _sparkle_line(width: int):
+    if width <= 0:
+        return ""
+    pattern = "✿  ｡  ⋆  ｡  ✿  "
+    row = (pattern * ((width // len(pattern)) + 2))[:width]
+    return _paint_256(row, fg=PASTEL_ACCENTS["sparkle_fg"], dim=True)
+
+
+def _print_pastel_backdrop(width: int = 118):
+    safe_width = max(40, width)
+    palette_top = BACKDROP_PALETTE or [255, 231, 225, 224, 223, 218, 217, 219, 183, 189]
+    palette_bottom = list(reversed(palette_top))
+    print(_gradient_bg_line(safe_width, palette_top))
+    print(_sparkle_line(safe_width))
+    print(_gradient_bg_line(safe_width, palette_bottom))
 
 
 def print_fancy_box(title: str, lines, width: int = 73, theme: str = "cyan"):
     w = max(20, int(width))
-    horizontal = "━" * w
-    print("┏" + horizontal + "┓")
-    print("┃" + _pad(_safe_text(title), w) + "┃")
-    print("┣" + horizontal + "┫")
+    palette = THEME_256.get(theme, THEME_256["default"])
+    border_fg = palette["border"]
+    title_bg = palette["title_bg"]
+    title_fg = palette["title_fg"]
+    body_fg = palette["body_fg"]
+
+    horizontal = "─" * w
+    title_text = _truncate(f" {title} ", w)
+    left = max(0, (w - _visual_width(title_text)) // 2)
+    right = max(0, w - _visual_width(title_text) - left)
+
+    print(_paint_256("╭" + horizontal + "╮", fg=border_fg))
+    print(
+        _paint_256("│", fg=border_fg)
+        + _paint_256((" " * left) + title_text + (" " * right), fg=title_fg, bg=title_bg, bold=True)
+        + _paint_256("│", fg=border_fg)
+    )
+    print(_paint_256("├" + horizontal + "┤", fg=border_fg))
 
     for line in lines:
-        print("┃" + _pad(_safe_text(line), w) + "┃")
+        content = _pad(" " + _safe_text(line), w)
+        print(_paint_256("│", fg=border_fg) + _paint_256(content, fg=body_fg) + _paint_256("│", fg=border_fg))
 
-    print("┗" + horizontal + "┛")
+    print(_paint_256("╰" + horizontal + "╯", fg=border_fg))
 
 
 def print_brand_header():
     lines = [
-        "Where productivity meets your virtual companion",
+        "✨ Where productivity meets your virtual companion ✨",
         "Stay focused. Stay playful. Keep evolving.",
+        BRAND_MODE_LINE,
     ]
-    print_fancy_box("STUDYPET", lines, width=73, theme="magenta")
+    print_fancy_box("🐾 STUDYPET 🐾", lines, width=73, theme="magenta")
 
 
 def print_intro_splash():
     clear_screen()
+    banner = [
+        "   /\\_/\\   STUDYPET",
+        "  ( o.o )  productivity + companion", 
+        "   > ^ <   pastel terminal mode", 
+    ]
+    shades = [225, 219, 217]
+    for idx, line in enumerate(banner):
+        print(_paint_256(line, fg=shades[idx % len(shades)], bold=True))
+        time.sleep(0.05)
+
+    print()
     lines = [
-        "Welcome to StudyPet",
-        "Simple Text UI Mode",
-        "No fancy visuals loaded",
+        "✨ Where productivity meets your virtual companion ✨",
+        "Stay focused. Stay playful. Keep evolving.",
+        BRAND_MODE_LINE,
     ]
     print_fancy_box("Launch", lines, width=73, theme="magenta")
-    time.sleep(0.4)
+    time.sleep(0.6)
 
 
 def clear_screen():
-    # Full clear: visible screen + scrollback + cursor home.
     print("\033[2J\033[3J\033[H", end="", flush=True)
+    _print_pastel_backdrop()
+    print()
 
 
 def pause():
     try:
-        input("\nPress Enter to continue...")
+        input(_paint("\nPress Enter to continue ✨", "dim"))
     except KeyboardInterrupt:
         print("\nExiting pause.")
 
@@ -121,7 +277,7 @@ def menu(options):
         menu_lines.append(f"[0] {_safe_text(options[-1])}")
 
         print_fancy_box("Choose An Option", menu_lines, width=73, theme="blue")
-        choice = input("Choose your option: ").strip()
+        choice = input(_paint_256("Choose your option: ", fg=PASTEL_ACCENTS["prompt_fg"], bold=True)).strip()
 
         if choice.isdigit():
             value = int(choice)
@@ -131,12 +287,28 @@ def menu(options):
                 return value
 
         clear_screen()
-        print("Invalid choice. Please try again.\n")
+        print(_paint_256("❌ Invalid choice. Please try again.", fg=PASTEL_ACCENTS["error_fg"], bold=True))
+        print()
 
 
 def choose_theme(menu_func):
-    # Theme system removed.
-    return None
+    theme_options = list_theme_options()
+    options = [label for _, label in theme_options] + ["Back"]
+
+    lines = [
+        f"Current Theme: {get_theme_display_name(get_ui_theme())}",
+        "",
+        "Pick a color mood for cards, prompts, and background.",
+    ]
+    print_fancy_box("Theme Studio", lines, theme="magenta")
+
+    choice = menu_func(options)
+    if choice == 0:
+        return None
+
+    selected_key, _ = theme_options[choice - 1]
+    set_ui_theme(selected_key)
+    return selected_key
 
 
 def choose_animation_style(menu_func):
@@ -260,4 +432,4 @@ def reflection_menu():
     return menu(options)
 
 
-set_ui_theme("disabled")
+set_ui_theme("pastel_pink")

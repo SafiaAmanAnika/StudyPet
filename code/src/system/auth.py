@@ -17,8 +17,11 @@ EMAIL_REGEX = _EmailRegexProxy()
 # ---------------- PASSWORD HELPERS ---------------- #
 
 def masked_input(prompt: str) -> str:
-    # Hidden input using standard getpass (no direct forbidden terminal imports here).
-    return getpass(prompt).strip()
+    # Prefer hidden input; some terminals may not support getpass reliably.
+    try:
+        return getpass(prompt).strip()
+    except Exception:
+        return input(prompt).strip()
 
 
 def is_valid_password(password: str) -> bool:
@@ -204,6 +207,7 @@ def register():
         },
         "last_login": str(date.today()),
         "mood_today": "",
+        "ui_theme": "pastel_pink",
         "animation_style": "sparkly",
         "music_enabled": True,
         "music_volume": 0.35,
