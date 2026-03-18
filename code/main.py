@@ -11,6 +11,7 @@ from src.interface.ui import (
     reflection_menu,
     print_fancy_box,
     print_brand_header,
+    print_intro_splash,
     choose_animation_style,
 )
 from src.pet.animation import set_animation_style, get_animation_style_display
@@ -187,43 +188,6 @@ def _prompt_non_empty_value(prompt, error_title):
         print_fancy_box(error_title, ["This field cannot be empty."], theme="yellow")
 
 
-def _prompt_goal_hours():
-    while True:
-        raw = input("📘 Enter new daily study hours (1-24): ").strip()
-        if raw.isdigit():
-            hours = int(raw)
-            if 1 <= hours <= 24:
-                return hours
-
-        clear_screen()
-        print_fancy_box(
-            "Invalid Daily Goal",
-            ["Please enter a whole number from 1 to 24."],
-            theme="yellow",
-        )
-
-
-def _volume_to_percent(value):
-    return int(round(float(value) * 100.0))
-
-
-def _prompt_volume(label):
-    while True:
-        raw = input(f"🔉 Enter {label} volume (0-100): ").strip()
-        if raw.isdigit():
-            pct = int(raw)
-            if 0 <= pct <= 100:
-                return pct / 100.0
-
-        clear_screen()
-        print_fancy_box(
-            "Invalid Volume",
-            ["Please enter a whole number from 0 to 100."],
-            theme="yellow",
-        )
-
-
-
 def handle_change_name(user_id, user_data):
     clear_screen()
     print_fancy_box(
@@ -395,59 +359,9 @@ def handle_change_pet(user_id, user_data):
     return user_data
 
 
-def handle_change_daily_goal(user_id, user_data):
-    from src.system.auth import assign_personality
-
-    clear_screen()
-    print_fancy_box(
-        "Change Daily Goal 📘",
-        [
-            f"Current Daily Goal: {user_data.get('goal_hours', '?')} hours",
-            "Set a new study target for each day.",
-        ],
-        theme="blue",
-    )
-    new_goal_hours = _prompt_goal_hours()
-
-    user_data["goal_hours"] = new_goal_hours
-    user_data["pet_personality"] = assign_personality(new_goal_hours)
-    save_user_data(user_id, user_data)
-
-    clear_screen()
-    print_fancy_box(
-        "Daily Goal Updated ✅",
-        [
-            f"New Daily Goal: {new_goal_hours} hours",
-            f"Pet Personality: {user_data.get('pet_personality', 'Neutral')}",
-        ],
-        theme="green",
-    )
-    pause()
-    return user_data
-
-
-def handle_change_academic_goal(user_id, user_data):
-    clear_screen()
-    print_fancy_box(
-        "Change Academic Goal 🎯",
-        [
-            f"Current Goal: {user_data.get('academic_goal', 'Not set')}",
-            "Write your updated academic target.",
-        ],
-        theme="blue",
-    )
-
-    new_goal = _prompt_non_empty_value("🎯 New academic goal            : ", "Invalid Goal")
-    user_data["academic_goal"] = new_goal
-    save_user_data(user_id, user_data)
-
-    clear_screen()
-    print_fancy_box("Academic Goal Updated ✅", [f"New Goal: {new_goal}"], theme="green")
-    pause()
-    return user_data
-
-
 def handle_animation_studio(user_id, user_data):
+    set_animation_style(user_data.get("animation_style", "sparkly"))
+    
     while True:
         clear_screen()
         print_fancy_box(
@@ -482,6 +396,8 @@ def handle_animation_studio(user_id, user_data):
 
 
 def handle_settings(user_id, user_data):
+    set_animation_style(user_data.get("animation_style", "sparkly"))
+    
     while True:
         clear_screen()
         print_fancy_box(
@@ -491,8 +407,6 @@ def handle_settings(user_id, user_data):
                 f"Name          : {user_data.get('name', 'User')}",
                 f"Pet           : {user_data.get('pet_theme', 'Cat')}",
                 f"Theme         : {get_theme_display_name(user_data.get('ui_theme', 'pastel_pink'))}",
-                f"Daily Goal    : {user_data.get('goal_hours', '?')} hours",
-                f"Academic Goal : {user_data.get('academic_goal', 'Not set')}",
             ],
             theme="green",
         )
@@ -503,8 +417,6 @@ def handle_settings(user_id, user_data):
             "Change Password",
             "Change Pet",
             "Theme Studio",
-            "Change Daily Goal",
-            "Change Academic Goal",
             "Animation Studio",
             "Delete Account",
             "Back",
@@ -532,12 +444,8 @@ def handle_settings(user_id, user_data):
                 )
                 pause()
         elif settings_choice == 6:
-            user_data = handle_change_daily_goal(user_id, user_data)
-        elif settings_choice == 7:
-            user_data = handle_change_academic_goal(user_id, user_data)
-        elif settings_choice == 8:
             user_data = handle_animation_studio(user_id, user_data)
-        elif settings_choice == 9:
+        elif settings_choice == 7:
             deleted = handle_delete_account(user_id, user_data)
             if deleted:
                 return user_id, user_data, True
@@ -754,11 +662,6 @@ def dashboard(user_id, user_data):
             choice = input("Choose your option              : ").strip()
             clear_screen()
 
-            if choice in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"}:
-                pass
-            elif choice == "0":
-                pass
-
             if choice == "1": 
                 user_data ,session_log = handle_study_session(user_id, user_data)
                 save_user_data(user_id, user_data)
@@ -848,6 +751,7 @@ def dashboard(user_id, user_data):
         
 def main(): 
     set_animation_style("sparkly")
+    print_intro_splash()
     while True: 
         try:
             set_animation_style("sparkly")
@@ -865,11 +769,6 @@ def main():
             print("Tip: type ':back' to refresh menu, ':exit' to close the app.")
 
             choice = input("Choose your option              : ").strip()
-
-            if choice in {"1", "2"}:
-                pass
-            elif choice == "0":
-                pass
 
             if choice == "1": 
                 user_id, user_data = register_user()

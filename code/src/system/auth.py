@@ -180,18 +180,17 @@ def register():
     password = ask_password()
     salt, password_hash = hash_password(password)
     
-    # Registration keeps these as defaults; users can change later in settings.
-    goal_hours = 2
-    academic_goal = ""
-    pet_theme = "Cat"
-    personality = assign_personality(goal_hours)
+    pet_theme = ask_pet_theme()
+    if pet_theme is None:
+        print("Registration cancelled.")
+        return None, None
+    
+    personality = assign_personality(2)
 
     user_data = {
         "name": name,
         "password_salt": salt,
         "password_hash": password_hash,
-        "goal_hours": goal_hours,
-        "academic_goal": academic_goal,
         "pet_theme": pet_theme,
         "pet_personality": personality,
         "health": 10,
@@ -241,7 +240,7 @@ def login():
     user_data = users[email]
 
     while True:
-        password = masked_input("🔑 Enter password               : ")
+        password = masked_input("🔑 Enter password                : ")
         if verify_password(
             password,
             user_data["password_salt"],

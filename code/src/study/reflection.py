@@ -65,20 +65,6 @@ def log_reflection(user_data):
     user_data['reflections'].append(entry)
     print("\nReflection saved!\n")
 
-
-    # Track daily sessions
-    user_data['daily_sessions'][study_date] = user_data['daily_sessions'].get(study_date, 0) + 1
-    user_data['total_study_hours'] = user_data.get('total_study_hours', 0) + hours
-
-    entry = {
-        "date": study_date,
-        "positive_feedback": positive_feedback,
-        "challenges": challenges,
-        "hours": hours
-    }
-    user_data['reflections'].append(entry)
-    print("\nReflection saved!\n")
-
     # Surprise achievement: 5 sessions/day
     if user_data['daily_sessions'][study_date] == 5:
         surprise_coins = choice([20, 25, 30])

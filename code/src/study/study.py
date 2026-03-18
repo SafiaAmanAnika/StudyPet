@@ -2,6 +2,7 @@ from src.interface.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
 from .study_planner.study_planner_config_helpers import load_data as load_planner_data
 from src.custom.custom_input import read_line_with_timeout
+from src.system.navigation import NavigateBack, ExitApplication
 import time, sys
 
 DEV_MODE = True

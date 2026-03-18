@@ -195,27 +195,27 @@ def generate_tips(goal_rate, days_studied, total_minutes, top_mood):
     tips = []
 
     if days_studied <= 2:
-        tips.append("✨ Study on at least 4 days next week to build consistency. ✨")
+        tips.append("✨ Study at least 4 days next week to build consistency. ✨")
     elif days_studied <= 4:
-        tips.append("✨ Try to study at least 5 days a week to strengthen your habit. ✨")
+        tips.append("✨ Aim for 5 study days a week to strengthen your habit. ✨")
 
     if total_minutes < 180:
-        tips.append("✨ Increase total weekly study time—aim for 30–45 minutes more per day. ✨")
+        tips.append("✨ Add 30–45 minutes of more study time this week. ✨")
     elif total_minutes < 420:
-        tips.append("✨ Great progress—try one extra Pomodoro on 2–3 days to level up. ✨")
+        tips.append("✨ Great progress! Add a Pomodoro the next 2–3 days to level up. ✨")
 
     if goal_rate is not None and goal_rate < 0.4:
-        tips.append("✨ Break your daily goal into smaller chunks (e.g., 2 short sessions) to meet it more often. ✨")
+        tips.append("✨ Break your daily goal into smaller chunks to meet it more often. ✨")
     elif goal_rate is not None and goal_rate < 0.7:
         tips.append("✨ You’re close to your goal—tighten your routine on 2 more days. ✨")
 
     if top_mood and "Tired" in top_mood:
-        tips.append("✨ Your mood shows fatigue—sleep/rest matters. Try shorter sessions + better breaks. ✨")
+        tips.append("✨ You seem tired—rest and take shorter sessions. ✨")
     elif top_mood and "Stressed" in top_mood:
-        tips.append("✨ Stress is showing—use the recreation/meditation unlocks to reset your mind. ✨")
+        tips.append("✨ Feeling stressed? Try the meditation module to reset your mind. ✨")
 
     while len(tips) < 3:
-        tips.append("✨ Keep tracking your mood and sessions—small consistent gains beat big spikes. ✨")
+        tips.append("✨ Keep going! Small consistent gains beat big spikes. ✨")
 
     return tips[:3]
 
