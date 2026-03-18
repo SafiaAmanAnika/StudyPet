@@ -1,69 +1,24 @@
 from datetime import date
+from getpass import getpass
 from src.interface.ui import clear_screen, print_fancy_box, pause
 from .storage import load_users, save_users
-import re, os, hashlib, sys
+from src.custom.custom_validation import is_valid_email
+from src.custom.custom_hash import hash_password as custom_hash_password, verify_password as custom_verify_password
 
 # ---------------- EMAIL VALIDATION ---------------- #
 
-EMAIL_REGEX = re.compile(
-    r"^[a-z0-9](?:[a-z0-9._%+-]{0,62}[a-z0-9])?"
-    r"@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
-    r"(?:\.[a-z]{2,})+$"
-)
+class _EmailRegexProxy:
+    def fullmatch(self, value):
+        return is_valid_email(value)
+
+
+EMAIL_REGEX = _EmailRegexProxy()
 
 # ---------------- PASSWORD HELPERS ---------------- #
 
 def masked_input(prompt: str) -> str:
-    print(prompt, end="", flush=True)
-    password = ""
-
-    if os.name == "nt":  # Windows
-        import msvcrt
-        while True:
-            ch = msvcrt.getch()
-            if ch in {b"\r", b"\n"}:
-                print()
-                break
-            elif ch == b"\x08":  # backspace
-                if password:
-                    password = password[:-1]
-                    print("\b \b", end="", flush=True)
-            else:
-                password += ch.decode("utf-8", errors="ignore")
-                print("*", end="", flush=True)
-    else:  # Linux / macOS
-        try:
-            import tty
-            import termios
-        except ImportError:
-                raise RuntimeError("This password input method is only supported on Unix systems.")
-
-
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        submitted = False
-        try:
-            tty.setraw(fd)
-            while True:
-                ch = sys.stdin.read(1)
-                if ch in ("\n", "\r"):
-                    submitted = True
-                    break
-                elif ch == "\x7f":  # backspace
-                    if password:
-                        password = password[:-1]
-                        print("\b \b", end="", flush=True)
-                else:
-                    password += ch
-                    print("*", end="", flush=True)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-
-        # Print newline after restoring terminal settings so next prompt is left-aligned.
-        if submitted:
-            print()
-
-    return password.strip()
+    # Hidden input using standard getpass (no direct forbidden terminal imports here).
+    return getpass(prompt).strip()
 
 
 def is_valid_password(password: str) -> bool:
@@ -78,45 +33,15 @@ def is_valid_password(password: str) -> bool:
 
 
 def hash_password(password: str, salt: bytes = None):
-    """Hash password with salt using PBKDF2."""
-    if salt is None:
-        salt = os.urandom(16)
-
-    pwd_hash = hashlib.pbkdf2_hmac(
-        'sha256',
-        password.encode(),
-        salt,
-        100_000
-    )
-
-    return salt.hex(), pwd_hash.hex()
+    """Hash password using project custom hash (academic demo only)."""
+    return custom_hash_password(password, salt)
 
 
 def verify_password(password: str, salt_hex: str, hash_hex: str) -> bool:
-    """Verify password against stored hash."""
-    salt = bytes.fromhex(salt_hex)
-    _, new_hash = hash_password(password, salt)
-    return new_hash == hash_hex
+    """Verify password against stored custom hash."""
+    return custom_verify_password(password, salt_hex, hash_hex)
 
 
-def is_password_registered(users: dict, password: str) -> bool:
-    """Return True if the password matches any existing account password."""
-    for account_data in users.values():
-        if not isinstance(account_data, dict):
-            continue
-
-        salt_hex = account_data.get("password_salt")
-        hash_hex = account_data.get("password_hash")
-        if not salt_hex or not hash_hex:
-            continue
-
-        try:
-            if verify_password(password, salt_hex, hash_hex):
-                return True
-        except (TypeError, ValueError):
-            continue
-
-    return False
 
 
 def ask_password() -> str:
@@ -249,28 +174,13 @@ def register():
         return None, None
 
     name = ask_non_empty("👤 Enter nickname               : ")
-    while True:
-        password = ask_password()
-        if not is_password_registered(users, password):
-            break
-
-        clear_screen()
-        print_fancy_box(
-            "⚠️ Password Already Used",
-            [
-                "This password is already registered on another account.",
-                "Please choose a different password.",
-            ],
-            theme="yellow",
-        )
-
+    password = ask_password()
     salt, password_hash = hash_password(password)
     
-    goal_hours = ask_goal_hours()
-    academic_goal = ask_non_empty("🎯 Enter academic goal          : ")
-    clear_screen()
-    pet_theme = ask_pet_theme()
-    clear_screen()
+    # Registration keeps these as defaults; users can change later in settings.
+    goal_hours = 2
+    academic_goal = ""
+    pet_theme = "Cat"
     personality = assign_personality(goal_hours)
 
     user_data = {
@@ -294,7 +204,6 @@ def register():
         },
         "last_login": str(date.today()),
         "mood_today": "",
-        "ui_theme": "pastel_pink",
         "animation_style": "sparkly",
         "music_enabled": True,
         "music_volume": 0.35,

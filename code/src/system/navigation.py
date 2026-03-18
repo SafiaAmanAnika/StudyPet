@@ -1,6 +1,3 @@
-import builtins
-
-
 class NavigateBack(Exception):
     """Raised when the user requests to go back to a previous menu."""
 
@@ -12,7 +9,23 @@ class ExitApplication(Exception):
 _BACK_TOKENS = {":back", ":b", "/back"}
 _EXIT_TOKENS = {":exit", ":quit", ":q", "/exit"}
 
-_original_input = builtins.input
+
+def _get_builtin_input():
+    b = __builtins__
+    if isinstance(b, dict):
+        return b["input"]
+    return b.input
+
+
+def _set_builtin_input(func):
+    b = __builtins__
+    if isinstance(b, dict):
+        b["input"] = func
+    else:
+        b.input = func
+
+
+_original_input = _get_builtin_input()
 
 
 def _navigation_input(prompt=""):
@@ -32,8 +45,9 @@ def install_global_navigation_input():
     """Patch built-in input so navigation commands work across modules."""
     global _original_input
 
-    if builtins.input is _navigation_input:
+    current_input = _get_builtin_input()
+    if current_input is _navigation_input:
         return
 
-    _original_input = builtins.input
-    builtins.input = _navigation_input
+    _original_input = current_input
+    _set_builtin_input(_navigation_input)

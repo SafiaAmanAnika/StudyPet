@@ -1,6 +1,7 @@
-import json, os, time, random
+import json, os, time
 from datetime import datetime, timedelta
 from src.interface.ui import clear_screen, print_fancy_box
+from src.custom.custom_random import choice
 
 # ---------------- UTILITY ---------------- #
 def today_str():
@@ -199,7 +200,7 @@ def log_reflection(user_data, user_id=None):
         user_data['reflection_bonus_dates'] = []
 
     if logged_sessions >= 5 and study_date not in user_data['reflection_bonus_dates']:
-        surprise_coins = random.choice([20, 25, 30])
+        surprise_coins = choice([20, 25, 30])
         user_data['coins'] = user_data.get('coins', 0) + surprise_coins
         user_data['reflection_bonus_dates'].append(study_date)
         print_fancy_box(
@@ -336,7 +337,7 @@ def random_encouragement(user_data):
             ("Bonus coins discovered! +30 coins", 30),
             ("Surprise reward! +15 coins", 15)
         ]
-        event, coins = random.choice(events)
+        event, coins = choice(events)
         user_data["coins"] = user_data.get("coins", 0) + coins
         print_fancy_box("✨ Bonus Reward", [event], theme="cyan")
     return user_data

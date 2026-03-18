@@ -12,7 +12,7 @@ It blends planner-driven Pomodoro flow, pet progression, wellbeing tracking, and
 | Motivation | Coins, pet health, feeding, shop, pet evolution |
 | Wellbeing | Mood logs, tired streak handling, burnout checks |
 | Insights | Analytics heatmaps, quiz tracking, weekly reports |
-| Experience | Animated intro, themes, animation styles, soundscape |
+| Experience | Animated intro, themes, animation styles |
 
 ## Daily Gameplay Loop
 
@@ -39,7 +39,6 @@ This makes Study Planner and Pomodoro feel like one continuous flow instead of t
 
 - Pomodoro presets and custom mode.
 - Difficulty-based reward and health impact.
-- Soundscape-enabled focus sessions (lofi + ambience).
 
 ### Pet Progression
 
@@ -64,7 +63,6 @@ This makes Study Planner and Pomodoro feel like one continuous flow instead of t
 
 - Animated intro splash.
 - Theme Studio (color themes + animation style).
-- Soundscape Studio (music, ambience type, volume).
 - Universal commands at prompts:
   - `:back` / `:b`
   - `:exit` / `:q`
@@ -94,10 +92,6 @@ This makes Study Planner and Pomodoro feel like one continuous flow instead of t
   - Ocean Breeze 🌊
   - Sunset Glow 🌇
   - animation style controls
-- Soundscape Studio:
-  - music toggle
-  - ambience toggle/type
-  - volume controls
 - Account deletion with password confirmation.
 
 ## Quick Start
@@ -105,13 +99,6 @@ This makes Study Planner and Pomodoro feel like one continuous flow instead of t
 ### Requirements
 
 - Python 3.10+
-- pygame
-
-Install dependency:
-
-```bash
-pip install pygame
-```
 
 Run from this folder (`code/`):
 
@@ -130,9 +117,6 @@ All runtime data is centralized in `data/`:
 - `data/quiz_marks.json`
 - `data/study_planner.json`
 - `data/weekly_reports.json`
-- `data/sounds/*.mp3`
-- `data/soundscape/*.mp3`
-- `data/ui_sfx/*.wav`
 
 ## Architecture (Current)
 
@@ -147,45 +131,18 @@ code/
     quiz_marks.json
     study_planner.json
     weekly_reports.json
-    sounds/
-    soundscape/
-    ui_sfx/
   src/
     __init__.py
     interface/
       __init__.py
       ui.py
-    audio/
-      __init__.py
-      soundscape.py
-      ui_sfx.py
     core/
       __init__.py
       analytics.py
       shop.py
     pet/
       __init__.py
-      animation.py
-      evolution.py
-      pet.py
-    study/
-      __init__.py
-      study.py
-      reflection.py
-      user_reflection.py
-      weekly_report.py
-      quiz/
-        __init__.py
-        quiz.py
-        quiz_analytics.py
-        quiz_charts.py
-        quiz_config_helpers.py
-        quiz_ui_input.py
-      study_planner/
-        __init__.py
-        study_planner.py
-        study_planner_config_helpers.py
-        study_planner_plan.py
+
         study_planner_profile.py
         study_planner_progress.py
         study_planner_recovery.py

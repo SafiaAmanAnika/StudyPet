@@ -1,4 +1,5 @@
-import time, random 
+import time
+from src.custom.custom_random import randint
 from src.interface.ui import clear_screen, print_fancy_box, menu, pause
 from .wellbeing import load_study_logs, today_str, tired_streak_days
 
@@ -127,7 +128,7 @@ def short_meditation():
 
 #game yey 
 def mini_game():
-    secret = random.randint(1, 10)
+    secret = randint(1, 10)
     clear_screen()
     print_fancy_box(
         "🎮 Mini Game: Guess The Number",

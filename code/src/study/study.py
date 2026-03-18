@@ -1,9 +1,8 @@
 from src.interface.ui import clear_screen, print_fancy_box
 from src.pet.animation import clear, render_countdown_scene
-from src.audio.soundscape import ensure_user_sound_defaults, apply_user_soundscape, stop_soundscape
 from .study_planner.study_planner_config_helpers import load_data as load_planner_data
-import time, os, sys, select
-import pygame
+from src.custom.custom_input import read_line_with_timeout
+import time, sys
 
 DEV_MODE = True
 
@@ -17,39 +16,6 @@ RAW_TO_BASE_MOOD = {
     "Stressed 😫": "Stressed",
     "Motivated 🥳": "Motivated",
 }
-
-# ------------------ SOUND ------------------ #
-
-pygame.mixer.init()
-
-def play_pet_sound(pet_type: str):
-    
-    sound_map = {
-        "Cat": "meow.mp3",
-        "Dog": "woof.mp3",
-        "Bunny": "bunny.mp3",
-    }
-    filename = sound_map.get(pet_type)
-    if not filename:
-        return
-
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sound_path = os.path.join(project_root, "data", "sounds", filename)
-    if not os.path.exists(sound_path):
-        print(f"⚠️ Sound file not found: {sound_path}")
-        return
-
-    try:
-        sound = pygame.mixer.Sound(sound_path)
-        channel = sound.play()
-
-        # Wait only for this sound's channel so ambient loops do not block forever.
-        while channel is not None and channel.get_busy():
-            pygame.time.Clock().tick(10)
-
-    except Exception as e:
-        print(f"⚠️ Sound error: {e}")
-
 
 # ------------------ UTILITY FUNCTIONS ------------------ #
 
@@ -388,27 +354,11 @@ def _pause_countdown(label: str, pause_budget_seconds, paused_so_far: float):
             print_fancy_box(box_title, lines, theme=box_theme)
             last_shown_second = paused_seconds
 
-        try:
-            ready, _, _ = select.select([sys.stdin], [], [], 1.0)
-        except (OSError, ValueError):
-            command = trim(input("> ")).lower()
-            paused_total = paused_so_far + (time.time() - pause_started_at)
-
-            if pause_budget_seconds is not None and paused_total > pause_budget_seconds:
-                return COUNTDOWN_OVERPAUSE, paused_total
-
-            if command in {"cancel", "c", "0"}:
-                return COUNTDOWN_CANCELLED, paused_total
-
-            if command in {"", "resume", "r", "continue", "start", "1"}:
-                return COUNTDOWN_COMPLETED, paused_total
-
+        command_line = read_line_with_timeout(1.0)
+        if command_line is None:
             continue
 
-        if not ready:
-            continue
-
-        command = trim(sys.stdin.readline()).lower()
+        command = trim(command_line).lower()
         paused_total = paused_so_far + (time.time() - pause_started_at)
 
         if pause_budget_seconds is not None and paused_total > pause_budget_seconds:
@@ -483,14 +433,11 @@ def run_countdowns(study_seconds, break_seconds, mood, pet_type):
             print("Session cancelled! No rewards earned.\n")
         return False
 
-    play_pet_sound(pet_type)  # 🔊 Plays fully after study ends
-
     if break_seconds > 0:
         break_status = animated_countdown(break_seconds, "Break", mood=mood, pet_type=pet_type)
         if break_status != COUNTDOWN_COMPLETED:
             print("Break cancelled!\n")
             return False
-        play_pet_sound(pet_type)  # 🔊 Plays fully after break ends
 
     return True
 
@@ -611,9 +558,6 @@ def start_session(user_id, user_data):
     break_taken = False
     consecutive_mode = False
 
-    # Play ambience only while countdowns are active.
-    ensure_user_sound_defaults(user_data)
-    apply_user_soundscape(user_data)
     try:
         while True:
             study_status = animated_countdown(
@@ -656,8 +600,6 @@ def start_session(user_id, user_data):
                     return user_data, None
                 break
 
-            play_pet_sound(pet_type)
-
             session_multiplier = 2 if consecutive_mode else 1
             coins_earned, health_lost_this_session = calculate_rewards(
                 user_data,
@@ -696,17 +638,16 @@ def start_session(user_id, user_data):
                         mood=mood,
                         pet_type=pet_type,
                     )
-                    if break_status == COUNTDOWN_COMPLETED:
-                        play_pet_sound(pet_type)
-                        break_taken = True
-                    else:
-                        print("Break cancelled.\n")
+
+                    if break_status != COUNTDOWN_COMPLETED:
+                        print("Break cancelled!\n")
+                        return False
                 else:
                     print("No break is configured for this Pomodoro setup.\n")
 
             break
-    finally:
-        stop_soundscape()
+    except (NavigateBack, ExitApplication):
+        return user_data, None
 
     if completed_sessions == 0:
         print("Session cancelled! No rewards earned.\n")

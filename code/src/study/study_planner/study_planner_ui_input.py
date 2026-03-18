@@ -1,4 +1,4 @@
-import re
+from src.custom.custom_text import count_emojis
 from .study_planner_config_helpers import (
     BOX_INNER, visible_width, truncate_to_width, pad_to_width,
     wrap_text_to_width, manual_strip, manual_is_number, is_only_letters
@@ -27,13 +27,11 @@ BORDER_FILL = "═" * (BOX_INNER + 2)
 # BOX DRAWING
 # ============================================================================
 
-EMOJI_PATTERN = re.compile(r"[\U0001F300-\U0001FAFF]")
-
 def box_title_only(title):
     """Display title in box (top and bottom borders only)"""
     t = str(title)
 
-    emoji_count = len(EMOJI_PATTERN.findall(t))
+    emoji_count = count_emojis(t)
 
     # Only adjust when emoji count is odd
     extra = emoji_count % 2

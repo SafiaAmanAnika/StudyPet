@@ -96,9 +96,9 @@ def feed_pet(user_data: dict) -> dict:
         normal = user_data["inventory"]["normal_food"]
         premium = user_data["inventory"]["premium_food"]
         print_fancy_box(
-            "🍽️ FEED PET",
+            "🍽️  FEED PET",
             [
-                f"❤️ Current Health: {user_data.get('health', 10)}/{MAX_PET_HEALTH}",
+                f"❤️  Current Health: {user_data.get('health', 10)}/{MAX_PET_HEALTH}",
                 f"🍎 Normal Food: {normal} | 🍗 Premium Food: {premium}",
                 "",
                 "Choose food to boost your pet's health.",

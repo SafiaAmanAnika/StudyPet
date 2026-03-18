@@ -1,4 +1,5 @@
-import json, os, unicodedata
+import json, os
+from src.custom.custom_text import char_width
 from datetime import datetime
 
 # ---------------- PROJECT ROOT ----------------
@@ -25,10 +26,7 @@ def visible_width(s):
     """Calculate visible width accounting for wide characters"""
     width = 0
     for ch in s:
-        if unicodedata.east_asian_width(ch) in ("F", "W"):
-            width += 2
-        else:
-            width += 1
+        width += char_width(ch)
     return width
 
 def truncate_to_width(s, maxw):

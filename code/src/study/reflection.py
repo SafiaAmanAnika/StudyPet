@@ -1,5 +1,6 @@
-import time, random
+import time
 from datetime import datetime, timedelta
+from src.custom.custom_random import choice
 
 # ---------------- UTILITY ---------------- #
 def today_str():
@@ -80,7 +81,7 @@ def log_reflection(user_data):
 
     # Surprise achievement: 5 sessions/day
     if user_data['daily_sessions'][study_date] == 5:
-        surprise_coins = random.choice([20, 25, 30])
+        surprise_coins = choice([20, 25, 30])
         user_data['coins'] = user_data.get('coins', 0) + surprise_coins
         print(f"✨ Surprise! You completed 5 sessions today! +{surprise_coins} coins")
 
@@ -180,7 +181,7 @@ def random_encouragement(user_data):
             ("Bonus coins discovered! +30 coins", 30),
             ("Surprise reward! +15 coins", 15)
         ]
-        event, coins = random.choice(events)
+        event, coins = choice(events)
         user_data["coins"] = user_data.get("coins", 0) + coins
         print(f"✨ {event}")
     return user_data
