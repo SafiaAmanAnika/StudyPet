@@ -1,11 +1,7 @@
 from .study_planner_ui_input import clear_screen
-from .study_planner_plan import (
-    generate_study_plan, view_study_plan
-)
-from .study_planner_progress import (
-    log_study_session, view_progress_dashboard
-)
-from .study_planner_recovery import check_missed_goal_recovery
+from .study_planner_plan import generate_study_plan, view_study_plan
+from .study_planner_progress import log_study_session, view_progress_dashboard
+from .study_planner_recovery import check_missed_goal_recovery, check_and_handle_shortfall
 from .study_planner_profile import view_user_dashboard
 from src.interface.ui import print_fancy_box, menu, pause
 
@@ -14,7 +10,6 @@ from src.interface.ui import print_fancy_box, menu, pause
 # ============================================================================
 
 def main_menu(user_id=None, user_data=None):
-
     while True:
         clear_screen()
         print_fancy_box(
@@ -33,7 +28,15 @@ def main_menu(user_id=None, user_data=None):
         ])
 
         if choice == 1:
-            generate_study_plan(user_id=user_id, user_data=user_data)
+            should_generate, recovery_minutes = check_and_handle_shortfall(
+                user_id=user_id, user_data=user_data
+            )
+            if should_generate:
+                generate_study_plan(
+                    user_id=user_id,
+                    user_data=user_data,
+                    recovery_minutes=recovery_minutes
+                )
         elif choice == 2:
             view_study_plan(user_id=user_id)
         elif choice == 3:
@@ -54,10 +57,6 @@ def main_menu(user_id=None, user_data=None):
             pause()
             break
 
-# ============================================================================
-# PROGRAM ENTRY POINT
-# ============================================================================
 
 def main():
-    """Entry point for Study Planner program"""
     main_menu()

@@ -1,10 +1,8 @@
 from datetime import datetime
 from .study_planner_config_helpers import (
-    load_data, save_data, manual_len, print_progress_bar
+    load_data, save_data, manual_len, print_progress_bar, manual_max, manual_min
 )
-from .study_planner_ui_input import (
-    clear_screen, ask_float
-)
+from .study_planner_ui_input import clear_screen, ask_float
 from src.interface.ui import print_fancy_box, pause
 
 # ============================================================================
@@ -12,43 +10,29 @@ from src.interface.ui import print_fancy_box, pause
 # ============================================================================
 
 def log_study_session(user_id=None):
-
     clear_screen()
     data = load_data(user_id=user_id)
-    
+
     if not data.get("study_plan"):
         clear_screen()
-        print_fancy_box(
-            "⚠️ No Study Plan",
-            ["No study plan generated yet."],
-            theme="yellow",
-        )
+        print_fancy_box("⚠️ No Study Plan", ["No study plan generated yet."], theme="yellow")
         pause()
         return
-    
+
     clear_screen()
-    print_fancy_box(
-        "Today's Session",
-        ["How many minutes did you study today?"],
-        theme="cyan",
-    )
+    print_fancy_box("Today's Session", ["How many minutes did you study today?"], theme="cyan")
     total_minutes = ask_float("Total minutes: ", 0, 1440)
-    
-    # ---- INITIALIZE SUBJECT STUDY MINUTES ----
+
     if "subject_study_minutes" not in data:
         data["subject_study_minutes"] = {}
-    
     for subject in data["subjects"]:
         if subject not in data["subject_study_minutes"]:
             data["subject_study_minutes"][subject] = 0
-    
-    # ---- HANDLE SINGLE VS MULTIPLE SUBJECTS ----
+
     if manual_len(data["subjects"]) == 1:
-        # Single subject - just store the total
         subject = data["subjects"][0]
         data["subject_study_minutes"][subject] = int(total_minutes)
     else:
-        # Multiple subjects - ask breakdown
         clear_screen()
         print_fancy_box(
             "Subject Breakdown",
@@ -58,51 +42,45 @@ def log_study_session(user_id=None):
             ],
             theme="blue",
         )
-        
         subject_minutes = {}
         total_entered = 0
-        
-        for i, subject in enumerate(data["subjects"], 1):
-            print(f"[{i}] {subject}")
+        idx = 1
+        for subject in data["subjects"]:
+            print(f"[{idx}] {subject}")
             while True:
                 minutes = ask_float(f"Minutes for {subject}: ", 0, int(total_minutes))
                 if total_entered + minutes > total_minutes:
                     remaining = int(total_minutes - total_entered)
-                    print_fancy_box(
-                        "Minutes Exceeded",
-                        [f"You only have {remaining} minutes left."],
-                        theme="yellow",
-                    )
+                    print_fancy_box("Minutes Exceeded", [f"You only have {remaining} minutes left."], theme="yellow")
                     continue
                 subject_minutes[subject] = int(minutes)
                 total_entered += int(minutes)
                 break
-        
+            idx += 1
         data["subject_study_minutes"] = subject_minutes
-    
-    # ---- UPDATE DATA ----
+
     data["study_minutes_today"] = int(total_minutes)
     data["last_study_date"] = str(datetime.now().date())
-    
-    # ---- CHECK IF GOAL MET ----
     goal_minutes = int(data.get("goal_hours", 0) * 60)
-    
     clear_screen()
-    
+
     if total_minutes < goal_minutes:
+        shortfall = goal_minutes - int(total_minutes)
         data["missed_goal"] = True
+        data["shortfall_minutes"] = shortfall
         print_fancy_box(
             "⚠️ Goal Not Met",
             [
                 f"Studied: {int(total_minutes)} min",
                 f"Goal: {goal_minutes} min",
-                f"Shortfall: {goal_minutes - int(total_minutes)} min",
-                "Don't worry! Recovery plan is ready for tomorrow.",
+                f"Shortfall: {shortfall} min",
+                "Don't worry! You can recover this tomorrow.",
             ],
             theme="yellow",
         )
     else:
         data["missed_goal"] = False
+        data["shortfall_minutes"] = 0
         print_fancy_box(
             "✅ Goal Met",
             [
@@ -112,7 +90,7 @@ def log_study_session(user_id=None):
             ],
             theme="green",
         )
-    
+
     save_data(data, user_id=user_id)
     pause()
 
@@ -121,82 +99,66 @@ def log_study_session(user_id=None):
 # ============================================================================
 
 def view_progress_dashboard(user_id=None):
-    """
-    Display progress dashboard showing:
-    - Overall daily progress
-    - Subject-wise breakdown (planned vs actual)
-    - Status indicators
-    """
     clear_screen()
     data = load_data(user_id=user_id)
-    
+
     if not data["subjects"]:
         clear_screen()
-        print_fancy_box(
-            "⚠️ Profile Required",
-            ["Please set up your profile first."],
-            theme="yellow",
-        )
+        print_fancy_box("⚠️ Profile Required", ["Please set up your profile first."], theme="yellow")
         pause()
         return
-    
+
     goal_hours = data.get("goal_hours", 0)
     goal_minutes = int(goal_hours * 60)
     study_minutes = data.get("study_minutes_today", 0)
     subject_minutes = data.get("subject_study_minutes", {})
-    study_plan = data.get("study_plan", [])
-    
-    # ---- CALCULATE OVERALL PROGRESS ----
-    progress_percentage = int((study_minutes / goal_minutes * 100)) if goal_minutes > 0 else 0
-    progress_percentage = min(progress_percentage, 100)
-    
-    # ---- EXTRACT PLANNED MINUTES PER SUBJECT ----
+
+    if goal_minutes > 0:
+        progress_percentage = int(study_minutes / goal_minutes * 100)
+    else:
+        progress_percentage = 0
+    if progress_percentage > 100:
+        progress_percentage = 100
+
+    # Extract planned minutes per subject from study plan
     planned_minutes = {}
     for subject in data["subjects"]:
         planned_minutes[subject] = 0
-    
-    for session in study_plan:
+    for session in data.get("study_plan", []):
         if session.get("type") == "study":
             subject = session.get("subject", "")
             if subject in planned_minutes:
                 planned_minutes[subject] += session.get("duration", 0)
 
     lines = ["📈 Overall Daily Progress", ""]
-    bar = print_progress_bar(progress_percentage)
-    lines.append(f"Progress: {bar}")
+    lines.append(f"Progress: {print_progress_bar(progress_percentage)}")
     lines.append(f"Studied Today: {study_minutes} min")
     lines.append(f"Daily Goal: {goal_minutes} min")
-    lines.append(f"Remaining: {max(0, goal_minutes - study_minutes)} min")
+    remaining = goal_minutes - study_minutes
+    if remaining < 0:
+        remaining = 0
+    lines.append(f"Remaining: {remaining} min")
     lines.append("")
     lines.append("📚 Subject-wise (Planned vs Actual)")
     lines.append("")
-    
+
     for subject in data["subjects"]:
         actual_minutes = subject_minutes.get(subject, 0)
         planned = planned_minutes.get(subject, 0)
-        
-        # Calculate percentage for this subject
-        subject_percentage = int((actual_minutes / planned * 100)) if planned > 0 else 0
-        subject_percentage = min(subject_percentage, 100)
-        
-        sub_bar = print_progress_bar(subject_percentage)
-        
-        # Show subject name with percentage
-        lines.append(f"{subject}: {sub_bar}")
-        
-        # Show comparison: Planned vs Actual
-        comparison = f"Planned: {planned} min | Actual: {actual_minutes} min"
-        lines.append(f"↳ {comparison}")
-        
-        # Show status
-        if actual_minutes >= planned:
-            status = f"✅ Completed! (+{actual_minutes - planned} min)"
-        elif actual_minutes > 0:
-            status = f"⏳ In progress ({planned - actual_minutes} min left)"
+        if planned > 0:
+            subject_percentage = int(actual_minutes / planned * 100)
         else:
-            status = f"❌ Not started"
-        
-        lines.append(f"↳ {status}")
+            subject_percentage = 0
+        if subject_percentage > 100:
+            subject_percentage = 100
+        lines.append(f"{subject}: {print_progress_bar(subject_percentage)}")
+        lines.append(f"↳ Planned: {planned} min | Actual: {actual_minutes} min")
+        if actual_minutes >= planned:
+            lines.append(f"↳ ✅ Completed! (+{actual_minutes - planned} min)")
+        elif actual_minutes > 0:
+            lines.append(f"↳ ⏳ In progress ({planned - actual_minutes} min left)")
+        else:
+            lines.append(f"↳ ❌ Not started")
         lines.append("")
 
     print_fancy_box("📊 Progress Dashboard", lines, theme="magenta")
