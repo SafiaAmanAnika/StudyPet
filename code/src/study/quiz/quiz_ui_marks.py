@@ -79,12 +79,12 @@ def add_mid_marks(user_id=None):
     subject = ask_subject(user_id, data)
     if subject is None:
         return
-    existing_titles = [q.get("title", "") for q in data["subjects"].get(subject, {}).get("quiz", [])]
+    existing_titles = [q.get("title", "") for q in data["subjects"].get(subject, {}).get("mid", [])]
     while True:
-        title = ask_title("Quiz title (e.g., quiz1): ")
+        title = ask_title("Mid title (e.g., mid1): ")
         if title not in existing_titles:
             break
-        _error_box(f"Quiz '{title}' already exists for {subject}. Use a different title.")
+        _error_box(f"Mid '{title}' already exists for {subject}. Use a different title.")
     total = ask_float("Total marks: ", 1)
     obtained = ask_float("Obtained marks: ", 0, total)
     subject_data = data["subjects"].get(subject, {"quiz": [], "mid": []})
