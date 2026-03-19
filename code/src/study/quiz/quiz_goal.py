@@ -129,7 +129,7 @@ def set_goal(user_id=None):
     save_data(data, user_id=user_id)
 
     if marks_still_needed <= max_remaining:
-        distribution = distribute_marks(marks_still_needed, remaining_slots)
+        distribution = distribute_marks(marks_still_needed, remaining_slots, target_min_pct)
         result_lines = [
             f"✅ {target_grade} is achievable!", "",
             f"You need {marks_needed:.2f} / {grand_total:.2f} total ({target_min_pct}%)",
@@ -165,7 +165,7 @@ def set_goal(user_id=None):
         if achievable_grade and achievable_grade != "F":
             marks_needed_best = (achievable_threshold / 100) * grand_total
             marks_still_best = marks_needed_best - current_obtained
-            distribution = distribute_marks(marks_still_best, remaining_slots)
+            distribution = distribute_marks(marks_still_best, remaining_slots, achievable_threshold)
             not_possible_lines += [
                 f"💡 Best possible grade for you: {achievable_grade}", "",
                 f"You need {marks_needed_best:.2f} / {grand_total:.2f} total ({achievable_threshold}%)",

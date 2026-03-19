@@ -41,7 +41,7 @@ def ask_int(prompt, min_v=None, max_v=None):
 # ============================================================================
 # MARKS DISTRIBUTION
 # ============================================================================
-def distribute_marks(required, slots):
+def distribute_marks(required, slots, target_min_pct=80):
     result = []
     remaining_required = required
     n = manual_len(slots)
@@ -51,17 +51,14 @@ def distribute_marks(required, slots):
         if slots_left == 0:
             break
 
-        is_quiz = manual_lower(title).startswith("quiz")
-        cap = total * 0.85 if is_quiz else total
+        cap = min(total, total * (target_min_pct / 100) + total * 0.05)
 
-        # Fair share as target
         target = remaining_required / slots_left
         if target > cap:
             target = cap
         if target < 0:
             target = 0
 
-        # Tight range: ±5% of total around target
         buffer = 2.0
         min_n = max(0, target - buffer)
         max_n = min(cap, target + buffer)
