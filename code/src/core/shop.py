@@ -169,4 +169,22 @@ def feed_pet(user_data: dict) -> dict:
                 lines.append("Reached max health cap (20).")
             print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
             break
+        
+
+        elif choice == 2:
+            if user_data.get("health", 10) >= MAX_PET_HEALTH:
+                clear_screen()
+                print_fancy_box(
+                    "❤️ Health Already Full",
+                    [
+                        "Your pet is already at maximum health!",
+                        f"Current Health : {user_data.get('health', 10)}/{MAX_PET_HEALTH}",
+                        "No food was consumed.",
+                         "Complete a session first, then come back to feed! 📚",
+                    ],
+                    theme="yellow",
+                )
+                pause()
+                continue
+
 
