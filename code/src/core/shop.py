@@ -23,4 +23,11 @@ def open_shop(user_data: dict) -> dict:
             ],
             theme="cyan",
         )
+        choice = menu([
+            "Buy Normal Food (50 coins)",
+            "Buy Premium Food (75 coins)",
+            "Back",
+        ])
+
+       
 
