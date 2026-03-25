@@ -117,6 +117,8 @@ def append_study_log(session_log):
 
 
 def save_user_data(user_id, user_data):
+    if not isinstance(user_data, dict):
+        return
     users = load_users()
     users[user_id] = user_data
     save_users(users)

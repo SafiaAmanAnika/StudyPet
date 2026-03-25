@@ -168,7 +168,9 @@ def feed_pet(user_data: dict) -> dict:
             if gained < NORMAL_FOOD_HEALTH:
                 lines.append("Reached max health cap (20).")
             print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
-            break
+            pause()
+            pet.show_status(user_data)
+            return user_data
 
 
         elif choice == 2:
@@ -207,11 +209,12 @@ def feed_pet(user_data: dict) -> dict:
             if gained < PREMIUM_FOOD_HEALTH:
                 lines.append("Reached max health cap (20).")
             print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
-            break
+            pause()
+            pet.show_status(user_data)
+            return user_data
 
         elif choice == 0:
             return user_data
 
-        pet.show_status(user_data)
-        return user_data
+    return user_data
 

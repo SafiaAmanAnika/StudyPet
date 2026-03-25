@@ -348,8 +348,7 @@ def _pause_countdown(label: str, pause_budget_seconds, paused_so_far: float):
                 lines.append("When time left hits 00:00, this session is cancelled.")
                 lines.append("No coins for cancelled session, and health still drops.")
 
-            lines.append("Type resume + Enter to jump back in! ✨")
-            lines.append("Type cancel + Enter to stop this session.")
+            lines.append("Type Enter to jump back in! ✨")
 
             clear()
             print_fancy_box(box_title, lines, theme=box_theme)

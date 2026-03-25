@@ -238,6 +238,14 @@ def login():
         return None, None
 
     user_data = users[email]
+    if not isinstance(user_data, dict):
+        clear_screen()
+        print_fancy_box(
+            "⚠️ Corrupted Account Data",
+            ["This account record is invalid.", "Please re-register or fix users.json."],
+            theme="yellow",
+        )
+        return None, None
 
     while True:
         password = masked_input("🔑 Enter password                : ")

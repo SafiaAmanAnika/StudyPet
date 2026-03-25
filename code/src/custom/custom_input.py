@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 
@@ -9,9 +10,22 @@ def read_line_with_timeout(timeout_seconds):
         return None
 
     if os.name != "nt":
-        # Fallback for non-Windows without select: no timed input support.
-        time.sleep(timeout_seconds)
-        return None
+        # POSIX path (macOS/Linux): wait for stdin readability, then read one line.
+        import select
+
+        try:
+            ready, _, _ = select.select([sys.stdin], [], [], timeout_seconds)
+        except (OSError, ValueError):
+            time.sleep(timeout_seconds)
+            return None
+
+        if not ready:
+            return None
+
+        try:
+            return sys.stdin.readline().rstrip("\n")
+        except KeyboardInterrupt:
+            return "cancel"
 
     import msvcrt
 
@@ -24,6 +38,9 @@ def read_line_with_timeout(timeout_seconds):
             continue
 
         ch = msvcrt.getwch()
+        if ch == "\x03":
+            return "cancel"
+
         if ch in ("\r", "\n"):
             print()
             return "".join(buf)
