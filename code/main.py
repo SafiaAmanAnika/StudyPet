@@ -40,6 +40,7 @@ from src.system.navigation import install_global_navigation_input, NavigateBack,
 
 import json, os
 from datetime import date, timedelta
+from src.core.wallet import show_wallet
 
 install_global_navigation_input()
 
@@ -655,6 +656,7 @@ def dashboard(user_id, user_data):
                 " [10] Study Planner 🗓️",
                 " [11] Reflection Journal 📓",
                 " [12] Settings ⚙️",
+                " [13] Wallet 💰", 
                 " [0] Logout 👋",
             ]
             print_fancy_box("Your virtual pet awaits!", dashboard_options, theme="cyan")
@@ -732,6 +734,11 @@ def dashboard(user_id, user_data):
                 user_id, user_data, deleted = handle_settings(user_id, user_data)
                 if deleted:
                     return
+                
+            elif choice == "13":
+               show_wallet(user_data)
+               pause()
+               clear_screen()
 
             elif choice == "0": 
                 clear_screen()
