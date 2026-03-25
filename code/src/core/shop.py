@@ -31,3 +31,41 @@ def open_shop(user_data: dict) -> dict:
 
        
 
+        if choice == 1:
+            user_data = buy_normal_food(user_data)
+        elif choice == 2:
+            user_data = buy_premium_food(user_data)
+        elif choice == 0:
+            return user_data
+
+
+def buy_normal_food(user_data: dict) -> dict:
+    if user_data["coins"] < NORMAL_FOOD_COST:
+        clear_screen()
+        print_fancy_box(
+            "❌ Not Enough Coins",
+            [
+                "You don't have enough coins to buy Normal Food.",
+                f"Normal Food costs : {NORMAL_FOOD_COST} coins",
+                f"Your coins        : {user_data['coins']}",
+            ],
+            theme="yellow",
+        )
+        pause()
+        return user_data
+
+
+def buy_premium_food(user_data: dict) -> dict:
+    if user_data["coins"] < PREMIUM_FOOD_COST:
+        clear_screen()
+        print_fancy_box(
+            "❌ Not Enough Coins",
+            [
+                "You don't have enough coins to buy Premium Food.",
+                f"Premium Food costs : {PREMIUM_FOOD_COST} coins",
+                f"Your coins         : {user_data['coins']}",
+            ],
+            theme="yellow",
+        )
+        pause()
+        return user_data
