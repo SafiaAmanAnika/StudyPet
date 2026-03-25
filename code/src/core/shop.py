@@ -53,6 +53,25 @@ def buy_normal_food(user_data: dict) -> dict:
         )
         pause()
         return user_data
+    
+    user_data = pet.change_coins(user_data, -NORMAL_FOOD_COST)
+    user_data["inventory"]["normal_food"] += 1
+    user_data = log_transaction(user_data, "Bought Normal Food", NORMAL_FOOD_COST, "debit")
+
+    clear_screen()
+    print_fancy_box(
+    "✅ Purchase Complete",
+    [
+        "🍎 Normal Food bought successfully!",
+        f"🎒 Normal Food in inventory : {user_data['inventory']['normal_food']}",
+        f"💰 Remaining Coins          : {user_data['coins']}",
+    ],
+    theme="green",
+) 
+    
+    
+    pause()
+    return user_data
 
 
 def buy_premium_food(user_data: dict) -> dict:
@@ -84,3 +103,7 @@ def buy_premium_food(user_data: dict) -> dict:
     ],
     theme="green",
 )
+    
+
+    pause()
+    return user_data
