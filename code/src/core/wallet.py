@@ -43,3 +43,17 @@ def show_wallet(user_data: dict) -> None:
     W_BAL   = 8
     SEP     = " | "
 
+    def row(date, desc, credit, debit, balance):
+        date_col  = date[:W_DATE].ljust(W_DATE)
+        desc_col  = desc[:W_DESC].ljust(W_DESC)
+        cr_col    = str(credit).rjust(W_CR)
+        db_col    = str(debit).rjust(W_DB)
+        bal_col   = str(balance).rjust(W_BAL)
+        return date_col + SEP + desc_col + SEP + cr_col + SEP + db_col + SEP + bal_col
+
+    header = row("Date", "Description", "Credit", "Debit", "Balance")
+    divider = "-" * len(header)
+
+    lines = [header, divider]
+
+
