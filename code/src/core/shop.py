@@ -9,3 +9,18 @@ NORMAL_FOOD_HEALTH = 5
 PREMIUM_FOOD_HEALTH = 10
 MAX_PET_HEALTH = 20
 
+def open_shop(user_data: dict) -> dict:
+    user_data = pet.ensure_pet_defaults(user_data)
+
+    while True:
+        clear_screen()
+        print_fancy_box(
+            "🛒 PET SHOP",
+            [
+                f"💰 Current Coins: {user_data['coins']}",
+                "",
+                "Stock up food to keep your pet healthy.",
+            ],
+            theme="cyan",
+        )
+
