@@ -56,4 +56,14 @@ def show_wallet(user_data: dict) -> None:
 
     lines = [header, divider]
 
+    for tx in transactions:
+        lines.append(row(
+            tx.get("date", ""),
+            tx.get("description", ""),
+            tx.get("credit", 0) or "",
+            tx.get("debit", 0) or "",
+            tx.get("balance", 0),
+        ))
+
+
 
