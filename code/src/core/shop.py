@@ -147,3 +147,13 @@ def feed_pet(user_data: dict) -> dict:
                 )
                 pause()
                 continue
+
+            if user_data["inventory"]["normal_food"] <= 0:
+                clear_screen()
+                print_fancy_box(
+                    "⚠️ No Normal Food",
+                    ["Inventory is empty.", "Buy food from the Pet Shop."],
+                    theme="yellow",
+                )
+                pause()
+                continue
