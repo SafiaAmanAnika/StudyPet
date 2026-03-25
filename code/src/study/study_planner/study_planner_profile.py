@@ -40,7 +40,14 @@ def view_user_dashboard(user_id=None, user_data=None):
 
     subjects_list = planner_data.get("subjects", [])
     subjects_str = _join_subjects(subjects_list) if subjects_list else "Not set"
-    goal_str = f"{planner_data['goal_hours']} hours" if planner_data.get("goal_hours", 0) > 0 else "Not set"
+    
+    goal_hours = planner_data.get("goal_hours", 0)
+    if goal_hours > 0:
+        goal_minutes = int(goal_hours * 60)
+        goal_str = f"{goal_hours} hours ({goal_minutes} minutes)"
+    else:
+        goal_str = "Not set"
+    
     mood_str = mood if mood else "Not set"
     last_date = planner_data.get("last_study_date") or "N/A"
     shortfall = planner_data.get("shortfall_minutes", 0)
@@ -48,7 +55,7 @@ def view_user_dashboard(user_id=None, user_data=None):
     lines = [
         f"Name: {name}",
         f"Subjects: {subjects_str}",
-        f"Today's Study Goal: {goal_str}",
+        f"Today's Study Goal: {goal_str}", 
         f"Current Mood: {mood_str}",
         f"Today's Actual Study: {planner_data.get('study_minutes_today', 0)} minutes",
         f"Last Study Date: {last_date}",
