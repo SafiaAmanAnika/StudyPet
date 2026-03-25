@@ -34,4 +34,12 @@ def show_wallet(user_data: dict) -> None:
             theme="cyan",
         )
         return
+    
+     # Column widths
+    W_DATE  = 12
+    W_DESC  = 28
+    W_CR    = 8
+    W_DB    = 8
+    W_BAL   = 8
+    SEP     = " | "
 
