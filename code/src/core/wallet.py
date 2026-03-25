@@ -24,3 +24,14 @@ def log_transaction(user_data: dict, description: str, amount: int, tx_type: str
     user_data["wallet_transactions"].append(entry)
     return user_data
 
+def show_wallet(user_data: dict) -> None:
+    transactions = user_data.get("wallet_transactions", [])
+
+    if not transactions:
+        print_fancy_box(
+            "💰 WALLET - BANK STATEMENT",
+            ["No transactions yet.", "Start studying or visit the shop!"],
+            theme="cyan",
+        )
+        return
+
