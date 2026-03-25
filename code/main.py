@@ -649,16 +649,16 @@ def dashboard(user_id, user_data):
                 " [1] Start Study Session ⏳",
                 " [2] Feed Pet 🍖",
                 " [3] Pet Shop 🛒",
-                " [4] View Pet Status 🐱",
-                " [5] View User Status 📊",
-                " [6] Mood Check-in 🌼",
-                " [7] Study Performance Tracker 📚",
-                " [8] Analytics 📈",
-                " [9] Weekly Report 📅",
-                " [10] Study Planner 🗓️",
-                " [11] Reflection Journal 📓",
-                " [12] Settings ⚙️",
-                " [13] Wallet 💰", 
+                " [4] Wallet 💰",
+                " [5] View Pet Status 🐱",
+                " [6] View User Status 📊",
+                " [7] Mood Check-in 🌼",
+                " [8] Study Performance Tracker 📚",
+                " [9] Analytics 📈",
+                " [10] Weekly Report 📅",
+                " [11] Study Planner 🗓️",
+                " [12] Reflection Journal 📓",
+                " [13] Settings ⚙️",
                 " [0] Logout 👋",
             ]
             print_fancy_box("Your virtual pet awaits!", dashboard_options, theme="cyan")
@@ -686,33 +686,33 @@ def dashboard(user_id, user_data):
                 pause()
                 clear_screen()
 
-            elif choice == "4": 
+            elif choice == "5": 
                 show_status(user_data)
                 pause()
                 clear_screen()
             
-            elif choice == "5": 
+            elif choice == "6": 
                 show_user_stats(user_id, user_data)
                 pause()
                 clear_screen()
             
-            elif choice == "6":
+            elif choice == "7":
                 user_data = handle_wellbeing(user_id, user_data)
                 save_user_data(user_id, user_data)
 
-            elif choice == "7": 
+            elif choice == "8": 
                 user_data = quiz_run(user_id, user_data)
 
-            elif choice == "8": 
+            elif choice == "9": 
                 user_data = analytics_run(user_id, user_data)
 
-            elif choice == "9": 
+            elif choice == "10": 
                 user_data = weekly_run(user_id, user_data)
 
-            elif choice == "10":
+            elif choice == "11":
                 study_planner_menu(user_id=user_id, user_data=user_data)
 
-            elif choice == "11":
+            elif choice == "12":
                 while True:
                     reflection_choice = reflection_menu()
                     clear_screen()
@@ -732,12 +732,12 @@ def dashboard(user_id, user_data):
                     elif reflection_choice == 0:
                         break
 
-            elif choice == "12":
+            elif choice == "13":
                 user_id, user_data, deleted = handle_settings(user_id, user_data)
                 if deleted:
                     return
                 
-            elif choice == "13":
+            elif choice == "4":
                show_wallet(user_data)
                pause()
                clear_screen()
