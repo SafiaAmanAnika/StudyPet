@@ -114,7 +114,7 @@ def _planner_subject_choices(user_id=None):
             continue
 
         session_type = str(session.get("type", "")).strip().lower()
-        if session_type not in {"study", "revision"}:
+        if session_type not in {"study"}:
             continue
 
         subject = trim(str(session.get("subject", "")))
@@ -205,27 +205,12 @@ DIFFICULTY = {
 
 DIFFICULTY_BY_LABEL = {value[0]: value for value in DIFFICULTY.values()}
 
-
 def select_difficulty(planner_difficulty=None):
     planner_difficulty = str(planner_difficulty or "").strip().title()
-
+    
     if planner_difficulty in DIFFICULTY_BY_LABEL:
-        print_fancy_box(
-            "DIFFICULTY",
-            [
-                f"[1] Use Study Planner difficulty ({planner_difficulty})",
-                "[2] Choose manually",
-                "[0] Cancel",
-            ],
-            theme="yellow",
-        )
-        planner_choice = get_choice("Choose your option: ", {"1", "2", "0"})
-        clear_screen()
-
-        if planner_choice == "0":
-            return None
-        if planner_choice == "1":
-            return DIFFICULTY_BY_LABEL[planner_difficulty]
+        print(f"✅ Using Study Planner difficulty: {planner_difficulty}")
+        return DIFFICULTY_BY_LABEL[planner_difficulty]
 
     print_fancy_box(
         "DIFFICULTY",
