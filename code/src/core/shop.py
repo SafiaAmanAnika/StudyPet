@@ -197,5 +197,16 @@ def feed_pet(user_data: dict) -> dict:
                 pause()
                 continue
 
+            health_before = int(user_data.get("health", 10))
+            user_data["inventory"]["premium_food"] -= 1
+            user_data = pet.change_health(user_data, PREMIUM_FOOD_HEALTH)
+            gained = int(user_data.get("health", 10)) - health_before
+
+            clear_screen()
+            lines = ["Used Premium Food.", f"❤️ Health increased by {gained}."]
+            if gained < PREMIUM_FOOD_HEALTH:
+                lines.append("Reached max health cap (20).")
+            print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
+            break
 
 
