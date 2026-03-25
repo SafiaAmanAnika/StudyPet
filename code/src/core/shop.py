@@ -69,3 +69,18 @@ def buy_premium_food(user_data: dict) -> dict:
         )
         pause()
         return user_data
+    
+    user_data = pet.change_coins(user_data, -PREMIUM_FOOD_COST)
+    user_data["inventory"]["premium_food"] += 1
+    user_data = log_transaction(user_data, "Bought Premium Food", PREMIUM_FOOD_COST, "debit")
+
+    clear_screen()
+    print_fancy_box(
+    "✅ Purchase Complete",
+    [
+        "🍗 Premium Food bought successfully!",
+        f"🎒 Premium Food in inventory : {user_data['inventory']['premium_food']}",
+        f"💰 Remaining Coins           : {user_data['coins']}",
+    ],
+    theme="green",
+)
