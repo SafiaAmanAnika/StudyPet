@@ -3,6 +3,7 @@ from src.pet.animation import clear, render_countdown_scene
 from .study_planner.study_planner_config_helpers import load_data as load_planner_data
 from src.custom.custom_input import read_line_with_timeout
 from src.system.navigation import NavigateBack, ExitApplication
+from src.core.wallet import log_transaction
 import time, sys
 
 DEV_MODE = True
@@ -242,7 +243,7 @@ def select_difficulty(planner_difficulty=None):
     if choice == "0":
         return None
 
-    return DIFFICULTY[choice]  # returns (diff_name, diff_multiplier, health_loss)
+    return DIFFICULTY[choice]
 
 
 def select_pomodoro(planner_study_minutes=None, planner_break_minutes=None):
@@ -274,7 +275,7 @@ def select_pomodoro(planner_study_minutes=None, planner_break_minutes=None):
     clear_screen()
 
     if pm == "0":
-        return None, None  # canceled
+        return None, None
 
     if pm == "1":
         return 25, 5
@@ -297,7 +298,6 @@ def select_pomodoro(planner_study_minutes=None, planner_break_minutes=None):
 
 
 # ------------------ COUNTDOWNS ------------------ #
-
 
 COUNTDOWN_COMPLETED = "completed"
 COUNTDOWN_CANCELLED = "cancelled"
@@ -451,6 +451,8 @@ def calculate_rewards(user_data, study_minutes, diff_multiplier, health_loss, se
     health_loss_total = int(health_loss * multiplier)
 
     user_data["coins"] += coins_earned
+    user_data = log_transaction(user_data, "Study Session Reward", coins_earned, "credit")
+
     user_data["health"] -= health_loss_total
     if user_data["health"] < 0:
         user_data["health"] = 0
