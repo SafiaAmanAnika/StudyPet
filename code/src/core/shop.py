@@ -209,4 +209,9 @@ def feed_pet(user_data: dict) -> dict:
             print_fancy_box("🍽️ Feeding Complete", lines, theme="green")
             break
 
+        elif choice == 0:
+            return user_data
+
+        pet.show_status(user_data)
+        return user_data
 
