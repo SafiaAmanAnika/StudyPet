@@ -108,7 +108,7 @@ python3 main.py
 
 ## Canonical Data Layout
 
-All runtime data is centralized in `data/`:
+Runtime data is stored in `data/` (created/populated during app usage):
 
 - `data/users.json`
 - `data/study_log.json`
@@ -122,31 +122,66 @@ All runtime data is centralized in `data/`:
 
 ```text
 code/
+  .gitignore
   main.py
   README.md
-  data/
-    users.json
-    study_log.json
-    mood_log.json
-    quiz_marks.json
-    study_planner.json
-    weekly_reports.json
   src/
     __init__.py
-    interface/
-      __init__.py
-      ui.py
     core/
       __init__.py
       analytics.py
       shop.py
+      wallet.py
+    custom/
+      __init__.py
+      custom_hash.py
+      custom_input.py
+      custom_random.py
+      custom_text.py
+      custom_validation.py
+    interface/
+      __init__.py
+      ui.py
     pet/
       __init__.py
-
+      animation.py
+      evolution.py
+      pet.py
+    study/
+      __init__.py
+      reflection.py
+      study.py
+      user_reflection.py
+      weekly_report.py
+      quiz/
+        __init__.py
+        quiz.py
+        quiz_analytics.py
+        quiz_charts.py
+        quiz_config_helpers.py
+        quiz_dashboard.py
+        quiz_file_io.py
+        quiz_goal.py
+        quiz_goal_helpers.py
+        quiz_syllabus.py
+        quiz_text_helpers.py
+        quiz_trend.py
+        quiz_ui_boxes.py
+        quiz_ui_input.py
+        quiz_ui_marks.py
+      study_planner/
+        __init__.py
+        study_planner.py
+        study_planner_config_helpers.py
+        study_planner_file_io.py
+        study_planner_plan.py
         study_planner_profile.py
         study_planner_progress.py
         study_planner_recovery.py
+        study_planner_text_helpers.py
+        study_planner_ui_boxes.py
         study_planner_ui_input.py
+        study_planner_ui_subjects.py
     system/
       __init__.py
       auth.py
@@ -157,6 +192,45 @@ code/
       wellbeing.py
       recreation.py
 ```
+
+## Simplified Layout (Reference)
+
+This is a flattened reference view in the style of your sample:
+
+```text
+├── data
+│   ├── mood_log.json
+│   ├── study_log.json
+│   ├── study_planner.json
+│   └── users.json
+│
+├── src
+│   ├── __init__.py
+│   ├── analytics.py
+│   ├── animation.py
+│   ├── auth.py
+│   ├── evolution.py
+│   ├── pet.py
+│   ├── quiz.py
+│   ├── recreation.py
+│   ├── shop.py
+│   ├── storage.py
+│   ├── study_planner.py
+│   ├── study.py
+│   ├── ui.py
+│   ├── weekly_report.py
+│   ├── reflection.py
+│   └── wellbeing.py
+│
+├── .gitignore
+├── main.py
+└── README.md
+```
+
+Actual implementation note:
+
+- These files are organized under domain folders in `src/` (for example `src/core/analytics.py`, `src/pet/animation.py`, `src/system/auth.py`, `src/study/quiz/quiz.py`).
+- `data/` files are created and populated at runtime.
 
 ## Developer Notes
 
