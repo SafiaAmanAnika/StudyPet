@@ -65,5 +65,10 @@ def show_wallet(user_data: dict) -> None:
             tx.get("balance", 0),
         ))
 
+    lines.append(divider)
+    lines.append(row("", "Current Balance", "", "", user_data.get("coins", 0)))
+
+    print_fancy_box("💰 WALLET - BANK STATEMENT", lines, theme="cyan")
+
 
 
