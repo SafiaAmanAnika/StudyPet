@@ -43,7 +43,7 @@ def view_user_dashboard(user_id=None, user_data=None):
     
     goal_hours = planner_data.get("goal_hours", 0)
     if goal_hours > 0:
-        goal_minutes = int(goal_hours * 60)
+        goal_minutes = round(goal_hours * 60)
         goal_str = f"{goal_hours} hours ({goal_minutes} minutes)"
     else:
         goal_str = "Not set"

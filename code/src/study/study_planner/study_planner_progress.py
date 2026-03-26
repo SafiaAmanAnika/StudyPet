@@ -39,16 +39,27 @@ def log_study_session(user_id=None):
             [
                 f"Total minutes studied: {int(total_minutes)} min",
                 "Now enter minutes for each subject.",
+                "(Last subject will be auto-calculated)",
             ],
             theme="blue",
         )
         subject_minutes = {}
         total_entered = 0
-        idx = 1
-        for subject in data["subjects"]:
-            print(f"[{idx}] {subject}")
+        subjects_list = data["subjects"]
+        n_subjects = manual_len(subjects_list)
+        
+        for idx, subject in enumerate(subjects_list):
+            print(f"[{idx + 1}] {subject}")
+            
+            if idx == n_subjects - 1:
+                remaining_minutes = int(total_minutes) - total_entered
+                subject_minutes[subject] = remaining_minutes
+                print(f"Minutes for {subject}: {remaining_minutes} (auto-calculated)")
+                print()
+                continue
+            
             while True:
-                minutes = ask_float(f"Minutes for {subject}: ", 0, int(total_minutes))
+                minutes = ask_float(f"Minutes for {subject}: ", 0, int(total_minutes - total_entered))
                 if total_entered + minutes > total_minutes:
                     remaining = int(total_minutes - total_entered)
                     print_fancy_box("Minutes Exceeded", [f"You only have {remaining} minutes left."], theme="yellow")
@@ -56,38 +67,62 @@ def log_study_session(user_id=None):
                 subject_minutes[subject] = int(minutes)
                 total_entered += int(minutes)
                 break
-            idx += 1
+        
         data["subject_study_minutes"] = subject_minutes
 
     data["study_minutes_today"] = int(total_minutes)
     data["last_study_date"] = str(datetime.now().date())
-    goal_minutes = int(data.get("goal_hours", 0) * 60)
+    goal_minutes = round(data.get("goal_hours", 0) * 60)
     clear_screen()
 
     if total_minutes < goal_minutes:
         shortfall = goal_minutes - int(total_minutes)
         data["missed_goal"] = True
         data["shortfall_minutes"] = shortfall
+        
+        lines = [
+            f"Studied: {int(total_minutes)} min",
+        ]
+        
+        # Add subject-wise breakdown only for multiple subjects
+        if manual_len(data.get("subjects", [])) > 1:
+            subject_minutes = data.get("subject_study_minutes", {})
+            for subject, minutes in subject_minutes.items():
+                lines.append(f"  ├─ {subject}: {minutes} min")
+        
+        lines.extend([
+            f"Goal: {goal_minutes} min",
+            f"Shortfall: {shortfall} min",
+            "Don't worry! You can recover this tomorrow.",
+        ])
+        
         print_fancy_box(
             "⚠️ Goal Not Met",
-            [
-                f"Studied: {int(total_minutes)} min",
-                f"Goal: {goal_minutes} min",
-                f"Shortfall: {shortfall} min",
-                "Don't worry! You can recover this tomorrow.",
-            ],
+            lines,
             theme="yellow",
         )
     else:
         data["missed_goal"] = False
         data["shortfall_minutes"] = 0
+        
+        lines = [
+            f"Studied: {int(total_minutes)} min",
+        ]
+        
+        # Add subject-wise breakdown only for multiple subjects
+        if manual_len(data.get("subjects", [])) > 1:
+            subject_minutes = data.get("subject_study_minutes", {})
+            for subject, minutes in subject_minutes.items():
+                lines.append(f"  ├─ {subject}: {minutes} min")
+        
+        lines.extend([
+            f"Goal: {goal_minutes} min",
+            "You met your goal! Great job! 🎉",
+        ])
+        
         print_fancy_box(
             "✅ Goal Met",
-            [
-                f"Studied: {int(total_minutes)} min",
-                f"Goal: {goal_minutes} min",
-                "You met your goal! Great job! 🎉",
-            ],
+            lines,
             theme="green",
         )
 
@@ -109,7 +144,7 @@ def view_progress_dashboard(user_id=None):
         return
 
     goal_hours = data.get("goal_hours", 0)
-    goal_minutes = int(goal_hours * 60)
+    goal_minutes = round(goal_hours * 60)
     study_minutes = data.get("study_minutes_today", 0)
     subject_minutes = data.get("subject_study_minutes", {})
 
