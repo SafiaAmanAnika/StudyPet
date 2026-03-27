@@ -1,8 +1,15 @@
 from src.study.quiz.quiz_config_helpers import load_data, save_data
 from src.study.quiz.quiz_ui_input import (
-    clear_screen, ask_subject, ask_title, ask_float, ask_date, _error_box
+    clear_screen, ask_subject, ask_title, ask_float, ask_date, _error_box, manual_lower
 )
 from src.interface.ui import print_fancy_box, menu as ui_menu, pause
+
+# ============================================================================
+# NORMALIZE TITLE HELPER
+# ============================================================================
+
+def normalize_title(title):
+    return title.lower().strip().replace(" ", "")
 
 # ============================================================================
 # SYLLABUS COVERAGE HELPER
@@ -27,14 +34,30 @@ def add_quiz_marks(user_id=None):
     subject = ask_subject(user_id, data)
     if subject is None:
         return
-    existing_titles = [q.get("title", "") for q in data["subjects"].get(subject, {}).get("quiz", [])]
+    existing_titles = [normalize_title(q.get("title", "")) for q in data["subjects"].get(subject, {}).get("quiz", [])]
+    
     while True:
-        title = ask_title("Quiz title (e.g., quiz1): ")
-        if title not in existing_titles:
-            break
-        _error_box(f"Quiz '{title}' already exists for {subject}. Use a different title.")
-    total = ask_float("Total marks: ", 1)
-    obtained = ask_float("Obtained marks: ", 0, total)
+        title = ask_title("Quiz title: ", allow_back=True)
+        if title is None:
+            return
+        normalized_title = normalize_title(title)
+        if normalized_title in existing_titles:
+            _error_box(f"Quiz '{title}' already exists for {subject}. Use a different title.")
+            continue
+        break
+    
+    while True:
+        total = ask_float("Total marks: ", 1, allow_back=True)
+        if total is None:
+            return
+        break
+    
+    while True:
+        obtained = ask_float(f"Obtained marks: ", 0, total, allow_back=True)
+        if obtained is None:
+            return
+        break
+    
     subject_data = data["subjects"].get(subject, {"quiz": [], "mid": []})
     already_covered = _calc_already_covered(subject_data)
     remaining_syllabus = 100.0 - already_covered
@@ -45,7 +68,7 @@ def add_quiz_marks(user_id=None):
                         theme="yellow")
         pause()
         return
-    print(f"\n{title} covered what % of your whole syllabus?")
+    print(f"\n{normalized_title} covered what % of your whole syllabus?")
     print(f"(already covered: {already_covered:.2f}%, remaining: {remaining_syllabus:.2f}%)")
     while True:
         syllabus_coverage = ask_float(f"Enter % (0 - {remaining_syllabus:.2f}): ", 0, 100)
@@ -53,19 +76,19 @@ def add_quiz_marks(user_id=None):
             _error_box(f"Cannot exceed {remaining_syllabus:.2f}%.")
             continue
         break
-    print(f"\nYou personally completed what % of {title}? (0-100)")
+    print(f"\nYou personally completed what % of {normalized_title}? (0-100)")
     personal_coverage = ask_float("Enter %: ", 0, 100)
     date_str = ask_date("Date (YYYY-MM-DD): ")
     if subject not in data["subjects"]:
         data["subjects"][subject] = {"quiz": [], "mid": []}
     data["subjects"][subject]["quiz"].append({
-        "title": title, "total": total, "obtained": obtained,
+        "title": normalized_title, "total": total, "obtained": obtained,
         "syllabus_coverage": syllabus_coverage,
         "personal_coverage": personal_coverage, "date": date_str
     })
     save_data(data, user_id=user_id)
     clear_screen()
-    print_fancy_box("✅ Quiz Added", [f"{subject} - {title} added successfully."], theme="green")
+    print_fancy_box("✅ Quiz Added", [f"{subject} - {normalized_title} added successfully."], theme="green")
     pause()
 
 # ============================================================================
@@ -79,14 +102,31 @@ def add_mid_marks(user_id=None):
     subject = ask_subject(user_id, data)
     if subject is None:
         return
-    existing_titles = [q.get("title", "") for q in data["subjects"].get(subject, {}).get("mid", [])]
+    
+    existing_titles = [normalize_title(q.get("title", "")) for q in data["subjects"].get(subject, {}).get("mid", [])]
+    
     while True:
-        title = ask_title("Mid title (e.g., mid1): ")
-        if title not in existing_titles:
-            break
-        _error_box(f"Mid '{title}' already exists for {subject}. Use a different title.")
-    total = ask_float("Total marks: ", 1)
-    obtained = ask_float("Obtained marks: ", 0, total)
+        title = ask_title("Mid title: ", allow_back=True)
+        if title is None:
+            return
+        normalized_title = normalize_title(title)
+        if normalized_title in existing_titles:
+            _error_box(f"Mid '{title}' already exists for {subject}. Use a different title.")
+            continue
+        break
+    
+    while True:
+        total = ask_float("Total marks: ", 1, allow_back=True)
+        if total is None:
+            return
+        break
+    
+    while True:
+        obtained = ask_float(f"Obtained marks: ", 0, total, allow_back=True)
+        if obtained is None:
+            return
+        break
+    
     subject_data = data["subjects"].get(subject, {"quiz": [], "mid": []})
     already_covered = _calc_already_covered(subject_data)
     remaining_syllabus = 100.0 - already_covered
@@ -97,7 +137,7 @@ def add_mid_marks(user_id=None):
                         theme="yellow")
         pause()
         return
-    print(f"\n{title} covered what % of your whole syllabus?")
+    print(f"\n{normalized_title} covered what % of your whole syllabus?")
     print(f"(already covered: {already_covered:.2f}%, remaining: {remaining_syllabus:.2f}%)")
     while True:
         syllabus_coverage = ask_float(f"Enter % (0 - {remaining_syllabus:.2f}): ", 0, 100)
@@ -105,19 +145,19 @@ def add_mid_marks(user_id=None):
             _error_box(f"Cannot exceed {remaining_syllabus:.2f}%.")
             continue
         break
-    print(f"\nYou personally completed what % of {title}? (0-100)")
+    print(f"\nYou personally completed what % of {normalized_title}? (0-100)")
     personal_coverage = ask_float("Enter %: ", 0, 100)
     date_str = ask_date("Date (YYYY-MM-DD): ")
     if subject not in data["subjects"]:
         data["subjects"][subject] = {"quiz": [], "mid": []}
     data["subjects"][subject]["mid"].append({
-        "title": title, "total": total, "obtained": obtained,
+        "title": normalized_title, "total": total, "obtained": obtained,
         "syllabus_coverage": syllabus_coverage,
         "personal_coverage": personal_coverage, "date": date_str
     })
     save_data(data, user_id=user_id)
     clear_screen()
-    print_fancy_box("✅ Mid Added", [f"{subject} - {title} added successfully."], theme="green")
+    print_fancy_box("✅ Mid Added", [f"{subject} - {normalized_title} added successfully."], theme="green")
     pause()
 
 # ============================================================================

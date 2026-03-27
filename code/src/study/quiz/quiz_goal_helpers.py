@@ -45,29 +45,32 @@ def distribute_marks(required, slots, target_min_pct=80):
     result = []
     remaining_required = required
     n = manual_len(slots)
+    
+    only_one_exam_left = (n == 1)
 
     for i, (title, total) in enumerate(slots):
         slots_left = n - i
         if slots_left == 0:
             break
 
-        cap = min(total, total * (target_min_pct / 100) + total * 0.05)
-
         target = remaining_required / slots_left
-        if target > cap:
-            target = cap
-        if target < 0:
-            target = 0
+        target = min(target, total)
+        target = max(target, 0)
 
-        buffer = 2.0
-        min_n = max(0, target - buffer)
-        max_n = min(cap, target + buffer)
-
+        if only_one_exam_left:
+            min_n = max(0, remaining_required)
+            max_n = min(total, remaining_required)
+        else:
+            
+            buffer = 2.0
+            min_n = max(0, target - buffer)
+            max_n = min(total, target + buffer)
+            
+            remaining_required -= target
+        
         result.append((title, min_n, max_n, total))
-        remaining_required -= target
 
     return result
-
 
 # ============================================================================
 # SUBJECT PICKER FOR GOAL

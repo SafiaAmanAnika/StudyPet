@@ -65,6 +65,7 @@ def set_goal(user_id=None):
 
     print_fancy_box(f"{subject.upper()} — Current Status", lines, width=CARD_WIDTH, theme="blue")
 
+    
     already_quiz_count = manual_len(quizzes)
     total_quizzes = ask_int(
         f"Total quizzes in your course (already done: {already_quiz_count}): ",
@@ -75,15 +76,24 @@ def set_goal(user_id=None):
     if remaining_quiz_count > 0:
         per_quiz_total = ask_float("Each remaining quiz is out of how many marks? ", 1, 1000)
 
-    mid_total = 0.0
-    if manual_len(mids) == 0:
-        mid_total = ask_float("Mid exam total marks: ", 0, 10000)
+
+    already_mid_count = manual_len(mids)
+    total_mids = ask_int(
+        f"Total mids in your course (already done: {already_mid_count}): ",
+        already_mid_count, 50)
+    remaining_mid_count = total_mids - already_mid_count
+
+    per_mid_total = 0.0
+    if remaining_mid_count > 0:
+        per_mid_total = ask_float("Each remaining mid is out of how many marks? ", 1, 10000)
+
+    
     final_total = ask_float("Final exam total marks: ", 0, 10000)
 
     remaining_slots = [(f"Quiz {already_quiz_count + i + 1}", per_quiz_total)
                        for i in range(remaining_quiz_count)]
-    if manual_len(mids) == 0 and mid_total > 0:
-        remaining_slots.append(("Mid", mid_total))
+    remaining_slots += [(f"Mid {already_mid_count + i + 1}", per_mid_total)
+                        for i in range(remaining_mid_count)]
     if final_total > 0:
         remaining_slots.append(("Final", final_total))
 
@@ -138,12 +148,18 @@ def set_goal(user_id=None):
             "", "📋 Best suggestive marks to attain your goal:",
         ]
         for title, min_n, max_n, total in distribution:
-            min_pct = (min_n / total * 100) if total > 0 else 0
-            max_pct = (max_n / total * 100) if total > 0 else 0
-            result_lines.append(
-                f"  {title}: {min_n:.1f} - {max_n:.1f} / {total:.0f} "
-                f"({min_pct:.1f}% - {max_pct:.1f}%)"
-            )
+            if min_n == max_n:  
+                pct = (min_n / total * 100) if total > 0 else 0
+                result_lines.append(
+                    f"  {title}: {min_n:.0f} / {total:.0f} ({pct:.1f}%)"
+                )
+            else:  
+                min_pct = (min_n / total * 100) if total > 0 else 0
+                max_pct = (max_n / total * 100) if total > 0 else 0
+                result_lines.append(
+                    f"  {title}: {min_n:.1f} - {max_n:.1f} / {total:.0f} "
+                    f"({min_pct:.1f}% - {max_pct:.1f}%)"
+                )
         print_fancy_box(f"🎯 Goal: {target_grade} — {subject.upper()}",
                         result_lines, width=CARD_WIDTH, theme="green")
 
@@ -174,12 +190,18 @@ def set_goal(user_id=None):
                 "", "📋 Best suggestive marks to attain your goal:",
             ]
             for title, min_n, max_n, total in distribution:
-                min_pct = (min_n / total * 100) if total > 0 else 0
-                max_pct = (max_n / total * 100) if total > 0 else 0
-                not_possible_lines.append(
-                    f"  {title}: {min_n:.1f} - {max_n:.1f} / {total:.0f} "
-                    f"({min_pct:.1f}% - {max_pct:.1f}%)"
-                )
+                if min_n == max_n:  
+                    pct = (min_n / total * 100) if total > 0 else 0
+                    not_possible_lines.append(
+                        f"  {title}: {min_n:.0f} / {total:.0f} ({pct:.1f}%)"
+                    )
+                else:  
+                    min_pct = (min_n / total * 100) if total > 0 else 0
+                    max_pct = (max_n / total * 100) if total > 0 else 0
+                    not_possible_lines.append(
+                        f"  {title}: {min_n:.1f} - {max_n:.1f} / {total:.0f} "
+                        f"({min_pct:.1f}% - {max_pct:.1f}%)"
+                    )
         else:
             not_possible_lines += [
                 "⚠️ Even passing (D) may be difficult.",
