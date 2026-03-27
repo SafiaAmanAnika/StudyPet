@@ -89,9 +89,13 @@ def ask_subject(user_id, quiz_data):
 # INPUT FUNCTIONS
 # ============================================================================
 
-def ask_title(prompt):
+def ask_title(prompt, allow_back=False):
     while True:
         v = manual_strip(input(prompt))
+        
+        if allow_back and manual_lower(v) in ("b", "back"):
+            return None
+        
         if v == "":
             _error_box("Title cannot be empty.")
             continue
@@ -119,20 +123,27 @@ def ask_title(prompt):
             continue
         return v
 
-
-def ask_float(prompt, min_v=None, max_v=None):
+def ask_float(prompt, min_v=None, max_v=None, allow_back=False):
     while True:
         v = manual_strip(input(prompt))
+        
+        if allow_back and manual_lower(v) in ("b", "back"):
+            return None
+        
         if not manual_is_number(v):
             _error_box("Enter a valid number.")
             continue
+        
         num = float(v)
+        
         if min_v is not None and num < min_v:
             _error_box(f"Value must be >= {min_v}")
             continue
+        
         if max_v is not None and num > max_v:
             _error_box(f"Value must be <= {max_v}")
             continue
+        
         return num
 
 
