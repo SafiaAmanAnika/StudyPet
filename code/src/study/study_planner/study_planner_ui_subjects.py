@@ -20,7 +20,7 @@ def ask_subjects_type():
         elif choice == 2:
             return "multiple"
         elif choice == 0:
-            return "single"
+            return None
 
 
 def ask_single_subject_with_difficulty():
@@ -55,7 +55,7 @@ def ask_single_subject_with_difficulty():
     )
     choice = ui_menu(["Easy", "Medium", "Hard", "Back"])
     if choice == 0:
-        choice = 2
+       return None, None
     difficulty = ["Easy", "Medium", "Hard"][choice - 1]
     return subject, difficulty
 
@@ -112,7 +112,7 @@ def ask_multiple_subjects_with_difficulty():
         )
         choice = ui_menu(["Easy", "Medium", "Hard", "Back"])
         if choice == 0:
-            choice = 2
+           return None, None
         difficulty = ["Easy", "Medium", "Hard"][choice - 1]
         subjects.append(subject)
         subject_difficulty[subject] = difficulty
