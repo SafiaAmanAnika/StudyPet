@@ -1,6 +1,3 @@
-# Minimal manual validators to avoid regex dependency.
-
-
 def is_valid_email(email):
     if email is None:
         return False

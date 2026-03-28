@@ -1,6 +1,3 @@
-# Text/emoji width helpers to avoid regex/unicodedata dependencies.
-
-
 def _ord(ch):
     if not ch:
         return 0
@@ -9,7 +6,6 @@ def _ord(ch):
 
 def is_zero_width(ch):
     cp = _ord(ch)
-    # ZWJ and variation selectors commonly used in emoji sequences.
     return cp == 0x200D or cp == 0xFE0F
 
 
@@ -24,7 +20,6 @@ def is_emoji(ch):
 
 def is_wide_char(ch):
     cp = _ord(ch)
-    # Common wide East Asian ranges.
     return (
         0x1100 <= cp <= 0x115F
         or 0x2E80 <= cp <= 0xA4CF
