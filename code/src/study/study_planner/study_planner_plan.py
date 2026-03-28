@@ -116,12 +116,18 @@ def generate_study_plan(user_id=None, user_data=None, recovery_minutes=None):
     clear_screen()
     print_fancy_box("📋 Subject Setup", ["Choose one or more subjects and set difficulty."], theme="cyan")
     subject_type = ask_subjects_type()
+    if subject_type is None:
+        return
     if subject_type == "single":
         subject, difficulty = ask_single_subject_with_difficulty()
+        if subject is None:
+            return
         planner_data["subjects"] = [subject]
         planner_data["subject_difficulty"] = {subject: difficulty}
     else:
         subjects, subject_difficulty = ask_multiple_subjects_with_difficulty()
+        if subjects is None:
+            return
         planner_data["subjects"] = subjects
         planner_data["subject_difficulty"] = subject_difficulty
 
@@ -153,11 +159,10 @@ def generate_study_plan(user_id=None, user_data=None, recovery_minutes=None):
     save_data(planner_data, user_id=user_id)
 
     clear_screen()
+    goal_minutes = int(custom_goal * 60)
     if recovery_minutes is not None:
-        goal_minutes = int(custom_goal * 60)
         label = f"{custom_goal} hours ({goal_minutes} minutes) for recovery"
     else:
-        goal_minutes = int(custom_goal * 60)
         label = f"{custom_goal} hours ({goal_minutes} minutes)"
     print_fancy_box("✅ Plan Generated", [f"Your plan is ready for {label} today."], theme="green")
     pause()
