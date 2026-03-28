@@ -237,10 +237,7 @@ def print_brand_header():
 
 
 def print_intro_splash():
-    """One-time animated intro screen shown at app launch.
 
-    This version intentionally avoids extra imports (random/shutil/sys/audio).
-    """
     TITLE_LINES = [
         " ███████╗████████╗██╗   ██╗██████╗ ██╗   ██╗██████╗ ███████╗████████╗ ",
         " ██╔════╝╚══██╔══╝██║   ██║██╔══██╗╚██╗ ██╔╝██╔══██╗██╔════╝╚══██╔══╝ ",
@@ -252,8 +249,8 @@ def print_intro_splash():
     GRAD = [225, 224, 219, 218, 217, 183]
     CAT_FACES = ["=^.^=", ">^w^<", "=^o^=", "^-^  ", ">.<  ", "uwu  ", "^v^  ", "=^-^="]
     CAT_FG = [219, 218, 217, 183, 189, 225, 147, 216]
-    FLEN = 5
-    BFG, BFG2, BFLASH = 219, 218, 255
+    FLEN = 5 #length of cat faces 
+    BFG, BFG2, BFLASH = 219, 218, 255 #diff forecolors used for the box drawing during animation
 
     title_w = max(_visual_width(line) for line in TITLE_LINES)
     content_w = max(20, int(BOX_WIDTH))
@@ -716,8 +713,6 @@ def show_user_summary(user_data):
     energy = user_data.get("energy", 100)
     coins = user_data.get("coins", 5)
     pet_theme = user_data.get("pet_theme", "Unknown")
-    goal_hours = user_data.get("goal_hours", "?")
-    academic_goal = user_data.get("academic_goal", "")
     pet_personality = user_data.get("pet_personality", "Neutral")
     mood = user_data.get("mood_today", "")
 
@@ -735,14 +730,10 @@ def show_user_summary(user_data):
         f"Health        : {health}/20  [{health_bar}]",
         f"Energy        : {energy}/100 [{energy_bar}]",
         f"Coins         : {coins}",
-        f"Daily Goal    : {goal_hours} hours",
     ]
 
     if mood:
         lines.insert(0, f"Mood Today    : {mood}")
-
-    if academic_goal:
-        lines.append(f"Academic Goal : {academic_goal}")
 
     if health <= 3:
         lines.append("⚠️ Pet is very weak. Feed it soon!")
@@ -754,8 +745,6 @@ def show_user_stats(user_id, user_data):
     lines = [
         f"🐱 Email         : {user_id}",
         f"🐱 Nickname      : {user_data.get('name', 'User')}",
-        f"🐱 Goal Hours    : {user_data.get('goal_hours', '?')}",
-        f"🐱 Academic Goal : {user_data.get('academic_goal', '')}",
         f"🐱 Pet Theme     : {user_data.get('pet_theme', 'Unknown')}",
         f"🐱 Personality   : {user_data.get('pet_personality', 'Neutral')}",
         f"🐱 Health        : {user_data.get('health', 10)}",
