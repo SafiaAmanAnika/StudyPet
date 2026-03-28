@@ -27,7 +27,7 @@ def _build_plan(total_minutes_goal, subjects, subject_difficulty, mood):
     difficulty_times = {"Easy": 25, "Medium": 35, "Hard": 50}
     difficulty_weights = {"Easy": 1, "Medium": 2, "Hard": 3}
 
-    available_minutes = total_minutes_goal - 10
+    available_minutes = total_minutes_goal
 
     # Calculate total weight
     total_weight = 0
@@ -93,11 +93,7 @@ def _build_plan(total_minutes_goal, subjects, subject_difficulty, mood):
         })
         session_num += 1
  
-
-    study_plan.append({
-        "session": session_num, "subject": "Revision",
-        "duration": 10, "type": "revision"
-    })
+ 
     return study_plan
 
 # ============================================================================
@@ -158,9 +154,11 @@ def generate_study_plan(user_id=None, user_data=None, recovery_minutes=None):
 
     clear_screen()
     if recovery_minutes is not None:
-        label = f"{custom_goal} hours (recovery)"
+        goal_minutes = int(custom_goal * 60)
+        label = f"{custom_goal} hours ({goal_minutes} minutes) for recovery"
     else:
-        label = f"{custom_goal} hours"
+        goal_minutes = int(custom_goal * 60)
+        label = f"{custom_goal} hours ({goal_minutes} minutes)"
     print_fancy_box("✅ Plan Generated", [f"Your plan is ready for {label} today."], theme="green")
     pause()
 
@@ -180,7 +178,8 @@ def view_study_plan(user_id=None):
     study_plan = data["study_plan"]
     mood = data.get("mood_today", "Unknown")
     goal_hours = data.get("goal_hours", 0)
-    lines = [f"Mood: {mood}", f"Today's Goal: {goal_hours} hours", ""]
+    goal_minutes = int(goal_hours * 60)
+    lines = [f"Mood: {mood}", f"Today's Goal: {goal_hours} hours ({goal_minutes} minutes)", ""]
 
     total_study_minutes = 0
     total_break_minutes = 0
@@ -201,13 +200,10 @@ def view_study_plan(user_id=None):
         elif session["type"] == "break":
             lines.append(f"☕ Break: {session['duration']} min")
             total_break_minutes += session["duration"]
-        elif session["type"] == "revision":
-            lines.append(f"🔄 Revision: {session['duration']} min")
-            total_study_minutes += session["duration"]
 
     total_hours = total_study_minutes / 60
     lines.append("")
-    lines.append(f"Total Study Time: {total_study_minutes} min ({total_hours:.1f} hours)")
+    lines.append(f"Total Study Time: {total_study_minutes} min ({total_hours:.2f} hours)")
     lines.append(f"Total Break Time: {total_break_minutes} min")
     lines.append(f"Study Sessions: {session_count} sessions")
     print_fancy_box("📅 Today's Study Plan", lines, theme="magenta")
