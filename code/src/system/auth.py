@@ -17,7 +17,6 @@ EMAIL_REGEX = _EmailRegexProxy()
 # ---------------- PASSWORD HELPERS ---------------- #
 
 def masked_input(prompt: str) -> str:
-    # Prefer hidden input; some terminals may not support getpass reliably.
     try:
         return getpass(prompt).strip()
     except Exception:
@@ -25,7 +24,6 @@ def masked_input(prompt: str) -> str:
 
 
 def is_valid_password(password: str) -> bool:
-    """Check password rules."""
     if len(password) < 8:
         return False
     if not any(c.isupper() for c in password):
@@ -36,15 +34,11 @@ def is_valid_password(password: str) -> bool:
 
 
 def hash_password(password: str, salt: bytes = None):
-    """Hash password using project custom hash (academic demo only)."""
     return custom_hash_password(password, salt)
 
 
 def verify_password(password: str, salt_hex: str, hash_hex: str) -> bool:
-    """Verify password against stored custom hash."""
     return custom_verify_password(password, salt_hex, hash_hex)
-
-
 
 
 def ask_password() -> str:

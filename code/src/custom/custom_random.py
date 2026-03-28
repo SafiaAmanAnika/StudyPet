@@ -1,7 +1,5 @@
 import time
 
-# Lightweight linear congruential generator (LCG).
-# Good enough for simple game/UX randomness in this project.
 _MODULUS = 2 ** 31
 _MULTIPLIER = 1103515245
 _INCREMENT = 12345

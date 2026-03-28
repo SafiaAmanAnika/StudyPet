@@ -1,7 +1,5 @@
 import os
 
-# Weak academic-demo hash (NOT secure for production).
-
 
 def _mix(value, ch_code):
     value = (value * 1315423911) & 0xFFFFFFFFFFFFFFFF
