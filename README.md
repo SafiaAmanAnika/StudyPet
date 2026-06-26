@@ -22,13 +22,11 @@
 
 <br>
 
-<a href="#overview">📋 Overview</a>  🔷
-<a href="#gameplay-loop">🔁 Gameplay Loop</a>  🔷
-<a href="#features">✨ Features</a>  🔷
-<a href="#dashboard">🖥️ Dashboard Menu</a>
 
-<a href="#libraries">📚 Libraries Used</a>  🔷
 <a href="#installation">⚙️ Installation</a>  🔷
+<a href="#walkthrough">🔁 System Workflow</a>  🔷
+<a href="#features">✨ Core Features</a>  🔷
+<a href="#libraries">📚 Libraries Used</a>  🔷
 <a href="#architecture">🏗️ Architecture</a>  🔷
 <a href="#data-storage">💾 Data Storage</a>
 
@@ -36,37 +34,71 @@
 
 ---
 
-<a name="overview"></a>
-## 📋 Overview
+<a name="installation"></a>
+## ⚙️ Installation
 
-**StudyPet** is organized into clearly separated domains — study, pet, wellbeing, and system services — so that planner, Pomodoro timer, pet logic, and analytics all stay independent but feed into one continuous daily routine.
+### Prerequisites
 
-| Area | What you get |
-|------|---------------|
-| Focus | Pomodoro sessions (25/5, 50/10, custom) |
-| Planning | Study Planner subjects flow directly into session start |
-| Motivation | Coins, pet health, feeding, shop, pet evolution |
-| Wellbeing | Mood logs, tired-streak handling, burnout checks |
-| Insights | Analytics heatmaps, quiz tracking, weekly reports |
-| Experience | Animated intro, color themes, animation styles |
+| Requirement | Version | Link |
+|--------------|---------|------|
+| Python | 3.10 or higher | [Download](https://www.python.org/downloads/) |
+
+### Setup
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/zenken24/StudyPet.git
+cd StudyPet/code
+
+# 2. Run the app
+python3 main.py
+```
+
+> All runtime data is created automatically under `data/` on first use — no separate setup step or database is required.
+
+<details>
+<summary><b>Developer mode</b></summary>
+
+<br>
+
+### Compile Check
+
+Quickly verify the whole codebase compiles without running it:
+
+```bash
+python3 -m compileall main.py src
+```
+
+### Timer Testing Shortcut
+
+For fast iteration on Pomodoro sessions during development:
+
+- Edit `DEV_MODE` in `src/study/study.py`.
+- `True` — treats minutes as seconds, so sessions complete almost instantly.
+- `False` — uses real session durations (default for normal use).
+
+<br>
+
+</details>
 
 ---
 
-<a name="gameplay-loop"></a>
-## 🔁 Daily Gameplay Loop
+<a name="walkthrough"></a>
+## 🔁 System Workflow
 
 ```
-1. Generate or review your study plan
-2. Pick a subject and launch a focused study session
-3. Earn rewards and manage your pet
-4. Check mood, energy, and burnout signals
-5. Review progress and reflections
+1. Register or log in to StudyPet via secure, masked password input
+2. Generate or review your study plan
+3. Pick a subject and start a focused study session
+4. Earn coins and feed your pet to make it happy
+5. Check mood, energy, and burnout signals
+6. Review progress and make reflections
 ```
 
 ---
  
 <a name="features"></a>
-## ✨ Features
+## ✨ Core Features
  
 <details>
 <summary><b>Study + Focus</b> — Pomodoro sessions tied to planned subjects</summary>
@@ -74,8 +106,8 @@
 <br>
 
 - Pomodoro presets (25/5, 50/10) plus a fully custom timing mode.
-- Difficulty-based reward and pet-health impact — harder sessions matter more.
-- Sessions launched either standalone or seeded directly from the Study Planner.
+- Difficulty-based reward and pet-health impact — harder sessions earn more coins.
+- Start a quick standalone session on the fly, or seed one directly from your pre-scheduled study planner.
 - Every completed session is logged with topic, difficulty, and duration for analytics and weekly reporting.
 
 <br>
@@ -83,7 +115,7 @@
 </details>
 
 <details>
-<summary><b>Planner → Pomodoro Integration</b> — planner and timer working as one flow</summary>
+<summary><b>Study Planner → Pomodoro Integration</b> — planner and timer working as one flow</summary>
 
 <br>
 
@@ -167,30 +199,6 @@
 
 ---
 
-
-<a name="dashboard"></a>
-## 🖥️ Dashboard Menu (Post-Login)
-
-```text
-┌───────────────────────────────────────────┐
-│             STUDYPET DASHBOARD            │
-├───────────────────────────────────────────┤
-│  [1]  Start Study Session                 │
-│  [2]  Feed Pet                            │
-│  [3]  Pet Shop                            │
-│  [4]  View Pet Status                     │
-│  [5]  View User Status                    │
-│  [6]  Mood Check-in                       │
-│  [7]  Study Performance Tracker           │
-│  [8]  Analytics                           │
-│  [9]  Weekly Report                       │
-│  [10] Study Planner                       │
-│  [11] Reflection Journal                  │
-│  [12] Settings                            │
-│  [13] Logout                              │
-└───────────────────────────────────────────┘
-```
-
 <a name="libraries"></a>
 ## 📚 Libraries Used
 
@@ -233,55 +241,6 @@ StudyPet is built almost entirely on the Python standard library, with a set of 
 
 ---
 
-<a name="installation"></a>
-## ⚙️ Installation
-
-### Prerequisites
-
-| Requirement | Version | Link |
-|--------------|---------|------|
-| Python | 3.10 or higher | [Download](https://www.python.org/downloads/) |
-
-### Setup
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/zenken24/StudyPet.git
-cd StudyPet/code
-
-# 2. Run the app
-python3 main.py
-```
-
-> All runtime data is created automatically under `data/` on first use — no separate setup step or database is required.
-
-<details>
-<summary><b>Developer mode</b></summary>
-
-<br>
-
-### Compile Check
-
-Quickly verify the whole codebase compiles without running it:
-
-```bash
-python3 -m compileall main.py src
-```
-
-### Timer Testing Shortcut
-
-For fast iteration on Pomodoro sessions during development:
-
-- Edit `DEV_MODE` in `src/study/study.py`.
-- `True` — treats minutes as seconds, so sessions complete almost instantly.
-- `False` — uses real session durations (default for normal use).
-
-<br>
-
-</details>
-
----
-
 <a name="architecture"></a>
 ## 🏗️ Architecture
 
@@ -290,27 +249,26 @@ StudyPet organizes its logic by **domain** rather than by technical layer — st
 <pre>
   
 ┌─────────────────────────────────────────────────────────┐
-│                  Interface (CLI Layer)                  │
+│                 Interface (CLI Layer)                   │
 │               src/interface/ui.py · menus               │
 └───────────────────────────┬─────────────────────────────┘
                             │
 ┌───────────────────────────▼──────────────────────────────┐
 │                     Domain Modules                       │
-│   study/ (Pomodoro, planner, quiz, reports, reflection)  │
-│          pet/ (animation, evolution, pet logic)          │
-│          wellbeing/ (mood, recreation, burnout)          │
-│             core/ (analytics, shop, wallet)              │
+│   study/     -> Sessions, Planners, Quizzes & Reports    │
+│   pet/       -> Engine, Animation, and Evolution         │
+│   wellbeing/ -> Mood analysis & Overwork constraints     │
+│   core/      -> Analytics matrix, Shop & Wallets         │
 └───────────────────────────┬──────────────────────────────┘
                             │
 ┌───────────────────────────▼───────────────────────────────┐
-│                  System Services Layer                    │
-│          auth.py · navigation.py · storage.py             │
+│                 System Services Layer                     │
+│         auth.py · navigation.py · storage.py              │
 └───────────────────────────┬───────────────────────────────┘
                             │
 ┌───────────────────────────▼───────────────────────────────┐
-│                    Data (JSON files)                      │
-│        users · study_log · mood_log · quiz_marks          │
-│             study_planner · weekly_reports                │
+│                    Data Layer (JSON)                      │
+│      Flat-file databases auto-synchronized on write       │
 └───────────────────────────────────────────────────────────┘
 
 </pre>
@@ -436,6 +394,6 @@ All state is persisted as JSON under `data/`, created and populated automaticall
 
 <div align="center">
 
-<b><a href="https://github.com/zenken24/StudyPet">⭐ GitHub Repository — github.com/zenken24/StudyPet</a></b>
+<b><a href="https://github.com/zenken24/StudyPet">✨ GitHub Repository — github.com/zenken24/StudyPet ✨</a></b>
 
 </div>
