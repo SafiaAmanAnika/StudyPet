@@ -1,251 +1,441 @@
-# StudyPet 🐾
+<div align="center">
 
-StudyPet is a cozy, gamified command-line study companion built with Python.
-It blends planner-driven Pomodoro flow, pet progression, wellbeing tracking, and performance analytics into one daily routine.
+<pre>
+███████╗████████╗██╗   ██╗██████╗ ██╗   ██╗██████╗ ███████╗████████╗ 
+██╔════╝╚══██╔══╝██║   ██║██╔══██╗╚██╗ ██╔╝██╔══██╗██╔════╝╚══██╔══╝ 
+███████╗   ██║   ██║   ██║██║  ██║ ╚████╔╝ ██████╔╝█████╗     ██║    
+╚════██║   ██║   ██║   ██║██║  ██║  ╚██╔╝  ██╔═══╝ ██╔══╝     ██║    
+███████║   ██║   ╚██████╔╝██████╔╝   ██║   ██║     ███████╗   ██║    
+╚══════╝   ╚═╝    ╚═════╝ ╚═════╝    ╚═╝   ╚═╝     ╚══════╝   ╚═╝    
+</pre>
 
-## At A Glance
+# STUDYPET
+
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/Type-CLI%20Application-FFA6CA?style=flat-square)](#)
+[![Platform](https://img.shields.io/badge/Platform-Cross--Platform-FF9913?style=flat-square)](#)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)](#)
+
+<br>
+
+<i>✨ Meet StudyPet, a cozy Python-based command-line companion designed to upgrade your study routine. Built with Python, it seamlessly blends a Pomodoro planner, pet progression, wellbeing tracking, and performance analytics into one habit-building tool. ✨</i>
+
+<br>
+
+<a href="#overview">📋 Overview</a>  🔷
+<a href="#gameplay-loop">🔁 Gameplay Loop</a>  🔷
+<a href="#features">✨ Features</a>  🔷
+<a href="#dashboard">🖥️ Dashboard Menu</a>
+
+<a href="#libraries">📚 Libraries Used</a>  🔷
+<a href="#installation">⚙️ Installation</a>  🔷
+<a href="#architecture">🏗️ Architecture</a>  🔷
+<a href="#data-storage">💾 Data Storage</a>
+
+</div>
+
+---
+
+<a name="overview"></a>
+## 📋 Overview
+
+**StudyPet** is organized into clearly separated domains — study, pet, wellbeing, and system services — so that planner, Pomodoro timer, pet logic, and analytics all stay independent but feed into one continuous daily routine.
 
 | Area | What you get |
-|---|---|
+|------|---------------|
 | Focus | Pomodoro sessions (25/5, 50/10, custom) |
-| Planning | Study Planner subjects flow into session start |
+| Planning | Study Planner subjects flow directly into session start |
 | Motivation | Coins, pet health, feeding, shop, pet evolution |
-| Wellbeing | Mood logs, tired streak handling, burnout checks |
+| Wellbeing | Mood logs, tired-streak handling, burnout checks |
 | Insights | Analytics heatmaps, quiz tracking, weekly reports |
-| Experience | Animated intro, themes, animation styles |
+| Experience | Animated intro, color themes, animation styles |
 
-## Daily Gameplay Loop
+---
 
-1. Generate or review your study plan.
-2. Pick a subject and launch a focused study session.
-3. Earn rewards and manage your pet.
-4. Check mood, energy, and burnout signals.
-5. Review progress and reflections.
+<a name="gameplay-loop"></a>
+## 🔁 Daily Gameplay Loop
 
-## Planner → Pomodoro Integration
+```
+1. Generate or review your study plan
+2. Pick a subject and launch a focused study session
+3. Earn rewards and manage your pet
+4. Check mood, energy, and burnout signals
+5. Review progress and reflections
+```
 
-Study sessions can now start directly from planner output:
+---
+ 
+<a name="features"></a>
+## ✨ Features
+ 
+<details>
+<summary><b>Study + Focus</b> — Pomodoro sessions tied to planned subjects</summary>
 
-- Choose subject from generated plan entries.
-- Optionally adopt planner difficulty.
-- Optionally use planner timing for study/break.
-- Session logs store topic, difficulty, study minutes, and break minutes.
+<br>
 
-This makes Study Planner and Pomodoro feel like one continuous flow instead of two separate tools.
+- Pomodoro presets (25/5, 50/10) plus a fully custom timing mode.
+- Difficulty-based reward and pet-health impact — harder sessions matter more.
+- Sessions launched either standalone or seeded directly from the Study Planner.
+- Every completed session is logged with topic, difficulty, and duration for analytics and weekly reporting.
 
-## Feature Highlights
+<br>
 
-### Study + Focus
+</details>
 
-- Pomodoro presets and custom mode.
-- Difficulty-based reward and health impact.
+<details>
+<summary><b>Planner → Pomodoro Integration</b> — planner and timer working as one flow</summary>
 
-### Pet Progression
+<br>
 
-- Pet themes: Cat, Dog, Bunny.
-- Coins and inventory loop through shop + feeding.
-- Pet abilities and evolution checks based on activity patterns.
+- Choose a subject straight from the generated plan.
+- Optionally adopt the planner's suggested difficulty.
+- Optionally reuse the planner's timing for study and break length.
+- Session logs capture topic, difficulty, study minutes, and break minutes for later analytics.
 
-### Wellbeing + Recovery
+<br>
 
-- Mood check-ins with logs.
-- Tired streak detection and burnout handling.
-- Recreation triggers after workload thresholds.
+</details>
 
-### Tracking + Reporting
+<details>
+<summary><b>Pet Progression</b> — coins, feeding, shop, evolution</summary>
+  
+<br>
 
-- Quiz performance tracker.
-- Analytics dashboard and heatmap-style insights.
-- Weekly report snapshots.
-- Reflection and achievement flow.
+- Choice of pet theme: **Cat, Dog, or Bunny**.
+- Coins are earned through study sessions and spent through the **Pet Shop**, looping back into feeding and inventory.
+- Pet health reacts to study consistency and difficulty.
+- Pet abilities unlock and the pet **evolves** based on sustained activity patterns rather than a single action.
+  
+<br>
 
-### UI/UX
+</details>
 
-- Animated intro splash.
-- Theme Studio (color themes + animation style).
-- Universal commands at prompts:
-  - `:back` / `:b`
-  - `:exit` / `:q`
+<details>
+<summary><b>Wellbeing + Recovery</b> — mood, burnout, and recreation</summary>
 
-## Dashboard Menu (Post Login)
+<br>
 
-1. Start Study Session
-2. Feed Pet
-3. Pet Shop
-4. View Pet Status
-5. View User Status
-6. Mood Check-in
-7. Study Performance Tracker
-8. Analytics
-9. Weekly Report
-10. Study Planner
-11. Reflection Journal
-12. Settings
-0. Logout
+- Mood check-ins logged over time, separate from the study log.
+- **Tired-streak detection** flags when a student has been overworking.
+- Burnout handling steps in once workload thresholds are crossed.
+- Recreation prompts are triggered automatically after sustained heavy study load.
 
-## Settings Studio
+<br>
 
-- Change name, email, password.
-- Change pet and goals.
-- Theme Studio:
-  - Pastel Pink 🎀
-  - Ocean Breeze 🌊
-  - Sunset Glow 🌇
-  - animation style controls
-- Account deletion with password confirmation.
+</details>
+<details>
+<summary><b>Tracking + Reporting</b> — quizzes, analytics, weekly reports</summary>
 
-## Quick Start
+<br>
 
-### Requirements
+- Quiz performance tracker with goals and trend tracking.
+- Analytics dashboard with heatmap-style insight into study patterns.
+- **Weekly report** snapshots summarizing the week's study activity.
+- Reflection journal for end-of-session or end-of-day notes, feeding into an achievement flow.
 
-- Python 3.10+
+<br>
 
-Run from this folder (`code/`):
+</details>
+
+<details>
+<summary><b>UI / UX</b> — themes, animation, and universal commands</summary>
+
+<br>
+
+- Animated intro splash on launch.
+- **Theme Studio** — switchable color themes and animation styles.
+- Universal commands available at any prompt:
+  - `:back` / `:b` — step back without losing progress
+  - `:exit` / `:q` — exit cleanly from anywhere
+
+<br>
+
+</details>
+<details>
+<summary><b>Settings Studio</b> — account management and presentation controls</summary>
+
+<br>
+
+- Change name, email, or password.
+- Change pet (theme) and study goals.
+- **Theme Studio** — Pastel Pink 🎀, Ocean Breeze 🌊, Sunset Glow 🌇, plus animation style controls.
+- Account deletion, gated behind password confirmation.
+
+<br>
+
+</details>
+
+---
+
+
+<a name="dashboard"></a>
+## 🖥️ Dashboard Menu (Post-Login)
+
+```text
+┌───────────────────────────────────────────┐
+│             STUDYPET DASHBOARD            │
+├───────────────────────────────────────────┤
+│  [1]  Start Study Session                 │
+│  [2]  Feed Pet                            │
+│  [3]  Pet Shop                            │
+│  [4]  View Pet Status                     │
+│  [5]  View User Status                    │
+│  [6]  Mood Check-in                       │
+│  [7]  Study Performance Tracker           │
+│  [8]  Analytics                           │
+│  [9]  Weekly Report                       │
+│  [10] Study Planner                       │
+│  [11] Reflection Journal                  │
+│  [12] Settings                            │
+│  [13] Logout                              │
+└───────────────────────────────────────────┘
+```
+
+<a name="libraries"></a>
+## 📚 Libraries Used
+
+StudyPet is built almost entirely on the Python standard library, with a set of hand-rolled utility modules covering input handling, hashing, randomness, and text formatting rather than pulling in third-party dependencies.
+
+### Custom Utilities (`src/custom/`)
+
+| Module | What it does |
+|--------|---------------|
+| `custom_hash.py` | Hashing helper used for credential storage, keeping plain-text passwords off disk. |
+| `custom_input.py` | Wraps and validates raw terminal input across menus and forms. |
+| `custom_random.py` | Custom randomization logic, including the random task/subject assignment used by the planner. |
+| `custom_text.py` | Text formatting and rendering helpers shared across CLI screens. |
+| `custom_validation.py` | Centralized input validation rules (emails, passwords, numeric ranges, etc.). |
+
+### Core Services (`src/core/`)
+
+| Module | What it does |
+|--------|---------------|
+| `analytics.py` | Builds the analytics dashboard and heatmap-style study insights. |
+| `shop.py` | Drives the Pet Shop — browsing, purchasing, and inventory effects. |
+| `wallet.py` | Tracks coin balance, earning, and spending across the system. |
+
+### System Services (`src/system/`)
+
+| Module | What it does |
+|--------|---------------|
+| `auth.py` | Account creation, login, and credential verification. |
+| `navigation.py` | Menu routing and the universal `:back` / `:exit` command handling. |
+| `storage.py` | Reads and writes the JSON data files under `data/`. |
+
+### Standard Library Usage
+
+| API | Where it is used |
+|-----|-------------------|
+| `json` | All persistence — users, study logs, mood logs, quiz marks, planner data, weekly reports |
+| `time` / `datetime` | Pomodoro timers, demo-mode timing, weekly report windows |
+| `random` (via `custom_random.py`) | Random subject/task assignment in the Study Planner |
+| `os` / `sys` | Terminal control and file path handling |
+
+---
+
+<a name="installation"></a>
+## ⚙️ Installation
+
+### Prerequisites
+
+| Requirement | Version | Link |
+|--------------|---------|------|
+| Python | 3.10 or higher | [Download](https://www.python.org/downloads/) |
+
+### Setup
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/zenken24/StudyPet.git
+cd StudyPet/code
+
+# 2. Run the app
 python3 main.py
 ```
 
-## Canonical Data Layout
+> All runtime data is created automatically under `data/` on first use — no separate setup step or database is required.
 
-Runtime data is stored in `data/` (created/populated during app usage):
+<details>
+<summary><b>Developer mode</b></summary>
 
-- `data/users.json`
-- `data/study_log.json`
-- `data/study_log.json.backup`
-- `data/mood_log.json`
-- `data/quiz_marks.json`
-- `data/study_planner.json`
-- `data/weekly_reports.json`
+<br>
 
-## Architecture (Current)
+### Compile Check
 
-```text
-code/
-  .gitignore
-  main.py
-  README.md
-  src/
-    __init__.py
-    core/
-      __init__.py
-      analytics.py
-      shop.py
-      wallet.py
-    custom/
-      __init__.py
-      custom_hash.py
-      custom_input.py
-      custom_random.py
-      custom_text.py
-      custom_validation.py
-    interface/
-      __init__.py
-      ui.py
-    pet/
-      __init__.py
-      animation.py
-      evolution.py
-      pet.py
-    study/
-      __init__.py
-      reflection.py
-      study.py
-      user_reflection.py
-      weekly_report.py
-      quiz/
-        __init__.py
-        quiz.py
-        quiz_analytics.py
-        quiz_charts.py
-        quiz_config_helpers.py
-        quiz_dashboard.py
-        quiz_file_io.py
-        quiz_goal.py
-        quiz_goal_helpers.py
-        quiz_syllabus.py
-        quiz_text_helpers.py
-        quiz_trend.py
-        quiz_ui_boxes.py
-        quiz_ui_input.py
-        quiz_ui_marks.py
-      study_planner/
-        __init__.py
-        study_planner.py
-        study_planner_config_helpers.py
-        study_planner_file_io.py
-        study_planner_plan.py
-        study_planner_profile.py
-        study_planner_progress.py
-        study_planner_recovery.py
-        study_planner_text_helpers.py
-        study_planner_ui_boxes.py
-        study_planner_ui_input.py
-        study_planner_ui_subjects.py
-    system/
-      __init__.py
-      auth.py
-      navigation.py
-      storage.py
-    wellbeing/
-      __init__.py
-      wellbeing.py
-      recreation.py
-```
-
-## Simplified Layout (Reference)
-
-This is a flattened reference view in the style of your sample:
-
-```text
-├── data
-│   ├── mood_log.json
-│   ├── study_log.json
-│   ├── study_planner.json
-│   └── users.json
-│
-├── src
-│   ├── __init__.py
-│   ├── analytics.py
-│   ├── animation.py
-│   ├── auth.py
-│   ├── evolution.py
-│   ├── pet.py
-│   ├── quiz.py
-│   ├── recreation.py
-│   ├── shop.py
-│   ├── storage.py
-│   ├── study_planner.py
-│   ├── study.py
-│   ├── ui.py
-│   ├── weekly_report.py
-│   ├── reflection.py
-│   └── wellbeing.py
-│
-├── .gitignore
-├── main.py
-└── README.md
-```
-
-Actual implementation note:
-
-- These files are organized under domain folders in `src/` (for example `src/core/analytics.py`, `src/pet/animation.py`, `src/system/auth.py`, `src/study/quiz/quiz.py`).
-- `data/` files are created and populated at runtime.
-
-## Developer Notes
-
-Compile-check quickly:
+Quickly verify the whole codebase compiles without running it:
 
 ```bash
 python3 -m compileall main.py src
 ```
 
-Timer testing shortcut:
+### Timer Testing Shortcut
+
+For fast iteration on Pomodoro sessions during development:
 
 - Edit `DEV_MODE` in `src/study/study.py`.
-- `True` treats minutes as seconds for fast iteration.
-- `False` uses real session durations.
+- `True` — treats minutes as seconds, so sessions complete almost instantly.
+- `False` — uses real session durations (default for normal use).
 
-## Closing
+<br>
 
-StudyPet is built to make consistency feel rewarding: focused sessions, visible growth, and a companion that evolves with your effort. ✨
+</details>
+
+---
+
+<a name="architecture"></a>
+## 🏗️ Architecture
+
+StudyPet organizes its logic by **domain** rather than by technical layer — study, pet, wellbeing, and system concerns each live in their own package, with shared low-level helpers kept in `custom/`. This keeps the planner, Pomodoro timer, pet logic, and analytics independent of one another while still able to share data through `storage.py`.
+
+<pre>
+  
+┌─────────────────────────────────────────────────────────┐
+│                  Interface (CLI Layer)                  │
+│               src/interface/ui.py · menus               │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────────┐
+│                     Domain Modules                       │
+│   study/ (Pomodoro, planner, quiz, reports, reflection)  │
+│          pet/ (animation, evolution, pet logic)          │
+│          wellbeing/ (mood, recreation, burnout)          │
+│             core/ (analytics, shop, wallet)              │
+└───────────────────────────┬──────────────────────────────┘
+                            │
+┌───────────────────────────▼───────────────────────────────┐
+│                  System Services Layer                    │
+│          auth.py · navigation.py · storage.py             │
+└───────────────────────────┬───────────────────────────────┘
+                            │
+┌───────────────────────────▼───────────────────────────────┐
+│                    Data (JSON files)                      │
+│        users · study_log · mood_log · quiz_marks          │
+│             study_planner · weekly_reports                │
+└───────────────────────────────────────────────────────────┘
+
+</pre>
+
+### Package Overview
+
+| Package | Role |
+|---------|------|
+| `interface` | All user-facing CLI screens and dashboard rendering |
+| `study` | Pomodoro sessions, the Study Planner, quizzes, reflections, and weekly reports |
+| `pet` | Pet rendering, animation, and evolution logic |
+| `wellbeing` | Mood check-ins, tired-streak detection, burnout handling, recreation prompts |
+| `core` | Analytics, the Pet Shop, and coin/wallet management |
+| `system` | Authentication, menu navigation, and JSON-backed storage |
+| `custom` | Hand-built helpers for hashing, input, randomness, text, and validation |
+
+<details>
+<summary><b>View full project structure</b></summary>
+
+<br>
+
+```
+code/
+├── .gitignore
+├── main.py
+├── README.md
+├── data/                          # created/populated at runtime
+│   ├── users.json
+│   ├── study_log.json
+│   ├── study_log.json.backup
+│   ├── mood_log.json
+│   ├── quiz_marks.json
+│   ├── study_planner.json
+│   └── weekly_reports.json
+└── src/
+    ├── __init__.py
+    ├── core/
+    │   ├── analytics.py
+    │   ├── shop.py
+    │   └── wallet.py
+    ├── custom/
+    │   ├── custom_hash.py
+    │   ├── custom_input.py
+    │   ├── custom_random.py
+    │   ├── custom_text.py
+    │   └── custom_validation.py
+    ├── interface/
+    │   └── ui.py
+    ├── pet/
+    │   ├── animation.py
+    │   ├── evolution.py
+    │   └── pet.py
+    ├── study/
+    │   ├── reflection.py
+    │   ├── study.py
+    │   ├── user_reflection.py
+    │   ├── weekly_report.py
+    │   ├── quiz/
+    │   │   ├── quiz.py
+    │   │   ├── quiz_analytics.py
+    │   │   ├── quiz_charts.py
+    │   │   ├── quiz_config_helpers.py
+    │   │   ├── quiz_dashboard.py
+    │   │   ├── quiz_file_io.py
+    │   │   ├── quiz_goal.py
+    │   │   ├── quiz_goal_helpers.py
+    │   │   ├── quiz_syllabus.py
+    │   │   ├── quiz_text_helpers.py
+    │   │   ├── quiz_trend.py
+    │   │   ├── quiz_ui_boxes.py
+    │   │   ├── quiz_ui_input.py
+    │   │   └── quiz_ui_marks.py
+    │   └── study_planner/
+    │       ├── study_planner.py
+    │       ├── study_planner_config_helpers.py
+    │       ├── study_planner_file_io.py
+    │       ├── study_planner_plan.py
+    │       ├── study_planner_profile.py
+    │       ├── study_planner_progress.py
+    │       ├── study_planner_recovery.py
+    │       ├── study_planner_text_helpers.py
+    │       ├── study_planner_ui_boxes.py
+    │       ├── study_planner_ui_input.py
+    │       └── study_planner_ui_subjects.py
+    ├── system/
+    │   ├── auth.py
+    │   ├── navigation.py
+    │   └── storage.py
+    └── wellbeing/
+        ├── wellbeing.py
+        └── recreation.py
+```
+
+</details>
+
+---
+
+<a name="data-storage"></a>
+## 💾 Data Storage
+
+All state is persisted as JSON under `data/`, created and populated automatically the first time the app runs. Each file maps to one domain, so adding a field generally means touching just the relevant model and its read/write path in `storage.py`.
+
+<details>
+<summary><b>View all data files</b></summary>
+
+<br>
+
+| File | Contents |
+|------|----------|
+| `data/users.json` | Account records — credentials (hashed), profile info, pet choice, goals |
+| `data/study_log.json` | Full Pomodoro session history — topic, difficulty, study/break minutes, timestamps |
+| `data/study_log.json.backup` | Automatic backup of the study log, used for recovery |
+| `data/mood_log.json` | Mood check-in entries over time |
+| `data/quiz_marks.json` | Quiz performance records and goals |
+| `data/study_planner.json` | Generated study plans, subjects, and planner progress |
+| `data/weekly_reports.json` | Snapshot summaries generated each week from the study log |
+
+<br>
+
+</details>
+
+---
+
+<div align="center">
+
+<b><a href="https://github.com/zenken24/StudyPet">⭐ GitHub Repository — github.com/zenken24/StudyPet</a></b>
+
+</div>
