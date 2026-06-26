@@ -22,13 +22,11 @@
 
 <br>
 
-
 <a href="#installation">⚙️ Installation</a>  🔷
-<a href="#walkthrough">🔁 System Workflow</a>  🔷
-<a href="#features">✨ Core Features</a>  🔷
-<a href="#libraries">📚 Libraries Used</a>  🔷
+<a href="#system_workflow">🔁 System Workflow</a>  🔷
+<a href="#core_features">✨ Core Features</a>  🔷
 <a href="#architecture">🏗️ Architecture</a>  🔷
-<a href="#data-storage">💾 Data Storage</a>
+<a href="#breakdown">📚 Module & Storage Breakdown</a>
 
 </div>
 
@@ -83,7 +81,7 @@ For fast iteration on Pomodoro sessions during development:
 
 ---
 
-<a name="walkthrough"></a>
+<a name="system_workflow"></a>
 ## 🔁 System Workflow
 
 ```
@@ -97,7 +95,7 @@ For fast iteration on Pomodoro sessions during development:
 
 ---
  
-<a name="features"></a>
+<a name="core_features"></a>
 ## ✨ Core Features
  
 <details>
@@ -199,48 +197,6 @@ For fast iteration on Pomodoro sessions during development:
 
 ---
 
-<a name="libraries"></a>
-## 📚 Libraries Used
-
-StudyPet is built almost entirely on the Python standard library, with a set of hand-rolled utility modules covering input handling, hashing, randomness, and text formatting rather than pulling in third-party dependencies.
-
-### Custom Utilities (`src/custom/`)
-
-| Module | What it does |
-|--------|---------------|
-| `custom_hash.py` | Hashing helper used for credential storage, keeping plain-text passwords off disk. |
-| `custom_input.py` | Wraps and validates raw terminal input across menus and forms. |
-| `custom_random.py` | Custom randomization logic, including the random task/subject assignment used by the planner. |
-| `custom_text.py` | Text formatting and rendering helpers shared across CLI screens. |
-| `custom_validation.py` | Centralized input validation rules (emails, passwords, numeric ranges, etc.). |
-
-### Core Services (`src/core/`)
-
-| Module | What it does |
-|--------|---------------|
-| `analytics.py` | Builds the analytics dashboard and heatmap-style study insights. |
-| `shop.py` | Drives the Pet Shop — browsing, purchasing, and inventory effects. |
-| `wallet.py` | Tracks coin balance, earning, and spending across the system. |
-
-### System Services (`src/system/`)
-
-| Module | What it does |
-|--------|---------------|
-| `auth.py` | Account creation, login, and credential verification. |
-| `navigation.py` | Menu routing and the universal `:back` / `:exit` command handling. |
-| `storage.py` | Reads and writes the JSON data files under `data/`. |
-
-### Standard Library Usage
-
-| API | Where it is used |
-|-----|-------------------|
-| `json` | All persistence — users, study logs, mood logs, quiz marks, planner data, weekly reports |
-| `time` / `datetime` | Pomodoro timers, demo-mode timing, weekly report windows |
-| `random` (via `custom_random.py`) | Random subject/task assignment in the Study Planner |
-| `os` / `sys` | Terminal control and file path handling |
-
----
-
 <a name="architecture"></a>
 ## 🏗️ Architecture
 
@@ -273,18 +229,6 @@ StudyPet organizes its logic by **domain** rather than by technical layer — st
 
 </pre>
 
-### Package Overview
-
-| Package | Role |
-|---------|------|
-| `interface` | All user-facing CLI screens and dashboard rendering |
-| `study` | Pomodoro sessions, the Study Planner, quizzes, reflections, and weekly reports |
-| `pet` | Pet rendering, animation, and evolution logic |
-| `wellbeing` | Mood check-ins, tired-streak detection, burnout handling, recreation prompts |
-| `core` | Analytics, the Pet Shop, and coin/wallet management |
-| `system` | Authentication, menu navigation, and JSON-backed storage |
-| `custom` | Hand-built helpers for hashing, input, randomness, text, and validation |
-
 <details>
 <summary><b>View full project structure</b></summary>
 
@@ -294,8 +238,7 @@ StudyPet organizes its logic by **domain** rather than by technical layer — st
 code/
 ├── .gitignore
 ├── main.py
-├── README.md
-├── data/                          # created/populated at runtime
+├── data/                          # created at runtime
 │   ├── users.json
 │   ├── study_log.json
 │   ├── study_log.json.backup
@@ -366,34 +309,91 @@ code/
 
 ---
 
-<a name="data-storage"></a>
-## 💾 Data Storage
+<a name="breakdown"></a>
+## 📚 Module & Storage Breakdown
 
-All state is persisted as JSON under `data/`, created and populated automatically the first time the app runs. Each file maps to one domain, so adding a field generally means touching just the relevant model and its read/write path in `storage.py`.
+StudyPet is built almost entirely on the Python standard library, with a set of hand-rolled utility modules covering input handling, hashing, randomness, and text formatting rather than pulling in third-party dependencies.
+
 
 <details>
-<summary><b>View all data files</b></summary>
+<summary><b>Standard Library Usage</b></summary>
+<br>
 
+| API | Where it is used |
+|-----|-------------------|
+| `json` | All persistence — users, study logs, mood logs, quiz marks, planner data, weekly reports |
+| `time` / `datetime` | Pomodoro timers, demo-mode timing, weekly report windows |
+| `random` (via `custom_random.py`) | Random subject/task assignment in the Study Planner |
+| `os` / `sys` | Terminal control and file path handling |
+
+<br>
+</details>
+
+<details>
+<summary><b>System Services (<code>src/system/</code>)</b></summary>
+<br>
+
+| Module | What it does |
+|--------|---------------|
+| `auth.py` | Account creation, login, and credential verification. |
+| `navigation.py` | Menu routing and the universal `:back` / `:exit` command handling. |
+| `storage.py` | Reads and writes the JSON data files under `data/`. |
+
+<br>
+</details>
+
+<details>
+<summary><b>Custom Utilities (<code>src/custom/</code>)</b></summary>
+<br>
+
+| Module | What it does |
+|--------|---------------|
+| `custom_hash.py` | Hashing helper used for credential storage, keeping plain-text passwords off disk. |
+| `custom_input.py` | Wraps and validates raw terminal input across menus and forms. |
+| `custom_random.py` | Custom randomization logic, including the random task/subject assignment used by the planner. |
+| `custom_text.py` | Text formatting and rendering helpers shared across CLI screens. |
+| `custom_validation.py` | Centralized input validation rules (emails, passwords, numeric ranges, etc.). |
+
+<br>
+</details>
+
+<details>
+<summary><b>Core Services (<code>src/core/</code>)</b></summary>
+<br>
+
+| Module | What it does |
+|--------|---------------|
+| `analytics.py` | Builds the analytics dashboard and heatmap-style study insights. |
+| `shop.py` | Drives the Pet Shop — browsing, purchasing, and inventory effects. |
+| `wallet.py` | Tracks coin balance, earning, and spending across the system. |
+
+<br>
+</details>
+
+<details>
+<summary><b>Data Storage (<code>data/</code>)</b></summary>
 <br>
 
 | File | Contents |
 |------|----------|
-| `data/users.json` | Account records — credentials (hashed), profile info, pet choice, goals |
-| `data/study_log.json` | Full Pomodoro session history — topic, difficulty, study/break minutes, timestamps |
-| `data/study_log.json.backup` | Automatic backup of the study log, used for recovery |
-| `data/mood_log.json` | Mood check-in entries over time |
-| `data/quiz_marks.json` | Quiz performance records and goals |
-| `data/study_planner.json` | Generated study plans, subjects, and planner progress |
-| `data/weekly_reports.json` | Snapshot summaries generated each week from the study log |
+| `users.json` | Account records — password(hashed), profile info, pet choice |
+| `study_log.json` | Full Pomodoro session history — topic, difficulty, study/break minutes, timestamps |
+| `mood_log.json` | Mood check-in entries over time |
+| `quiz_marks.json` | Quiz performance records and goals |
+| `study_planner.json` | Generated study plans, subjects, and planner progress |
+| `weekly_reports.json` | Snapshot summaries generated each week from the study log |
 
 <br>
-
 </details>
 
 ---
 
 <div align="center">
 
+<br>
+
 <b><a href="https://github.com/zenken24/StudyPet">✨ GitHub Repository — github.com/zenken24/StudyPet ✨</a></b>
+
+<br>
 
 </div>
