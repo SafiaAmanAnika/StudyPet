@@ -1,10 +1,9 @@
 from src.interface.ui import print_fancy_box
-import time
-
+from datetime import datetime
 
 def _today_str():
-    t = time.localtime()
-    return f"{t.tm_year}-{t.tm_mon:02}-{t.tm_mday:02}"
+    today = datetime.now().date()
+    return today.strftime("%Y-%m-%d")
 
 def log_transaction(user_data: dict, description: str, amount: int, tx_type: str) -> dict:
     # tx_type: "credit" or "debit"
@@ -69,6 +68,3 @@ def show_wallet(user_data: dict) -> None:
     lines.append(row("", "Current Balance", "", "", user_data.get("coins", 0)))
 
     print_fancy_box("💰 WALLET - BANK STATEMENT", lines, theme="cyan")
-
-
-

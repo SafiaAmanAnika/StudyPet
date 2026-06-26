@@ -1,4 +1,3 @@
-from src.custom.custom_text import char_width
 from src.study.quiz.quiz_text_helpers import (
     visible_width, truncate_to_width, pad_to_width, wrap_text_to_width
 )

@@ -16,7 +16,7 @@ from src.interface.ui import (
     choose_animation_style,
 )
 from src.pet.animation import set_animation_style, get_animation_style_display
-from src.system.storage import load_users, save_users
+from src.system.storage import load_users, save_users, _safe_load_json, _safe_save_json
 from src.pet import show_status, apply_pet_abilities
 from src.core.shop import feed_pet, open_shop
 from src.study import start_session
@@ -34,7 +34,7 @@ from src.core.analytics import run as analytics_run
 from src.study.weekly_report import run as weekly_run 
 from src.pet.evolution import check_pet_evolution
 from src.study.study_planner import main_menu as study_planner_menu
-from src.study.user_reflection import handle_post_study, handle_view_achievements, handle_view_journal_history
+from src.study.reflection import handle_post_study, handle_view_achievements, handle_view_journal_history
 from src.system.navigation import install_global_navigation_input, NavigateBack, ExitApplication
 
 
@@ -122,28 +122,6 @@ def save_user_data(user_id, user_data):
     users = load_users()
     users[user_id] = user_data
     save_users(users)
-
-
-def _safe_load_json(path, default):
-    if not os.path.exists(path):
-        return default
-    try:
-        with open(path, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError):
-        return default
-
-
-def _safe_save_json(path, data):
-    try:
-        folder = os.path.dirname(path)
-        if folder:
-            os.makedirs(folder, exist_ok=True)
-        with open(path, "w") as f:
-            json.dump(data, f, indent=2)
-        return True
-    except OSError:
-        return False
 
 
 def _migrate_user_key_file(path, old_user_id, new_user_id):

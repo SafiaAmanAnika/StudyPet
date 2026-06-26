@@ -1,41 +1,7 @@
 import json, os
 from datetime import date, timedelta
 from src.interface.ui import clear_screen, print_fancy_box, menu, pause
-
-# ---------------- PATH + SAFE JSON HELPERS ---------------- #
-
-def _project_root():
-    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
-def _data_path(filename: str) -> str:
-    return os.path.join(_project_root(), "data", filename)
-
-
-def _safe_load_json(path: str, default):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-    try:
-        with open(path, "r") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        with open(path, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-
-
-def _safe_save_json(path: str, data):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
-
-
-def today_str():
-    return str(date.today())
-
+from src.system.storage import _project_root, _data_path, _safe_load_json, _safe_save_json, today_str
 
 # ---------------- DATE RANGE (LAST 7 DAYS) ---------------- #
 

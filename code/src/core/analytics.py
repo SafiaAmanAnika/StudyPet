@@ -1,36 +1,7 @@
 import json, os
 from datetime import date, datetime, timedelta
 from src.interface.ui import analytics_menu, clear_screen, print_fancy_box, pause
-
-
-# Safe File Handling
-
-
-def _project_root():
-    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-def _data_path(filename: str) -> str:
-    return os.path.join(_project_root(), "data", filename)
-
-def _safe_load_json(path: str, default):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-
-    try:
-        with open(path, "r") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        with open(path, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-
-def today_str():
-    return str(date.today())
-
+from src.system.storage import _data_path, _safe_load_json
 
 # Load + Filter Logs
 
@@ -43,10 +14,6 @@ def filter_user_logs(all_logs: list, user_id: str) -> list:
         log for log in all_logs
         if isinstance(log, dict) and log.get("user_id") == user_id
     ]
-
-
-# Build Daily Maps
-
 
 def build_daily_maps(user_logs: list):
     minutes_by_date = {}
@@ -80,8 +47,6 @@ def build_daily_maps(user_logs: list):
 
     return minutes_by_date, sessions_by_date
 
-# Intensity Mapping
-
 
 def intensity_char(total_minutes: int) -> str:
     if total_minutes <= 0:
@@ -93,11 +58,7 @@ def intensity_char(total_minutes: int) -> str:
     if total_minutes <= 99:
         return "▓"
     return "█"
-
-
-# Date Range Builder
-
-
+\
 def date_range_list(days: int):
     end = date.today()
     start = end - timedelta(days=days - 1)
@@ -108,9 +69,6 @@ def date_range_list(days: int):
         out.append(str(cur))
         cur += timedelta(days=1)
     return out
-
-
-# Heatmap Grid
 
 
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -148,8 +106,6 @@ def print_heatmap(date_list: list, weeks: list):
         lines.append(" ".join(f"{cell:>3}" for cell in week))
 
     print_fancy_box("📈 Study Heatmap", lines, theme="green")
-
-# Stats Computation
 
 
 def sum_last_n(days: int, minutes_by_date: dict, sessions_by_date: dict):
@@ -216,9 +172,6 @@ def print_stats(date_list, minutes_by_date, sessions_by_date):
         lines.append("Best day in range: No study data")
 
     print_fancy_box("📊 Analytics Stats", lines, theme="cyan")
-
-
-# Required Interface
 
 
 menu_label = "Study Analytics 📈"

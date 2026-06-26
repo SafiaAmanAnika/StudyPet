@@ -527,15 +527,6 @@ PETS_FRAMES = {
 }
 
 
-def get_pet_stage(level):
-    if level >= 10:
-        return "Scholar"
-    elif level >= 5:
-        return "Teen"
-    else:
-        return "Baby"
-
-
 def get_animation_frame(pet_theme, mood, level):
 
     stage = get_pet_stage(level)

@@ -1,12 +1,9 @@
 import json, os
+from src.system.storage import _project_root
 
 # ============================================================================
 # FILE I/O OPERATIONS
 # ============================================================================
-
-def _project_root():
-    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
 
 DATA_DIR = os.path.join(_project_root(), "data")
 DATA_FILE = os.path.join(DATA_DIR, "quiz_marks.json")

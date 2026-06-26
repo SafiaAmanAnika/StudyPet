@@ -29,8 +29,6 @@ def open_shop(user_data: dict) -> dict:
             "Back",
         ])
 
-       
-
         if choice == 1:
             user_data = buy_normal_food(user_data)
         elif choice == 2:
@@ -60,15 +58,14 @@ def buy_normal_food(user_data: dict) -> dict:
 
     clear_screen()
     print_fancy_box(
-    "✅ Purchase Complete",
-    [
-        "🍎 Normal Food bought successfully!",
-        f"🎒 Normal Food in inventory : {user_data['inventory']['normal_food']}",
-        f"💰 Remaining Coins          : {user_data['coins']}",
-    ],
-    theme="green",
-) 
-    
+        "✅ Purchase Complete",
+        [
+            "🍎 Normal Food bought successfully!",
+            f"🎒 Normal Food in inventory : {user_data['inventory']['normal_food']}",
+            f"💰 Remaining Coins          : {user_data['coins']}",
+        ],
+        theme="green",
+    ) 
     
     pause()
     return user_data
@@ -95,15 +92,14 @@ def buy_premium_food(user_data: dict) -> dict:
 
     clear_screen()
     print_fancy_box(
-    "✅ Purchase Complete",
-    [
-        "🍗 Premium Food bought successfully!",
-        f"🎒 Premium Food in inventory : {user_data['inventory']['premium_food']}",
-        f"💰 Remaining Coins           : {user_data['coins']}",
-    ],
-    theme="green",
-)
-    
+        "✅ Purchase Complete",
+        [
+            "🍗 Premium Food bought successfully!",
+            f"🎒 Premium Food in inventory : {user_data['inventory']['premium_food']}",
+            f"💰 Remaining Coins           : {user_data['coins']}",
+        ],
+        theme="green",
+    )
 
     pause()
     return user_data
@@ -215,6 +211,3 @@ def feed_pet(user_data: dict) -> dict:
 
         elif choice == 0:
             return user_data
-
-    return user_data
-

@@ -4,7 +4,8 @@ from .study_planner.study_planner_config_helpers import load_data as load_planne
 from src.custom.custom_input import read_line_with_timeout
 from src.system.navigation import NavigateBack, ExitApplication
 from src.core.wallet import log_transaction
-import time, sys
+from datetime import datetime
+import time
 
 DEV_MODE = True
 
@@ -71,8 +72,8 @@ def get_choice(prompt, allowed):
 
 
 def today_date_str():
-    t = time.localtime()
-    return f"{t.tm_year}-{t.tm_mon:02}-{t.tm_mday:02}"
+    today = datetime.now().date()
+    return today.strftime("%Y-%m-%d")
 
 
 # ------------------ SESSION SELECTION ------------------ #

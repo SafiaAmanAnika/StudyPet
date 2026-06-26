@@ -1,167 +1,330 @@
-import time
+import json, os
 from datetime import datetime, timedelta
+from src.interface.ui import clear_screen, print_fancy_box
 from src.custom.custom_random import choice
+from src.system.storage import today_str, _project_root
 
-# ---------------- UTILITY ---------------- #
-def today_str():
-    t = time.localtime()
-    return f"{t.tm_year}-{t.tm_mon:02}-{t.tm_mday:02}"
 
 def input_study_date():
-    date_str = input("Enter study date (YYYY-MM-DD) or leave empty for today:\n> ").strip()
+    date_str = input("📅 Enter study date (YYYY-MM-DD) or press Enter for today: ").strip()
     if date_str == "":
         return today_str()
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
         return date_str
     except ValueError:
-        print("Invalid date format. Using today.")
+        clear_screen()
+        print_fancy_box(
+            "⚠️ Invalid Date Format",
+            ["Please use YYYY-MM-DD.", "Using today's date instead."],
+            theme="yellow",
+        )
         return today_str()
+    
 
 def input_study_hours():
     while True:
-        hours_str = input("How many hours did you study today? (1-24)\n> ").strip()
+        hours_str = input("⏱️ How many hours did you study today? (1-24): ").strip()
         try:
             hours = float(hours_str)
             if 0 < hours <= 24:
                 return hours
             else:
-                print("Please enter a valid number between 1 and 24.")
+                print_fancy_box(
+                    "Invalid Hours",
+                    ["Please enter a number between 1 and 24."],
+                    theme="yellow",
+                )
         except ValueError:
-            print("Please enter a valid number between 1 and 24.")
+            print_fancy_box(
+                "Invalid Input",
+                ["Please enter a valid number between 1 and 24."],
+                theme="yellow",
+            )
 
-# ---------------- REFLECTION JOURNAL ---------------- #
-def log_reflection(user_data):
-    if 'reflections' not in user_data:
-        user_data['reflections'] = []
 
-    if 'daily_sessions' not in user_data:
-        user_data['daily_sessions'] = {}
+def _study_log_path():
+    return os.path.join(_project_root(), "data", "study_log.json")
 
-    print("╔════════════════════════════════╗")
-    print("║       Reflection Journal       ║")
-    print("╚════════════════════════════════╝")
 
-    study_date = input_study_date()
-    positive_feedback = input("What went well today?\n> ").strip()
-    challenges = input("What was hard?\n> ").strip()
+def _safe_load_study_logs():
+    path = _study_log_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
 
-    if positive_feedback == "" and challenges == "":
-        print("No reflection entered.\n")
-        return user_data
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=2)
+        return []
 
-    hours = input_study_hours()
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, OSError):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=2)
+        return []
 
-    # Track daily sessions
-    user_data['daily_sessions'][study_date] = user_data['daily_sessions'].get(study_date, 0) + 1
-    user_data['total_study_hours'] = user_data.get('total_study_hours', 0) + hours
 
-    entry = {
-        "date": study_date,
-        "positive_feedback": positive_feedback,
-        "challenges": challenges,
-        "hours": hours
-    }
-    user_data['reflections'].append(entry)
-    print("\nReflection saved!\n")
+def _safe_int(value, default=0):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
-    # Surprise achievement: 5 sessions/day
-    if user_data['daily_sessions'][study_date] == 5:
-        surprise_coins = choice([20, 25, 30])
-        user_data['coins'] = user_data.get('coins', 0) + surprise_coins
-        print(f"✨ Surprise! You completed 5 sessions today! +{surprise_coins} coins")
+
+def _compute_user_study_metrics(user_id):
+    daily_sessions = {}
+    total_minutes = 0
+    total_sessions = 0
+
+    if not user_id:
+        return daily_sessions, total_minutes, total_sessions
+
+    for log in _safe_load_study_logs():
+        if not isinstance(log, dict):
+            continue
+        if log.get("user_id") != user_id:
+            continue
+
+        date_key = log.get("date")
+        if not isinstance(date_key, str) or not date_key:
+            continue
+
+        minutes = max(0, _safe_int(log.get("study_minutes", 0), 0))
+        sessions = max(1, _safe_int(log.get("sessions_completed", 1), 1))
+
+        total_minutes += minutes
+        total_sessions += sessions
+        daily_sessions[date_key] = daily_sessions.get(date_key, 0) + sessions
+
+    return daily_sessions, total_minutes, total_sessions
+
+
+def _sync_reflection_stats_from_logs(user_data, user_id=None):
+    daily_sessions, total_minutes, total_sessions = _compute_user_study_metrics(user_id)
+
+    user_data['daily_sessions'] = daily_sessions
+    user_data['reflection_total_hours'] = round(total_minutes / 60.0, 2)
+    user_data['reflection_total_sessions'] = total_sessions
 
     return user_data
 
+
+def _metrics_for_date(user_id, study_date):
+    daily_sessions, total_minutes, _ = _compute_user_study_metrics(user_id)
+    sessions = daily_sessions.get(study_date, 0)
+
+    date_minutes = 0
+    if user_id:
+        for log in _safe_load_study_logs():
+            if not isinstance(log, dict):
+                continue
+            if log.get("user_id") != user_id or log.get("date") != study_date:
+                continue
+            date_minutes += max(0, _safe_int(log.get("study_minutes", 0), 0))
+
+    return sessions, date_minutes, round(date_minutes / 60.0, 2)
+
+
+# ---------------- REFLECTION JOURNAL ---------------- #
+def log_reflection(user_data, user_id=None):
+    if 'reflections' not in user_data:
+        user_data['reflections'] = []
+
+    user_data = _sync_reflection_stats_from_logs(user_data, user_id=user_id)
+
+    clear_screen()
+    print_fancy_box(
+        "📓 Reflection Journal",
+        [
+            "Reflect on your study and wins.",
+            "Study time and session count are auto-synced from your logs.",
+        ],
+        theme="yellow",
+    )
+
+    study_date = input_study_date()
+    logged_sessions, logged_minutes, logged_hours = _metrics_for_date(user_id, study_date)
+
+    positive_feedback = input("✨ What went well today?          : ").strip()
+    challenges = input("🧩 What was hard today?           : ").strip()
+
+    if positive_feedback == "" and challenges == "":
+        clear_screen()
+        print_fancy_box(
+            "Study Logged ✅",
+            [
+                f"Date: {study_date}",
+                f"Logged sessions: {logged_sessions}",
+                f"Logged minutes : {logged_minutes}",
+                f"Logged hours   : {logged_hours}",
+                "No reflection text entered.",
+            ],
+            theme="green",
+        )
+    else:
+        entry = {
+            "date": study_date,
+            "positive_feedback": positive_feedback,
+            "challenges": challenges,
+            "hours": logged_hours,
+            "sessions": logged_sessions,
+            "minutes": logged_minutes,
+        }
+        user_data['reflections'].append(entry)
+        clear_screen()
+        print_fancy_box(
+            "Reflection Saved ✅",
+            [
+                f"Date: {study_date}",
+                f"Logged sessions: {logged_sessions}",
+                f"Logged minutes : {logged_minutes}",
+                f"Logged hours   : {logged_hours}",
+                "Nice work capturing your learning progress.",
+            ],
+            theme="green",
+        )
+
+    user_data = _sync_reflection_stats_from_logs(user_data, user_id=user_id)
+
+    # Surprise achievement: 5+ sessions in a single day (awarded once per day)
+    if 'reflection_bonus_dates' not in user_data or not isinstance(user_data.get('reflection_bonus_dates'), list):
+        user_data['reflection_bonus_dates'] = []
+
+    if logged_sessions >= 5 and study_date not in user_data['reflection_bonus_dates']:
+        surprise_coins = choice([20, 25, 30])
+        user_data['coins'] = user_data.get('coins', 0) + surprise_coins
+        user_data['reflection_bonus_dates'].append(study_date)
+        print_fancy_box(
+            "✨ Surprise Achievement Unlocked",
+            [f"You completed 5 sessions today!", f"+{surprise_coins} coins added."],
+            theme="magenta",
+        )
+
+    return user_data
+
+
+        
 # ---------------- STREAK & INACTIVITY ---------------- #
-def calculate_streaks(user_data):
-    reflections = user_data.get('reflections', [])
-    if not reflections:
+def calculate_streaks(user_data, user_id=None):
+    user_data = _sync_reflection_stats_from_logs(user_data, user_id=user_id)
+    daily_sessions = user_data.get('daily_sessions', {})
+    
+    # Check daily_sessions instead of reflections so skipped journals don't break the streak
+    if not daily_sessions:
         user_data['current_streak'] = 0
         user_data['max_streak'] = 0
         user_data['inactivity_days'] = 0
         return user_data
 
-    # Build dict of date -> hours
-    date_hours = {}
-    for r in reflections:
-        date_hours[r['date']] = date_hours.get(r['date'], 0) + r.get('hours', 0)
-
-    all_dates = sorted([datetime.strptime(d, "%Y-%m-%d") for d in date_hours.keys()])
+    active_dates = list(daily_sessions.keys())
+    all_dates = sorted([datetime.strptime(d, "%Y-%m-%d") for d in active_dates])
     first_day = all_dates[0]
-    last_day = all_dates[-1]
+    today = datetime.strptime(today_str(), "%Y-%m-%d")
 
     current_streak = 0
     max_streak = 0
     inactivity_days = 0
     streak = 0
 
-    # iterate from first day to last day
     day = first_day
-    while day <= last_day:
+    while day <= today:
         day_str = day.strftime("%Y-%m-%d")
-        if date_hours.get(day_str, 0) > 0:
+        # If they have 1 or more sessions this day, they studied
+        if daily_sessions.get(day_str, 0) > 0:
             streak += 1
-        else:
+            inactivity_days = 0  
             if streak > max_streak:
                 max_streak = streak
+        else:
             streak = 0
-            if day != first_day and day != last_day:  # skip first/last for inactivity count
-                inactivity_days += 1
+            inactivity_days += 1 
         day += timedelta(days=1)
 
-    if streak > max_streak:
-        max_streak = streak
-
-    # current streak = streak at last day
-    user_data['current_streak'] = streak if date_hours.get(last_day.strftime("%Y-%m-%d"), 0) > 0 else 0
+    user_data['current_streak'] = streak
     user_data['max_streak'] = max_streak
     user_data['inactivity_days'] = inactivity_days
 
     return user_data
 
 # ---------------- ACHIEVEMENTS & BADGES ---------------- #
-def check_achievements(user_data):
+STREAK_BADGES = [
+    (3,  "Momentum Builder"),
+    (7,  "Weekly Warrior"),
+    (15, "Persistent Learner"),
+    (30, "Master of Habits"),
+    (31, "Learning Legend"),   
+]
+
+def check_and_award_achievements(user_data):
+    """Silently checks and adds newly earned badges. Returns list of new ones."""
     if 'achievements' not in user_data:
         user_data['achievements'] = []
 
     streak = user_data.get('current_streak', 0)
     new_achievements = []
 
-    # Streak-based badges only
-    streak_badges = [
-        (3, "Momentum Builder"),
-        (7, "Weekly Warrior"),
-        (15, "Persistent Learner"),
-        (30, "Master of Habits"),
-        (31, "Learning Legend")
-    ]
-
-    for days, name in streak_badges:
+    for days, name in STREAK_BADGES:
         if streak >= days and name not in user_data['achievements']:
             new_achievements.append(name)
+            user_data['achievements'].append(name)
 
-    for achievement in new_achievements:
-        user_data['achievements'].append(achievement)
-        print(f"🏆 New Achievement Unlocked: {achievement}")
+    return user_data, new_achievements
 
-    # Always show all badges
-    print("╔════════════════════════════════╗")
-    print("║       Your Achievements        ║")
-    print("╚════════════════════════════════╝")
-    if user_data['achievements']:
-        for a in user_data['achievements']:
-            print(f" - {a}")
+def display_achievements(user_data):
+    """Shows the user their current badges and progress toward next badge."""
+    streak = user_data.get('current_streak', 0)
+    achievements = user_data.get('achievements', [])
+    lines = []
+
+    if achievements:
+        lines.append("🏆 Badges Earned:")
+        for a in achievements:
+            lines.append(f"🎖️ {a}")
     else:
-        print("No achievements yet. Keep studying!")
-    print()
+        lines.append("No badges unlocked yet. Keep studying!")
 
+    next_badge = None
+    for days, name in STREAK_BADGES:
+        if streak < days:
+            next_badge = (days, name)
+            break
+
+    lines.append("")
+    if next_badge:
+        days_needed = next_badge[0] - streak
+        lines.append(f"📈 Current Streak: {streak} day(s)")
+        lines.append(f"🎯 Next Badge: {next_badge[1]} ({days_needed} more consecutive day(s))")
+    else:
+        lines.append(f"📈 Current Streak: {streak} day(s)")
+        lines.append("🌟 You've unlocked ALL badges! You're a Learning Legend!")
+
+    inactivity = user_data.get('inactivity_days', 0)
+    if inactivity > 0:
+        lines.append(f"⚠️ Inactive Days: {inactivity} day(s) (streak breaks on inactive days)")
+
+    print_fancy_box("🏆 Your Achievements", lines, theme="blue")
+
+def check_achievements(user_data):
+    """
+    Called after a study session — awards new badges and displays all achievements.
+    This is the main function called from the menu/post-study flow.
+    """
+    user_data, new_achievements = check_and_award_achievements(user_data)
+
+    if new_achievements:
+        lines = [f"🏆 {badge}" for badge in new_achievements]
+        print_fancy_box("🎉 New Badge Unlocked!", lines, theme="magenta")
+
+    display_achievements(user_data)
     return user_data
 
 # ---------------- RANDOM ENCOURAGEMENT ---------------- #
 def random_encouragement(user_data):
-    # Optional: trigger every 4 total sessions
-    if user_data.get('total_sessions', 0) % 4 == 0 and user_data.get('total_sessions', 0) > 0:
+    """Triggers every 4 total sessions as a surprise reward."""
+    total = user_data.get('reflection_total_sessions', user_data.get('total_sessions', 0))
+    if total > 0 and total % 4 == 0:  
         events = [
             ("Your pet found a rare study note! +20 coins", 20),
             ("Bonus coins discovered! +30 coins", 30),
@@ -169,13 +332,65 @@ def random_encouragement(user_data):
         ]
         event, coins = choice(events)
         user_data["coins"] = user_data.get("coins", 0) + coins
-        print(f"✨ {event}")
+        print_fancy_box("✨ Bonus Reward", [event], theme="cyan")
+    return user_data
+
+
+def view_journal_history(user_data):
+    clear_screen()
+    reflections = user_data.get('reflections', [])
+    if not isinstance(reflections, list) or not reflections:
+        print_fancy_box(
+            "📚 Journal History",
+            ["No journal entries yet.", "Log a reflection after studying to build your history."],
+            theme="blue",
+        )
+        return user_data
+
+    entries = [entry for entry in reflections if isinstance(entry, dict)]
+    entries.sort(key=lambda e: str(e.get('date', '')), reverse=True)
+
+    lines = []
+    display_limit = 12
+    for idx, entry in enumerate(entries[:display_limit], start=1):
+        date_label = str(entry.get('date', 'Unknown'))
+        hours = entry.get('hours', 0)
+        sessions = entry.get('sessions')
+        positives = str(entry.get('positive_feedback', '')).strip() or "-"
+        challenges = str(entry.get('challenges', '')).strip() or "-"
+
+        if sessions is None:
+            lines.append(f"[{idx}] {date_label} | Hours: {hours}")
+        else:
+            lines.append(f"[{idx}] {date_label} | Hours: {hours} | Sessions: {sessions}")
+        lines.append(f"Win : {positives}")
+        lines.append(f"Hard: {challenges}")
+        lines.append("")
+
+    remaining = len(entries) - display_limit
+    if remaining > 0:
+        lines.append(f"...and {remaining} older journal(s).")
+
+    print_fancy_box("📚 Journal History", lines, theme="blue")
     return user_data
 
 # ---------------- INTEGRATED HANDLER ---------------- #
-def handle_post_study(user_data):
-    user_data = log_reflection(user_data)
-    user_data = calculate_streaks(user_data)
+def handle_post_study(user_data, user_id=None):
+    """Called from reflection journal flow."""
+    user_data = log_reflection(user_data, user_id=user_id)
+    user_data = calculate_streaks(user_data, user_id=user_id)
     user_data = check_achievements(user_data)
     user_data = random_encouragement(user_data)
     return user_data
+
+# ---------------- MENU HANDLER (for Achievement option in menu) ---------------- #
+def handle_view_achievements(user_data, user_id=None):
+    """Called when user selects 'Achievements' from the main menu."""
+    user_data = calculate_streaks(user_data, user_id=user_id)  # Recalculate in case day changed
+    user_data, _ = check_and_award_achievements(user_data)  # Award any pending badges
+    display_achievements(user_data)
+    return user_data
+
+
+def handle_view_journal_history(user_data):
+    return view_journal_history(user_data)
